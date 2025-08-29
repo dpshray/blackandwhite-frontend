@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "../ui/button";
+import { Button } from "@/components/ui/button";
 import { Heart, Menu, Search, ShoppingCart, User } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 
@@ -46,7 +46,7 @@ export default function Header() {
                         </SheetContent>
                     </Sheet>
                 
-                    <div className="border border-black text-center  px-1 sm:px-3 py-1">
+                    <div className="border border-black text-center  px-1 sm:px-3 py-2">
                         <span className="text-xs sm:text-sm font-medium">
                             BLACK AND WHITE TREND
                         </span>

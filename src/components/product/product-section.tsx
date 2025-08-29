@@ -17,7 +17,7 @@ interface ProductSectionProps {
 
 export default function ProductSection({ title, products }: ProductSectionProps) {
   return (
-    <section className="max-w-7xl mx-auto px-4 py-12">
+    <section className="max-w-7xl mx-auto px-4">
       <div className="flex items-center justify-between mb-8">
         <h2 className="text-2xl font-bold">{title}</h2>
         <div className="flex space-x-2">
@@ -35,6 +35,10 @@ export default function ProductSection({ title, products }: ProductSectionProps)
           <ProductCard key={index} {...product} />
         ))}
       </div>
+
+      <Button size="lg" className="rounded-none mt-8 mx-auto block text-lg">
+        View All
+      </Button>
     </section>
   )
 }

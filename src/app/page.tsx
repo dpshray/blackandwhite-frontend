@@ -1,3 +1,4 @@
+import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
 import ProductSection from "@/components/product/product-section";
 import { Button } from "@/components/ui/button";
@@ -65,9 +66,13 @@ export default function Home() {
         </div>
       </section>
 
-      <ProductSection title="NEW ARRIVALS" products={products} />
-      <ProductSection title="BEST SELLERS" products={products} />
-      <ProductSection title="LIMITED EDITION" products={products} />
+      <div className="space-y-12 my-12">
+        <ProductSection title="NEW ARRIVALS" products={products} />
+        <ProductSection title="BEST SELLERS" products={products} />
+        <ProductSection title="LIMITED EDITION" products={products} />
+      </div>
+
+      <Footer />
     </div>
   )
 }

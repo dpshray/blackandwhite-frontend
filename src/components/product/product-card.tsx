@@ -13,7 +13,7 @@ interface ProductCardProps {
 
 export default function ProductCard({ image, title, originalPrice, salePrice, discount }: ProductCardProps) {
   return (
-    <Card className="relative overflow-hidden group">
+    <Card className="relative overflow-hidden group py-0">
       <div className="relative aspect-square">
         <Image
           src={image || "/placeholder.svg"}
