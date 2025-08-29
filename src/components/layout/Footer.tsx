@@ -103,7 +103,7 @@ export default function Footer() {
                 placeholder="Your query here..."
                 className="bg-transparent border-white text-white placeholder:text-gray-400 rounded-none flex-1"
               />
-              <Button className="bg-white text-black hover:bg-gray-200 rounded-none px-3">
+              <Button className="bg-white text-black hover:bg-gray-200 rounded-none px-3" aria-label="Submit Query">
                 <ArrowRight />
               </Button>
             </div>
