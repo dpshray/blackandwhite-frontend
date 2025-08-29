@@ -1,0 +1,40 @@
+import ProductCard from "./product-card"
+import { Button } from "@/components/ui/button"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+
+interface Product {
+  image: string
+  title: string
+  originalPrice: number
+  salePrice: number
+  discount: number
+}
+
+interface ProductSectionProps {
+  title: string
+  products: Product[]
+}
+
+export default function ProductSection({ title, products }: ProductSectionProps) {
+  return (
+    <section className="max-w-7xl mx-auto px-4 py-12">
+      <div className="flex items-center justify-between mb-8">
+        <h2 className="text-2xl font-bold">{title}</h2>
+        <div className="flex space-x-2">
+          <Button variant="outline" size="icon">
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <Button variant="outline" size="icon">
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {products.map((product, index) => (
+          <ProductCard key={index} {...product} />
+        ))}
+      </div>
+    </section>
+  )
+}
