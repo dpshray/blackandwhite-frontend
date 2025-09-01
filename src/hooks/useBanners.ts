@@ -1,6 +1,6 @@
 import { useQuery, type UseQueryResult } from "@tanstack/react-query"
 import { bannerService } from "@/services/bannerServices"
-import type { BannerResponse, Banner } from "@/types/bannerTypes"
+import type { BannerResponse } from "@/types/bannerTypes"
 
 // Query keys for banner-related queries
 export const bannerKeys = {

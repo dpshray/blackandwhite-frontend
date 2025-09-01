@@ -1,68 +1,54 @@
-import { BannerResponse } from "@/types/bannerTypes"
-import { CategoriesResponse } from "@/types/categoryTypes"
+import type { BannerResponse } from "@/types/bannerTypes";
+import type { CategoriesResponse } from "@/types/categoryTypes";
+import { ProductsResponse } from "@/types/productTypes";
 
-export async function getCategories(): Promise<CategoriesResponse> {
-  const apiUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000/api"
+const apiUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000/api";
 
+async function fetchJSON<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   try {
-    const response = await fetch(`${apiUrl}/categories`, {
-      cache: "no-store", // fresh data on every request
-    })
+    const res = await fetch(`${apiUrl}${endpoint}`, { cache: "no-store", ...options });
+    if (!res.ok) throw new Error(`API Error: ${res.status}`);
+    return await res.json();
+  } catch (err) {
+    console.error(`Error fetching ${endpoint}:`, err);
+    throw err;
+  }
+}
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch categories: ${response.status}`)
-    }
-
-    return await response.json()
-  } catch (error) {
-    console.error("Error fetching categories:", error)
-    // Return empty response structure on error
+// Categories
+export async function getCategories(): Promise<CategoriesResponse> {
+  try {
+    return await fetchJSON<CategoriesResponse>("/categories");
+  } catch {
     return {
       message: "Failed to fetch categories",
       data: {
         data: [],
-        meta: {
-          current_page: 1,
-          last_page: 1,
-          per_page: 10,
-          total: 0,
-        },
-        links: {
-          first: "",
-          last: "",
-          prev: null,
-          next: null,
-        },
+        meta: { current_page: 1, last_page: 1, per_page: 10, total: 0 },
+        links: { first: "", last: "", prev: null, next: null },
       },
       success: false,
-    }
+    };
   }
 }
 
+// Banners
 export async function getBanners(): Promise<BannerResponse> {
-  const apiUrl = process.env.NEXT_PUBLIC_BASE_URL
-
   try {
+    return await fetchJSON<BannerResponse>("/banner");
+  } catch {
+    return { message: "Failed to fetch banners", data: [], success: false };
+  }
+}
 
-    const response = await fetch(`${apiUrl}/banner`, {
-      cache: "no-store", // fresh data on every request
-      headers: {
-        "Content-Type": "application/json",
-        Accept: "application/json",
-      },
-    })
-
-    if (!response.ok) {
-      throw new Error(`API Error ${response.status}`)
-    }
-
-    const data = await response.json()
-    return data
+// Products
+export async function getProducts(page: number = 1, perPage: number = 10): Promise<ProductsResponse> {
+  try {
+    return await fetchJSON<ProductsResponse>(`/product?page=${page}&limit=${perPage}`);
   } catch {
     return {
-      message: "Failed to fetch banners",
-      data: [],
-      success: false,
-    }
+      message: "Failed to fetch products",
+      data: { data: [], meta: { current_page: 1, last_page: 1, per_page: perPage, total: 0 } },
+    };
   }
 }

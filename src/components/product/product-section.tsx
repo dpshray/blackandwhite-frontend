@@ -1,13 +1,6 @@
+import { Product } from "@/types/productTypes"
 import ProductCard from "./product-card"
 import { Button } from "@/components/ui/button"
-
-interface Product {
-  image: string
-  title: string
-  originalPrice: number
-  salePrice: number
-  discount: number
-}
 
 interface ProductSectionProps {
   title: string

@@ -4,42 +4,52 @@ import { Input } from "@/components/ui/input";
 import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import BannerSlider from "@/components/layout/BannerSlider";
-import { getBanners } from "@/lib/server-api";
+import { getBanners, getProducts } from "@/lib/server-api";
 
-export default async function Home() {
-  const products = [
-    {
-      image: "/banner1.png",
-      title: "Minimalistic Black Hoodie in Stock",
-      originalPrice: 2800,
-      salePrice: 2500,
-      discount: 10,
-    },
-    {
-      image: "/banner1.png",
-      title: "Minimalistic Black Hoodie in Stock",
-      originalPrice: 2800,
-      salePrice: 2500,
-      discount: 10,
-    },
-    {
-      image: "/banner1.png",
-      title: "Minimalistic Black Hoodie in Stock",
-      originalPrice: 2800,
-      salePrice: 2500,
-      discount: 10,
-    },
-    {
-      image: "/banner1.png",
-      title: "Minimalistic Black Hoodie in Stock",
-      originalPrice: 2800,
-      salePrice: 2500,
-      discount: 10,
-    },
-  ]
+interface ProductsPageProps {
+  searchParams: Promise<{ page?: string }>
+}
+
+export default async function Home({ searchParams }: ProductsPageProps) {
+  // const products = [
+  //   {
+  //     image: "/banner1.png",
+  //     title: "Minimalistic Black Hoodie in Stock",
+  //     originalPrice: 2800,
+  //     salePrice: 2500,
+  //     discount: 10,
+  //   },
+  //   {
+  //     image: "/banner1.png",
+  //     title: "Minimalistic Black Hoodie in Stock",
+  //     originalPrice: 2800,
+  //     salePrice: 2500,
+  //     discount: 10,
+  //   },
+  //   {
+  //     image: "/banner1.png",
+  //     title: "Minimalistic Black Hoodie in Stock",
+  //     originalPrice: 2800,
+  //     salePrice: 2500,
+  //     discount: 10,
+  //   },
+  //   {
+  //     image: "/banner1.png",
+  //     title: "Minimalistic Black Hoodie in Stock",
+  //     originalPrice: 2800,
+  //     salePrice: 2500,
+  //     discount: 10,
+  //   },
+  // ]
+  const params = await searchParams
+  const currentPage = Number.parseInt(params.page || "1", 9)
 
   const bannerResponse = await getBanners()
   const banners = bannerResponse.data || []
+
+  const productResponse = await getProducts(currentPage, 4)
+  const products = productResponse.data.data
+
   return (
     <div className="min-h-screen">
       <BannerSlider banners={banners} />

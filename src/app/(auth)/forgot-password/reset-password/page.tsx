@@ -25,7 +25,7 @@ export default function ResetPasswordPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ResetFormData>({ resolver: zodResolver(ResetSchema) });
 
   const resetMutation = useResetPassword();
