@@ -1,7 +1,10 @@
+'use client'
+
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Heart } from "lucide-react"
 import Image from "next/image"
+import { useState } from "react"
 
 interface ProductCardProps {
   image: string
@@ -12,6 +15,7 @@ interface ProductCardProps {
 }
 
 export default function ProductCard({ image, title, originalPrice, salePrice, discount }: ProductCardProps) {
+  const [favourite, setFavourite] = useState(false)
   return (
     <Card className="relative overflow-hidden group py-0">
       <div className="relative aspect-square">
@@ -23,7 +27,20 @@ export default function ProductCard({ image, title, originalPrice, salePrice, di
         />
         <div className="absolute top-3 left-3 bg-black text-white px-2 py-1 text-xs font-medium">{discount}% OFF</div>
         <div className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center">
-          <Button variant={"ghost"} size="icon" aria-label="Wishlist"><Heart className="h-4 w-4" /></Button>
+          {/* Favourite Button */}
+          <Button
+            variant="ghost"
+            size="icon"
+            aria-label="Wishlist"
+            onClick={() => setFavourite(!favourite)}
+            className="absolute w-9 h-9 rounded-full bg-white shadow-md hover:bg-gray-100"
+          >
+          <Heart
+            className={`h-5 w-5 transition-colors ${
+              favourite ? "fill-red-500 text-red-500" : "text-gray-600"
+            }`}
+          />
+        </Button>
         </div>
       </div>
       <div className="p-4 space-y-3">

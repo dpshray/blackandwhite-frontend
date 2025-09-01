@@ -1,6 +1,5 @@
 import ProductCard from "./product-card"
 import { Button } from "@/components/ui/button"
-import { ChevronLeft, ChevronRight } from "lucide-react"
 
 interface Product {
   image: string

@@ -2,16 +2,13 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Heart, Menu, Search, ShoppingCart, User } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
+import { Category } from "@/types/categoryTypes";
 
-const navItems = [
-    {name: "HOODIES", href: "#"},
-    {name: "PANTS", href: "#"},
-    {name: "SHIRTS", href: "#"},
-    {name: "T-SHIRTS", href: "#"},
-    {name: "HALF-PANTS", href: "#"},
-]
+interface HeaderProps {
+  categories: Category[]
+}
 
-export default function Header() {
+export default function Header({categories}: HeaderProps) {
     return (
         <header className="w-full bg-white border-b">
             <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
@@ -33,13 +30,13 @@ export default function Header() {
                                 </SheetDescription>
                             </SheetHeader>
                             <nav className="flex flex-col space-y-6 px-6">
-                                {navItems.map((item) => (
+                                {categories.map((item) => (
                                 <Link
-                                    key={item.name}
-                                    href={item.href}
+                                    key={item.id}
+                                    href={item.slug}
                                     className="text-lg font-medium hover:text-gray-600 transition-colors"
                                 >
-                                    {item.name}
+                                    {item.title}
                                 </Link>
                                 ))}
                             </nav>
@@ -54,25 +51,25 @@ export default function Header() {
                 </div>
 
                 <nav className="hidden md:flex items-center space-x-8">
-                    {navItems.map((item) => (
-                        <Link key={item.name} href={item.href} className="text-sm font-medium hover:text-gray-600">
-                            {item.name}
+                    {categories.map((item) => (
+                        <Link key={item.id} href={item.slug} className="text-sm font-medium hover:text-gray-600">
+                            {item.title}
                         </Link>
                     ))}
                 </nav>
 
                 <div className="flex items-center space-x-2 sm:space-x-4">
                     <Button variant={"ghost"} size="icon" aria-label="Search">
-                        <Search className="h-5 w-5" />
+                        <Search className="h-6 w-6" />
                     </Button>
                     <Button variant={"ghost"} size="icon" aria-label="User">
-                        <User className="h-5 w-5" />
+                        <User className="h-6 w-6" />
                     </Button>
                     <Button variant={"ghost"} size="icon" aria-label="Wishlist">
-                        <Heart className="h-5 w-5" />
+                        <Heart className="h-6 w-6" />
                     </Button>
                     <Button variant="ghost" size="icon" className="relative" aria-label="Shopping Cart">
-                        <ShoppingCart className="h-5 w-5" />
+                        <ShoppingCart className="h-6 w-6" />
                         <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                             0
                         </span>
