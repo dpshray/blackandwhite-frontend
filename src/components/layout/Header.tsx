@@ -30,6 +30,9 @@ export default function Header({categories}: HeaderProps) {
                                 </SheetDescription>
                             </SheetHeader>
                             <nav className="flex flex-col space-y-6 px-6">
+                                <Link href="/shop" className="text-lg font-medium hover:text-gray-600 transition-colors">
+                                    Shop
+                                </Link>
                                 {categories.map((item) => (
                                 <Link
                                     key={item.id}
@@ -51,6 +54,9 @@ export default function Header({categories}: HeaderProps) {
                 </div>
 
                 <nav className="hidden md:flex items-center space-x-8">
+                    <Link href="/shop" className="text-sm font-medium hover:text-gray-600">
+                        Shop
+                    </Link>
                     {categories.map((item) => (
                         <Link key={item.id} href={item.slug} className="text-sm font-medium hover:text-gray-600">
                             {item.title}

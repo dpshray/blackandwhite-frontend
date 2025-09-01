@@ -21,17 +21,6 @@ export const useBanners = (): UseQueryResult<BannerResponse, Error> => {
   })
 }
 
-// Hook to get single banner by ID
-export const useBanner = (id: number): UseQueryResult<Banner, Error> => {
-  return useQuery({
-    queryKey: bannerKeys.detail(id),
-    queryFn: () => bannerService.getBannerById(id),
-    enabled: !!id,
-    staleTime: 5 * 60 * 1000,
-    gcTime: 10 * 60 * 1000,
-  })
-}
-
 // Helper hook to get just the banners array
 export const useBannersData = () => {
   const { data, ...rest } = useBanners()
