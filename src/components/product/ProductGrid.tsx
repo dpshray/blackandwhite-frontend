@@ -12,9 +12,10 @@ interface ProductGridProps {
   products: Product[]
   totalPages: number
   currentPage: number
+  category?: string
 }
 
-export default function ProductGrid({ products, totalPages, currentPage }: ProductGridProps) {
+export default function ProductGrid({ products, totalPages, currentPage, category }: ProductGridProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const [selectedSize, setSelectedSize] = useState<string | null>(null)

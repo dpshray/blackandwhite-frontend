@@ -11,36 +11,6 @@ interface ProductsPageProps {
 }
 
 export default async function Home({ searchParams }: ProductsPageProps) {
-  // const products = [
-  //   {
-  //     image: "/banner1.png",
-  //     title: "Minimalistic Black Hoodie in Stock",
-  //     originalPrice: 2800,
-  //     salePrice: 2500,
-  //     discount: 10,
-  //   },
-  //   {
-  //     image: "/banner1.png",
-  //     title: "Minimalistic Black Hoodie in Stock",
-  //     originalPrice: 2800,
-  //     salePrice: 2500,
-  //     discount: 10,
-  //   },
-  //   {
-  //     image: "/banner1.png",
-  //     title: "Minimalistic Black Hoodie in Stock",
-  //     originalPrice: 2800,
-  //     salePrice: 2500,
-  //     discount: 10,
-  //   },
-  //   {
-  //     image: "/banner1.png",
-  //     title: "Minimalistic Black Hoodie in Stock",
-  //     originalPrice: 2800,
-  //     salePrice: 2500,
-  //     discount: 10,
-  //   },
-  // ]
   const params = await searchParams
   const currentPage = Number.parseInt(params.page || "1", 9)
 

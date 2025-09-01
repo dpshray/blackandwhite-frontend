@@ -23,10 +23,10 @@ export default function Header({categories}: HeaderProps) {
                         <SheetContent side="left" className="w-[300px] sm:w-[400px]">
                             <SheetHeader>
                                 <SheetTitle className="text-lg font-semibold">
-                                Menu
+                                    Menu
                                 </SheetTitle>
                                 <SheetDescription>
-                                Browse all available categories.
+                                    Browse all available categories.
                                 </SheetDescription>
                             </SheetHeader>
                             <nav className="flex flex-col space-y-6 px-6">
@@ -36,7 +36,7 @@ export default function Header({categories}: HeaderProps) {
                                 {categories.map((item) => (
                                 <Link
                                     key={item.id}
-                                    href={item.slug}
+                                    href={`/shop/${item.slug}`}
                                     className="text-lg font-medium hover:text-gray-600 transition-colors"
                                 >
                                     {item.title}
@@ -46,11 +46,13 @@ export default function Header({categories}: HeaderProps) {
                         </SheetContent>
                     </Sheet>
                 
-                    <div className="border border-black text-center  px-1 sm:px-3 py-2">
-                        <span className="text-xs sm:text-sm font-medium">
-                            BLACK AND WHITE TREND
-                        </span>
-                    </div>
+                    <Link href={"/"}>
+                        <div className="border border-black text-center  px-1 sm:px-3 py-2">
+                            <span className="text-xs sm:text-sm font-medium">
+                                BLACK AND WHITE TREND
+                            </span>
+                        </div>
+                    </Link>
                 </div>
 
                 <nav className="hidden md:flex items-center space-x-8">
@@ -58,13 +60,13 @@ export default function Header({categories}: HeaderProps) {
                         Shop
                     </Link>
                     {categories.map((item) => (
-                        <Link key={item.id} href={item.slug} className="text-sm font-medium hover:text-gray-600">
+                        <Link key={item.id} href={`/shop/${item.slug}`} className="text-sm font-medium hover:text-gray-600">
                             {item.title}
                         </Link>
                     ))}
                 </nav>
 
-                <div className="flex items-center space-x-2 sm:space-x-4">
+                <div className="flex items-center space-x-2">
                     <Button variant={"ghost"} size="icon" aria-label="Search">
                         <Search className="h-6 w-6" />
                     </Button>

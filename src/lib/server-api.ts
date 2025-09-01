@@ -42,13 +42,31 @@ export async function getBanners(): Promise<BannerResponse> {
 }
 
 // Products
-export async function getProducts(page: number = 1, perPage: number = 10): Promise<ProductsResponse> {
+export async function getProducts(
+  page: number = 1,
+  perPage: number = 10,
+  category?: string
+): Promise<ProductsResponse> {
   try {
-    return await fetchJSON<ProductsResponse>(`/product?page=${page}&limit=${perPage}`);
+    // Build dynamic query params
+    const categoryQuery = category ? `&category=${encodeURIComponent(category)}` : "";
+
+    return await fetchJSON<ProductsResponse>(
+      `/product?page=${page}&limit=${perPage}${categoryQuery}`
+    );
   } catch {
     return {
       message: "Failed to fetch products",
-      data: { data: [], meta: { current_page: 1, last_page: 1, per_page: perPage, total: 0 } },
+      data: {
+        data: [],
+        meta: {
+          current_page: 1,
+          last_page: 1,
+          per_page: perPage,
+          total: 0,
+        },
+      },
     };
   }
 }
+
