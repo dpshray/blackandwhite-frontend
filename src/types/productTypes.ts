@@ -43,3 +43,8 @@ export interface ProductsResponse {
   };
   message: string;
 }
+
+export interface SingleProductResponse {
+  data: Product | null;
+  message: string;
+}

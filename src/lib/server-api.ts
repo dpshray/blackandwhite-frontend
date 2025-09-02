@@ -1,8 +1,8 @@
 import type { BannerResponse } from "@/types/bannerTypes";
 import type { CategoriesResponse } from "@/types/categoryTypes";
-import { ProductsResponse } from "@/types/productTypes";
+import { ProductsResponse, SingleProductResponse } from "@/types/productTypes";
 
-const apiUrl = process.env.NEXT_PUBLIC_BASE_URL || "http://localhost:8000/api";
+const apiUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 async function fetchJSON<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   try {
@@ -69,4 +69,13 @@ export async function getProducts(
     };
   }
 }
+
+export async function getProductBySlug(slug: string): Promise<SingleProductResponse> {
+  try {
+    return await fetchJSON<SingleProductResponse>(`/product-detail/${slug}`);
+  } catch {
+    return { message: "Failed to fetch product", data: null};
+  }
+}
+
 

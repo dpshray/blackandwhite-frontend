@@ -1,6 +1,8 @@
 import ProductGrid from "@/components/product/ProductGrid"
 import { getProducts } from "@/lib/server-api"
 
+export const dynamic = "force-dynamic";
+
 interface CategoryPageProps {
   params: Promise<{ category: string }>
   searchParams: Promise<{ page?: string }>

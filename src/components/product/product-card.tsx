@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Heart } from "lucide-react"
 import Image from "next/image"
+import Link from "next/link"
 import { useState } from "react"
 
 interface ProductCardProps {
@@ -12,24 +13,28 @@ interface ProductCardProps {
   price: number
   discount_price: number | null
   discount_percent: number
+  category: string
+  slug: string
 }
 
-export default function ProductCard({ image, title, price, discount_price, discount_percent }: ProductCardProps) {
+export default function ProductCard({ image, title, price, discount_price, discount_percent, category, slug }: ProductCardProps) {
   const [favourite, setFavourite] = useState(false)
   return (
     <Card className="relative overflow-hidden group py-0">
       <div className="relative aspect-square">
-        <Image
-          src={image || "/placeholder.svg"}
-          alt={title}
-          fill
-          className="object-cover group-hover:scale-105 transition-transform duration-300"
-        />
-        {discount_percent > 0 && (
-          <div className="absolute top-3 left-3 bg-black text-white px-2 py-1 text-xs font-medium rounded">
-            {discount_percent}% OFF
-          </div>
-        )}
+        <Link href={`/shop/${category}/${slug}`}>
+          <Image
+            src={image || "/placeholder.svg"}
+            alt={title}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+          />
+          {discount_percent > 0 && (
+            <div className="absolute top-3 left-3 bg-black text-white px-2 py-1 text-xs font-medium rounded">
+              {discount_percent}% OFF
+            </div>
+          )}
+        </Link>
 
         <div className="absolute top-3 right-3 w-8 h-8 bg-white rounded-full flex items-center justify-center">
           {/* Favourite Button */}
