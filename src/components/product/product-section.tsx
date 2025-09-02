@@ -16,7 +16,16 @@ export default function ProductSection({ title, products }: ProductSectionProps)
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product, index) => (
-          <ProductCard key={index} {...product} />
+          <ProductCard 
+            key={index}
+            image={product.image}
+            title={product.title}
+            price={product.price}
+            discount_price={product.discount_price}
+            discount_percent={product.discount_percent}
+            slug={product.slug} 
+            category={product.categories?.map(c => c.categories_title).join(", ") || "Uncategorized"}
+          />
         ))}
       </div>
 

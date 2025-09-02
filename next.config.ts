@@ -12,7 +12,7 @@ const nextConfig: NextConfig = {
       },
       {
           protocol: 'https',
-          hostname: 'api.blackandwhite.com',
+          hostname: 'api.blackandwhitetrend.com',
           pathname: '/**',
       },
     ],

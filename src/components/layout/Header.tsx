@@ -30,14 +30,14 @@ export default function Header({categories}: HeaderProps) {
                                 </SheetDescription>
                             </SheetHeader>
                             <nav className="flex flex-col space-y-6 px-6">
-                                <Link href="/shop" className="text-lg font-medium hover:text-gray-600 transition-colors">
+                                <Link href="/shop" className="uppercase text-lg font-medium hover:text-gray-600 transition-colors">
                                     Shop
                                 </Link>
                                 {categories.map((item) => (
                                 <Link
                                     key={item.id}
                                     href={`/shop/${item.slug}`}
-                                    className="text-lg font-medium hover:text-gray-600 transition-colors"
+                                    className="uppercase text-lg font-medium hover:text-gray-600 transition-colors"
                                 >
                                     {item.title}
                                 </Link>
@@ -56,32 +56,32 @@ export default function Header({categories}: HeaderProps) {
                 </div>
 
                 <nav className="hidden md:flex items-center space-x-8">
-                    <Link href="/shop" className="text-sm font-medium hover:text-gray-600">
+                    <Link href="/shop" className="uppercase text-base font-medium hover:text-gray-600">
                         Shop
                     </Link>
                     {categories.map((item) => (
-                        <Link key={item.id} href={`/shop/${item.slug}`} className="text-sm font-medium hover:text-gray-600">
+                        <Link key={item.id} href={`/shop/${item.slug}`} className="uppercase text-base font-medium hover:text-gray-600">
                             {item.title}
                         </Link>
                     ))}
                 </nav>
 
-                <div className="flex items-center space-x-2">
-                    <Button variant={"ghost"} size="icon" aria-label="Search">
-                        <Search className="h-6 w-6" />
-                    </Button>
-                    <Button variant={"ghost"} size="icon" aria-label="User">
-                        <User className="h-6 w-6" />
-                    </Button>
-                    <Button variant={"ghost"} size="icon" aria-label="Wishlist">
-                        <Heart className="h-6 w-6" />
-                    </Button>
-                    <Button variant="ghost" size="icon" className="relative" aria-label="Shopping Cart">
-                        <ShoppingCart className="h-6 w-6" />
+                <div className="flex items-center space-x-2 sm:space-x-4">
+                    <div  aria-label="Search">
+                        <Search className="h-5 w-5 sm:h-6 sm:w-6" />
+                    </div>
+                    <div  aria-label="User">
+                        <User className="h-5 w-5 sm:h-6 sm:w-6" />
+                    </div>
+                    <div  aria-label="Wishlist">
+                        <Heart className="h-5 w-5 sm:h-6 sm:w-6" />
+                    </div>
+                    <div className="relative" aria-label="Shopping Cart">
+                        <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
                         <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
                             0
                         </span>
-                    </Button>
+                    </div>
                 </div>
             </div>
         </header>
