@@ -25,7 +25,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  // ✅ Load user from cookies on initial mount
+  // Load user from cookies on initial mount
   useEffect(() => {
     const token = Cookies.get("auth-token");
     const userData = Cookies.get("user-data");
@@ -42,7 +42,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  // ✅ Login using API
+  // Login using API
   const login = async (email: string, password: string) => {
     try {
       const response = await authService.signIn({

@@ -8,6 +8,7 @@ export const useCart = () => {
   return useQuery({
     queryKey: ["cart"],
     queryFn: cartService.getCart,
+    select: (res) => res.data,
   });
 };
 
@@ -17,7 +18,7 @@ export const useAddToCart = () => {
   return useMutation({
     mutationFn: cartService.addToCart,
     onSuccess: (res) => {
-        toast.success(res.data.message || "Product added to cart");
+        toast.success(res.message || "Product added to cart successfully");
         queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
     onError: (err: AxiosError<ApiError>) => {
@@ -33,7 +34,7 @@ export const useUpdateCartItem = () => {
     mutationFn: ({ id, quantity }: { id: number; quantity: number }) =>
       cartService.updateCartItem(id, { quantity }),
     onSuccess: (res) => {
-        toast.success(res.data.message || "Cart updated");
+        toast.success(res.message || "Cart updated successfully");
         queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
     onError: (err: AxiosError<ApiError>) => {
@@ -48,7 +49,7 @@ export const useRemoveCartItem = () => {
   return useMutation({
     mutationFn: cartService.removeCartItem,
     onSuccess: (res) => {
-        toast.success(res.data.message || "Item removed from cart");
+        toast.success(res.message || "Item removed from cart");
         queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
     onError: (err: AxiosError<ApiError>) => {
