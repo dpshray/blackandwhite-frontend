@@ -29,6 +29,7 @@ export interface Product {
   image: string;
   categories: ProductCategory[];
   variants: ProductVariant[];
+  isFavourite?: boolean;
 }
 
 export interface ProductsResponse {

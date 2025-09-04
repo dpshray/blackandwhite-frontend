@@ -2,12 +2,14 @@
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { useAddToCart } from "@/hooks/useCart"
+import { useAddFavourite, useRemoveFavourite } from "@/hooks/useFavourite"
 import { Heart } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
-import { useState } from "react"
 
 interface ProductCardProps {
+  id: number
   image: string
   title: string
   price: number
@@ -15,18 +17,35 @@ interface ProductCardProps {
   discount_percent: number
   category: string
   slug: string
+  isFavourite?: boolean;
 }
 
-export default function ProductCard({ image, title, price, discount_price, discount_percent, category, slug }: ProductCardProps) {
-  const [favourite, setFavourite] = useState(false)
-  // const addToFavMutation = useAddToFavourites();
-  // const { mutate: removeFromFavourites } = useRemoveFromFavourites();
+export default function ProductCard({ id, image, title, price, discount_price, discount_percent, category, slug, isFavourite }: ProductCardProps) {
+  const addToFavMutation = useAddFavourite();
+  const removeFromFavMutation = useRemoveFavourite();
+  const addToCartMutation = useAddToCart();
+
+  const handleFavourite = () => {
+    if (isFavourite) {
+      removeFromFavMutation.mutate(id);
+    } else {
+      addToFavMutation.mutate(id);
+    }
+  };
+
+  // Handle Add to Cart
+  const handleAddToCart = () => {
+    addToCartMutation.mutate(
+      { product_id: id },
+    );
+  };
+
   return (
     <Card className="relative overflow-hidden group py-0">
       <div className="relative aspect-square">
         <Link href={`/shop/${category}/${slug}`}>
           <Image
-            src={image || "/placeholder.svg"}
+            src={image || "/placeholder.png"}
             alt={title}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
@@ -44,12 +63,13 @@ export default function ProductCard({ image, title, price, discount_price, disco
             variant="ghost"
             size="icon"
             aria-label="Wishlist"
-            onClick={() => setFavourite(!favourite)}
+            onClick={handleFavourite}
+            disabled={addToFavMutation.isPending || removeFromFavMutation.isPending}
             className="absolute w-9 h-9 rounded-full bg-white shadow-md hover:bg-gray-100"
           >
           <Heart
             className={`h-5 w-5 transition-colors ${
-              favourite ? "fill-red-500 text-red-500" : "text-gray-600"
+              isFavourite ? "fill-black" : "text-gray-600"
             }`}
           />
         </Button>
@@ -61,7 +81,13 @@ export default function ProductCard({ image, title, price, discount_price, disco
           <span className="text-sm text-gray-500 line-through">Rs.{price}</span>
           <span className="text-sm font-medium">Rs.{discount_price}</span>
         </div>
-        <Button className="w-full bg-white text-black border border-gray-300 hover:bg-gray-50">Add to cart</Button>
+        <Button
+          className="w-full bg-white text-black border border-gray-300 hover:bg-gray-50"
+          onClick={handleAddToCart}
+          disabled={addToCartMutation.isPending}
+        >
+          {addToCartMutation.isPending ? "Adding..." : "Add to cart"}
+        </Button>      
       </div>
     </Card>
   )

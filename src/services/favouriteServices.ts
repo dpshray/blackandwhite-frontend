@@ -13,7 +13,7 @@ export const favouriteService = {
   },
 
   removeFavourite: async (product_id: number) => {
-    const { data } = await axiosInstance.delete(`/remove-favourites/${product_id}`);
+    const { data } = await axiosInstance.delete(`/remove-favourite/${product_id}`);
     return data;
   },
 };

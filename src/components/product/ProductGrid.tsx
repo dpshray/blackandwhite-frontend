@@ -1,6 +1,5 @@
 "use client"
 
-import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import ProductCard from "@/components/product/product-card"
 import type { Product } from "@/types/productTypes"
@@ -8,7 +7,9 @@ import { Button } from "@/components/ui/button"
 import Pagination from "../Pagination"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select"
 import { ShopBreadCrumb } from "../ShopBreadCrumb"
-import { Home } from "lucide-react"
+import { Home, SearchX } from "lucide-react"
+import { useFavourites } from "@/hooks/useFavourite"
+import Link from "next/link"
 
 interface ProductGridProps {
   products: Product[]
@@ -20,9 +21,10 @@ interface ProductGridProps {
 export default function ProductGrid({ products, totalPages, currentPage, category }: ProductGridProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const [selectedSize, setSelectedSize] = useState<string | null>(null)
-  const [selectedColor, setSelectedColor] = useState<string | null>(null)
-  const [sortOption, setSortOption] = useState("best")
+  const { data: favourites } = useFavourites();
+  const selectedSize = searchParams.get("size")
+  const selectedColor = searchParams.get("color")
+  const sortOption = searchParams.get("sort") || "best"
 
   const breadcrumbs = [
     { label: < Home />, href: '/' },
@@ -36,10 +38,39 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
     });
   }
 
+  const updateFilters = (newFilters: Record<string, string | null>) => {
+    const params = new URLSearchParams(searchParams.toString())
+
+    Object.entries(newFilters).forEach(([key, value]) => {
+      if (value) {
+        params.set(key, value)
+      } else {
+        params.delete(key)
+      }
+    })
+
+    // Reset to page 1 when filters change
+    params.set("page", "1")
+
+    router.push(`?${params.toString()}`)
+  }
+
   const goToPage = (page: number) => {
     const params = new URLSearchParams(searchParams.toString())
     params.set("page", page.toString())
     router.push(`?${params.toString()}`)
+  }
+
+  const handleSizeChange = (size: string) => {
+    updateFilters({ size: selectedSize === size ? null : size })
+  }
+
+  const handleColorChange = (color: string) => {
+    updateFilters({ color: selectedColor === color ? null : color })
+  }
+
+  const handleSortChange = (sort: string) => {
+    updateFilters({ sort })
   }
 
   return (
@@ -60,7 +91,8 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
                   key={size}
                   variant={selectedSize === size ? "default" : "outline"}
                   size="sm"
-                  onClick={() => setSelectedSize(size)}
+                  onClick={() => handleSizeChange(size)}
+                  className="min-w-[40px]"
                 >
                   {size}
                 </Button>
@@ -72,12 +104,23 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
           <div>
             <h3 className="font-semibold mb-2">COLOR</h3>
             <div className="flex gap-3">
-              {["black", "white"].map((color) => (
-                <button
-                  key={color}
-                  onClick={() => setSelectedColor(color)}
-                  className={`w-8 h-8 rounded-full border ${selectedColor === color ? "ring-2 ring-black" : ""}`}
-                  style={{ backgroundColor: color }}
+              {[
+                { name: "black", value: "black" },
+                { name: "white", value: "white" },
+              ].map((color) => (
+                <Button
+                  key={color.value}
+                  onClick={() => handleColorChange(color.value)}
+                  className={`rounded-full border-2 transition-all ${
+                    selectedColor === color.value
+                      ? "ring-2 ring-primary ring-offset-2"
+                      : "hover:ring-1 hover:ring-primary/50"
+                  }`}
+                  style={{
+                    backgroundColor: color.value,
+                    borderColor: color.value === "white" ? "#e5e7eb" : color.value,
+                  }}
+                  title={color.name}
                 />
               ))}
             </div>
@@ -89,10 +132,7 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
           {/* Sort */}
           <div className="flex items-center justify-end space-x-4 mb-6">
             <h3 className="font-semibold">SORT BY:</h3>
-            <Select
-              value={sortOption}
-              onValueChange={(value) => setSortOption(value)}
-            >
+            <Select value={sortOption} onValueChange={(value) => handleSortChange(value)}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select an option" />
               </SelectTrigger>
@@ -104,21 +144,45 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
             </Select>
           </div>
 
+          {products.length === 0 ? (
+            <div className="flex flex-col items-center justify-center text-center py-16">
+              <SearchX className="w-16 h-16 text-gray-400 mb-4" />
+              <h2 className="text-xl sm:text-3xl font-semibold">No Products Found</h2>
+              <p className="text-gray-500 mt-2 ">
+                We couldn&apos;t find any products matching your filters. Try adjusting them or browse our full
+                collection.
+              </p>
+              <div className="mt-6 flex gap-4">
+                <Link href="/"><Button>Go Home</Button></Link>
+                <Link href="/shop">
+                  <Button variant="outline">Browse Shop</Button>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <>
           {/* Product Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {products.map((product) => (
-              <ProductCard
-                key={product.id}
-                image={product.image}
-                title={product.title}
-                price={product.price}
-                discount_price={product.discount_price ?? product.price}
-                discount_percent={product.discount_percent}
-                category={product.categories[0]?.categories_title}
-                slug={product.slug}
-              />
-            ))}
+            {products.map((product) => {
+              const isFav = favourites?.favourites.some((fav: any) => fav.product_id === product.id.toString()) || false;
+              return (  
+                <ProductCard 
+                  key={product.id}
+                  id={product.id}
+                  image={product.image}
+                  title={product.title}
+                  price={product.price}
+                  discount_price={product.discount_price}
+                  discount_percent={product.discount_percent}
+                  slug={product.slug} 
+                  category={product.categories?.map(c => c.categories_title).join(", ") || "Uncategorized"}
+                  isFavourite={isFav}
+                />
+              )
+            })}
           </div>
+          </>
+          )}
 
           {/* Pagination */}
           {totalPages > 1 && <Pagination currentPage={currentPage} totalPages={totalPages} goToPage={goToPage} />}
