@@ -6,8 +6,6 @@ import Image from "next/image";
 import BannerSlider from "@/components/layout/BannerSlider";
 import { getBanners, getProducts } from "@/lib/server-api";
 
-export const dynamic = "force-dynamic";
-
 interface ProductsPageProps {
   searchParams: Promise<{ page?: string }>
 }

@@ -7,9 +7,9 @@ import { ArrowRight } from "lucide-react";
 import { Category } from "@/types/categoryTypes";
 
 const company = [
-  { title: "Home", link: "#" },
-  { title: "FAQs", link: "#" },
-  { title: "Contact Us", link: "#" },
+  { title: "Home", link: "/" },
+  { title: "FAQs", link: "/faq" },
+  { title: "Contact Us", link: "/contact" },
 ];
 
 const follow = [
