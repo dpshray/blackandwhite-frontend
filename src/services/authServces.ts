@@ -35,4 +35,6 @@ export const authService = {
 
   resetPassword: (payload: ResetPasswordPayload) =>
     axiosInstance.post("/reset-password", payload).then((res) => res.data),
+
+  logout: () => axiosInstance.post("/logout").then((res) => res.data),
 }

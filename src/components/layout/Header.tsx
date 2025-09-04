@@ -1,19 +1,31 @@
+'use client'
+
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Heart, Menu, Search, ShoppingCart, User } from "lucide-react";
 import { Sheet, SheetContent, SheetDescription, SheetHeader, SheetTitle, SheetTrigger } from "../ui/sheet";
 import { Category } from "@/types/categoryTypes";
+import { useCart } from "@/hooks/useCart";
+import { useFavourites } from "@/hooks/useFavourite";
+import { useAuth } from "@/context/auth-provider";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "../ui/dropdown-menu";
+import { useLogout } from "@/hooks/useAuth";
 
 interface HeaderProps {
   categories: Category[]
 }
 
 export default function Header({categories}: HeaderProps) {
+    const totalCartItems = useCart().data?.total_cart;
+    const totalWishlistItems = useFavourites().data?.total_favourites;
+    const { user } = useAuth();
+    const { mutate: handleLogout, isPending } = useLogout();
+
     return (
         <header className="w-full bg-white border-b">
             <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
                 <div className="flex items-center space-x-2">
-                {/* Mobile menu button */}
+                    {/* Mobile menu button */}
                     <Sheet>
                         <SheetTrigger asChild>
                             <Button variant="ghost" size="icon" className="md:hidden">
@@ -67,21 +79,52 @@ export default function Header({categories}: HeaderProps) {
                 </nav>
 
                 <div className="flex items-center space-x-2 sm:space-x-4">
+                    {/* search */}
                     <div  aria-label="Search">
                         <Search className="h-5 w-5 sm:h-6 sm:w-6" />
                     </div>
-                    <div  aria-label="User">
-                        <User className="h-5 w-5 sm:h-6 sm:w-6" />
-                    </div>
-                    <div  aria-label="Wishlist">
+                    {/* user */}
+                    <DropdownMenu modal={false}>
+                        <DropdownMenuTrigger asChild>
+                            <User className="h-5 w-5 sm:h-6 sm:w-6 cursor-pointer hover:text-gray-600" aria-label="User"/>
+                        </DropdownMenuTrigger>
+
+                        <DropdownMenuContent align="end" className="w-44 rounded-lg shadow-md">
+                            {user ? (
+                            <>
+                                <DropdownMenuItem asChild>
+                                <Link href="/profile">Profile</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleLogout()} className="text-red-500 hover:!text-red-600" disabled={isPending}>
+                                    Logout
+                                </DropdownMenuItem>
+                            </>
+                            ) : (
+                            <>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/login">Login</Link>
+                                </DropdownMenuItem>
+                                <DropdownMenuItem asChild>
+                                    <Link href="/register">Signup</Link>
+                                </DropdownMenuItem>
+                            </>
+                            )}
+                        </DropdownMenuContent>
+                    </DropdownMenu>
+                    {/* wishlist */}
+                    <Link href="/wishlist" className="relative hover:text-gray-600"  aria-label="Wishlist">
                         <Heart className="h-5 w-5 sm:h-6 sm:w-6" />
-                    </div>
-                    <div className="relative" aria-label="Shopping Cart">
-                        <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
-                        <span className="absolute -top-1 -right-1 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
-                            0
+                        <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            {totalWishlistItems ?? 0}
                         </span>
-                    </div>
+                    </Link>
+                    {/* cart */}
+                    <Link href="/cart" className="relative hover:text-gray-600" aria-label="Shopping Cart">
+                        <ShoppingCart className="h-5 w-5 sm:h-6 sm:w-6" />
+                        <span className="absolute -top-1.5 -right-1.5 bg-black text-white text-xs rounded-full h-5 w-5 flex items-center justify-center">
+                            {totalCartItems ?? 0}
+                        </span>
+                    </Link>
                 </div>
             </div>
         </header>

@@ -72,3 +72,20 @@ export const useResetPassword = () => {
     },
   });
 };
+
+export const useLogout = () => {
+  const { logout } = useAuth();
+
+  return useMutation({
+    mutationFn: async () => {
+      return authService.logout();
+    },
+    onSuccess: () => {
+      logout(); // Remove cookies & clear state
+      toast.success("Logged out successfully");
+    },
+    onError: () => {
+      toast.error("Failed to log out");
+    },
+  });
+};

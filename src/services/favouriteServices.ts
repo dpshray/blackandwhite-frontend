@@ -1,18 +1,19 @@
 import axiosInstance from "@/lib/axios";
+import { FavouritesResponse } from "@/types/favouriteTypes";
 
 export const favouriteService = {
   getFavourites: async () => {
-    const { data } = await axiosInstance.get("/favourites");
-    return data;
+    const { data } = await axiosInstance.get<FavouritesResponse>("/view-favourites");
+    return data.data;
   },
 
   addFavourite: async (product_id: number) => {
-    const { data } = await axiosInstance.post("/favourites", { product_id });
+    const { data } = await axiosInstance.post("/add-favourites", { product_id });
     return data;
   },
 
   removeFavourite: async (product_id: number) => {
-    const { data } = await axiosInstance.delete(`/favourites/${product_id}`);
+    const { data } = await axiosInstance.delete(`/remove-favourites/${product_id}`);
     return data;
   },
 };

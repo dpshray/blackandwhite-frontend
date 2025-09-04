@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useEffect, useState } from "react";
 import Cookies from "js-cookie";
 import { authService } from "@/services/authServces";
+import { useQueryClient } from "@tanstack/react-query";
 
 interface User {
   id: string;
@@ -24,8 +25,9 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const queryClient = useQueryClient();
 
-  // ✅ Load user from cookies on initial mount
+  // Load user from cookies on initial mount
   useEffect(() => {
     const token = Cookies.get("auth-token");
     const userData = Cookies.get("user-data");
@@ -42,7 +44,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(false);
   }, []);
 
-  // ✅ Login using API
+  // Login using API
   const login = async (email: string, password: string) => {
     try {
       const response = await authService.signIn({
@@ -101,6 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     Cookies.remove("auth-token");
     Cookies.remove("user-data");
     setUser(null);
+    queryClient.clear();
   };
 
   return (

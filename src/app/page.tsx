@@ -6,8 +6,6 @@ import Image from "next/image";
 import BannerSlider from "@/components/layout/BannerSlider";
 import { getBanners, getProducts } from "@/lib/server-api";
 
-export const dynamic = "force-dynamic";
-
 interface ProductsPageProps {
   searchParams: Promise<{ page?: string }>
 }
@@ -27,9 +25,9 @@ export default async function Home({ searchParams }: ProductsPageProps) {
       <BannerSlider banners={banners} />
 
       <div className="space-y-12 my-12">
-        <ProductSection title="NEW ARRIVALS" products={products} />
-        <ProductSection title="BEST SELLERS" products={products} />
-        <ProductSection title="LIMITED EDITION" products={products} />
+        <ProductSection title="NEW ARRIVALS" products={products} link="/shop"/>
+        <ProductSection title="BEST SELLERS" products={products} link="/shop"/>
+        <ProductSection title="LIMITED EDITION" products={products} link="/shop"/>
       </div>
 
       {/* Newsletter Section */}

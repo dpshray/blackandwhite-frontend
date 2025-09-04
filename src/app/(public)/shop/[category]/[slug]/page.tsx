@@ -3,8 +3,6 @@ import { getProductBySlug } from "@/lib/server-api";
 import ProductDetails from "@/components/product/ProductDetails";
 import { Home } from "lucide-react";
 
-export const dynamic = "force-dynamic";
-
 export default async function ProductPage(props: { params: Promise<{ slug: string; category: string }> }) {
   const { slug } = await props.params;
 
