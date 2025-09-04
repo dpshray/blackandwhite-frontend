@@ -5,9 +5,10 @@ import { Button } from "@/components/ui/button"
 interface ProductSectionProps {
   title: string
   products: Product[]
+  link?: string
 }
 
-export default function ProductSection({ title, products }: ProductSectionProps) {
+export default function ProductSection({ title, products, link }: ProductSectionProps) {
   return (
     <section className="max-w-7xl mx-auto px-4">
       <div className="flex items-center justify-between mb-8">
@@ -28,10 +29,14 @@ export default function ProductSection({ title, products }: ProductSectionProps)
           />
         ))}
       </div>
-
-      <Button size="lg" className="rounded-none mt-8 mx-auto block text-lg">
-        View All
-      </Button>
+      
+      {
+        link && (
+          <Button size="lg" className="rounded-none mt-8 mx-auto block text-lg">
+            View All
+          </Button>
+        )
+      }
     </section>
   )
 }

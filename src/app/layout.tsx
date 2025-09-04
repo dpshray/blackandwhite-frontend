@@ -40,10 +40,12 @@ export default async function RootLayout({
       >
         <TanstackProvider>
           <AuthProvider>
-            <Header categories={categories} />
-              {children}
-            <Footer categories={categories} />
-            <Toaster />
+            <div className="min-h-screen flex flex-col">
+              <Header categories={categories} />
+              <main className="flex-grow">{children}</main>
+              <Footer categories={categories} />
+              <Toaster />
+            </div>
           </AuthProvider>
         </TanstackProvider>
       </body>

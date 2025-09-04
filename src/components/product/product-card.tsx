@@ -19,6 +19,8 @@ interface ProductCardProps {
 
 export default function ProductCard({ image, title, price, discount_price, discount_percent, category, slug }: ProductCardProps) {
   const [favourite, setFavourite] = useState(false)
+  // const addToFavMutation = useAddToFavourites();
+  // const { mutate: removeFromFavourites } = useRemoveFromFavourites();
   return (
     <Card className="relative overflow-hidden group py-0">
       <div className="relative aspect-square">
