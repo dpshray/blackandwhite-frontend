@@ -4,9 +4,6 @@ import Cookies from "js-cookie";
 const axiosInstance = axios.create({
   baseURL: process.env.NEXT_PUBLIC_BASE_URL,
   timeout: 10000,
-  headers: {
-    "Content-Type": "application/json",
-  },
 })
 
 // Request interceptor for adding auth tokens
@@ -16,6 +13,12 @@ axiosInstance.interceptors.request.use(
     const token = Cookies.get("auth-token");
     if (token) {
       config.headers.Authorization =  `${token}`;
+    }
+    if (config.data instanceof FormData) {
+      // Let Axios handle boundary automatically
+      config.headers["Content-Type"] = "multipart/form-data";
+    } else {
+      config.headers["Content-Type"] = "application/json";
     }
     return config
   },

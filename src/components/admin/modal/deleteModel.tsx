@@ -11,7 +11,7 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { CircleAlert, Loader2 } from "lucide-react";
-import { ReactNode, useState } from "react";
+import { ReactNode   } from "react";
 
 type BaseModalProps = {
   open: boolean;
@@ -24,6 +24,7 @@ type BaseModalProps = {
   onConfirm?: () => Promise<void> | void; // Supports async
   isDestructive?: boolean;
   icon?: ReactNode;
+  loading?: boolean;
 };
 
 export function BaseModal({
@@ -37,21 +38,11 @@ export function BaseModal({
   onConfirm,
   isDestructive = false,
   icon = <CircleAlert className="opacity-80" size={16} strokeWidth={2} />,
+  loading = false,
 }: BaseModalProps) {
-  const [loading, setLoading] = useState(false);
 
   const handleConfirm = async () => {
-    if (!onConfirm) return;
-
-    try {
-      setLoading(true);
-      await onConfirm();
-      onOpenChangeAction(false); // Close modal after success
-    } catch (error) {
-      console.error("Error in confirm action:", error);
-    } finally {
-      setLoading(false);
-    }
+    if (onConfirm) await onConfirm();
   };
 
   return (

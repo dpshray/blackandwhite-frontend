@@ -11,6 +11,7 @@ import { BaseModal } from "../modal/deleteModel";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
+import AddProduct from "./AddProduct";
 
 export default function ProductTable() {
     const [page, setPage] = useState(1);
@@ -29,11 +30,13 @@ export default function ProductTable() {
 
     const handleConfirmDelete = async () => {
         if (!selectedProduct) return;
+
         try {
-        await deleteProduct.mutate(selectedProduct.id);
-        } finally {
-        setDeleteModalOpen(false);
-        setSelectedProduct(null);
+            await deleteProduct.mutateAsync(selectedProduct.id)
+            setDeleteModalOpen(false)
+            setSelectedProduct(null)
+        } catch (error) {
+            console.error("Failed to delete product:", error)
         }
     };
 
@@ -83,7 +86,7 @@ export default function ProductTable() {
             header: "Description",
             cell: ({ row }) => (
                 <div className="line-clamp-2 break-words whitespace-normal">
-                {row.original.description}
+                    {row.original.description}
                 </div>
             ),
             enableSorting: false,
@@ -210,9 +213,9 @@ export default function ProductTable() {
 
     return (
         <div className="space-y-4 py-4">
-        {/* <div className="w-full md:w-auto">
-            <AddProductDialog />
-        </div> */}
+        <div className="w-full md:w-auto">
+            <AddProduct />
+        </div>
 
         {!productData ? (
             <TableSkeleton />
@@ -236,6 +239,7 @@ export default function ProductTable() {
             cancelText="Cancel"
             onConfirm={handleConfirmDelete}
             isDestructive
+            loading={deleteProduct.isPending}
         />
         </div>
     );

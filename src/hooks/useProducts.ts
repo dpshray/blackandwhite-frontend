@@ -3,6 +3,9 @@
 import { productService } from "@/services/productServices";
 import { ProductsResponse } from "@/types/productTypes";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { ApiError } from "next/dist/server/api-utils";
+import { toast } from "sonner";
 
 export const useProducts = (page: number = 1, limit: number = 10) => {
   const queryClient = useQueryClient();
@@ -18,7 +21,11 @@ export const useProducts = (page: number = 1, limit: number = 10) => {
   const addProduct = useMutation({
     mutationFn: (payload: FormData) => productService.addProduct(payload),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["products"] }); // refresh list
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast.success("Product added successfully");
+    },
+    onError: (err: AxiosError<ApiError>) => {
+      toast.error(err.response?.data?.message || "Failed to add product");
     },
   });
 
@@ -28,7 +35,11 @@ export const useProducts = (page: number = 1, limit: number = 10) => {
       productService.updateProduct(id, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast.success("Product updated successfully");
     },
+    onError: (err: AxiosError<ApiError>) => {
+      toast.error(err.response?.data?.message || "Failed to update product");
+    }
   });
 
   // delete
@@ -36,6 +47,10 @@ export const useProducts = (page: number = 1, limit: number = 10) => {
     mutationFn: (id: number) => productService.deleteProduct(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast.success("Product deleted successfully");
+    },
+    onError: (err: AxiosError<ApiError>) => {
+      toast.error(err.response?.data?.message || "Failed to delete product");
     },
   });
 

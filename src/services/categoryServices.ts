@@ -1,26 +1,32 @@
-import axiosInstance from "@/lib/axios"
-import { CategoriesResponse, Category } from "@/types/categoryTypes"
+import axiosInstance from "@/lib/axios";
+import { CategoriesResponse, Category } from "@/types/categoryTypes";
 
 export const categoriesService = {
-  // Get all categories
+  // Get all categories (with pagination + search)
   getCategories: async (params?: {
-    page?: number
-    limit?: number
-    search?: string
+    page?: number;
+    limit?: number;
+    search?: string;
   }): Promise<CategoriesResponse> => {
-    const response = await axiosInstance.get("/categories", { params })
-    return response.data
+    const response = await axiosInstance.get("/categories", { params });
+    return response.data;
   },
 
-  // Get single category by ID
-  getCategoryById: async (id: number): Promise<Category> => {
-    const response = await axiosInstance.get(`/categories/${id}`)
-    return response.data
+  // Add new category
+  addCategory: async (payload: FormData): Promise<Category> => {
+    const response = await axiosInstance.post("/categories", payload);
+    return response.data;
   },
 
-  // Get category by slug
-  getCategoryBySlug: async (slug: string): Promise<Category> => {
-    const response = await axiosInstance.get(`/categories/slug/${slug}`)
-    return response.data
+  // Update category 
+  updateCategory: async (id: number, payload: FormData): Promise<Category> => {
+    const response = await axiosInstance.put(`/categories/${id}`, payload);
+    return response.data;
   },
-}
+
+  // Delete category
+  deleteCategory: async (id: number): Promise<{ message: string }> => {
+    const response = await axiosInstance.delete(`/categories/${id}`);
+    return response.data;
+  },
+};

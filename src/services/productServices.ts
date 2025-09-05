@@ -9,9 +9,10 @@ export const productService = {
     return data;
   },
 
-  addProduct: (payload: FormData) => axiosInstance.post("/product", payload),
+  addProduct: (payload: FormData) => axiosInstance.post("/admin/add-product", payload),
 
-  deleteProduct: (id: number) => axiosInstance.delete(`/product/${id}`),
+  updateProduct: (id: number, payload: FormData) => axiosInstance.put(`/admin/update-product/${id}`, payload),
 
-  updateProduct: (id: number, payload: FormData) => axiosInstance.put(`/product/${id}`, payload),
+  deleteProduct: (id: number) => axiosInstance.delete(`/admin/delete-product/${id}`),
+
 };
