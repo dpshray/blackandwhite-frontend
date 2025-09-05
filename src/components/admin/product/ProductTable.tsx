@@ -12,6 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import AddProduct from "./AddProduct";
+import UpdateProductDialog from "./UpdateProduct";
 
 export default function ProductTable() {
     const [page, setPage] = useState(1);
@@ -146,48 +147,7 @@ export default function ProductTable() {
           header: "Actions",
           cell: ({ row }) => (
             <div className="flex gap-2">
-              {/* <UpdateProductDialog
-                productId={row.original.id}
-                defaultValues={{
-                  name: row.original.title,
-                  model_no: row.original.model_no,
-                  description: row.original.description,
-                  price: parseFloat(row.original.price),
-                  discount_price: row.original.discount_price
-                    ? parseFloat(row.original.discount_price)
-                    : 0,
-                  features: row.original.features || [],
-                  quantity: row.original.quantity,
-                  warranty: row.original.warranty,
-                  categories: (row.original.categories ?? []).map(
-                    (cat: Category | any) => ({
-                      id: cat.categories_id,
-                      name: cat.name,
-                      categories_title: cat.categories_title,
-                      categories_slug: cat.categories_slug,
-                    })
-                  ),
-                  subcategories: (row.original.subcategories ?? []).map(
-                    (subcat: SubCategory | any) => ({
-                      id: subcat.subcategories_id,
-                      subcategories_title: subcat.subcategories_title,
-                      slug: subcat.subcategories_slug,
-                    })
-                  ),
-                  variants: (row.original.variants ?? []).map((v) => ({
-                    id: v.id,
-                    size: v.size,
-                    color: v.color,
-                    price: Number(v.price),
-                    discount_price: v.discount_price
-                      ? Number(v.discount_price)
-                      : null,
-                    frame: v.frame,
-                    temple: v.temple,
-                    quantity: Number(v.quantity),
-                  })),
-                }}
-              /> */}
+              <UpdateProductDialog product={row.original} />
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>

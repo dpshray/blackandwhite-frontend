@@ -11,7 +11,7 @@ export const productService = {
 
   addProduct: (payload: FormData) => axiosInstance.post("/admin/add-product", payload),
 
-  updateProduct: (id: number, payload: FormData) => axiosInstance.put(`/admin/update-product/${id}`, payload),
+  updateProduct: (id: number, payload: FormData) => axiosInstance.post(`/admin/update-product/${id}`, payload),
 
   deleteProduct: (id: number) => axiosInstance.delete(`/admin/delete-product/${id}`),
 
