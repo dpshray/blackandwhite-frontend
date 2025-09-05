@@ -105,9 +105,9 @@ export function AppSidebar() {
                       href={item.url}
                       className={cn(
                         pathname === item.url
-                          ? "bg-gradient-to-r from-black to-white text-yellow-900 font-semibold shadow-sm hover:shadow-md hover:text-yellow-900"
+                          ? "bg-gradient-to-r from-black to-gray-400 text-gray-200 font-semibold shadow-sm hover:shadow-2xl hover:!text-gray-200"
                           : "",
-                        "flex items-center gap-2 w-full px-3 py-2 rounded hover:bg-yellow-50 transition-colors"
+                        "flex items-center gap-2 w-full px-3 py-2 rounded hover:!bg-black hover:!text-gray-200 transition-colors"
                       )}
                     >
                       <item.icon />

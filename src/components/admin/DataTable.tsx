@@ -18,6 +18,7 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import { useState } from "react";
+import Pagination from "../Pagination";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -104,14 +105,15 @@ export function DataTable<TData, TValue>({
         </Table>
       </div>
 
-     {/* {totalPages > 1 && (
-        <PaginationControls
-          totalPages={totalPages}
+      {/* Pagination Section */}
+      {totalPages > 1 && onPageChange && (
+        <Pagination
           currentPage={currentPage}
-          onPageChange={onPageChange}
-          className="mt-4"
+          totalPages={totalPages}
+          goToPage={onPageChange}
         />
-      )} */}
+      )}
+
     </div>
   );
 }

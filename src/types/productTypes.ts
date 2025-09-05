@@ -2,8 +2,8 @@ export interface ProductVariant {
   id: number;
   size: string;
   color: string;
-  price: string;
-  discount_price: string | null;
+  price: number;
+  discount_price: number | null;
   discount_percent: number | null;
   stock: number;
   images: string[];

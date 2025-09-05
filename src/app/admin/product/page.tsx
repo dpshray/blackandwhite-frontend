@@ -1,5 +1,4 @@
-import ProductTable from "./ProductTable";
-
+import ProductTable from "@/components/admin/product/ProductTable";
 
 export default function AdminProduct() {
     return (
