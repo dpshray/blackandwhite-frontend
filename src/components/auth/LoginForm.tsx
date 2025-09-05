@@ -4,8 +4,6 @@ import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Button } from "@/components/ui/button";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner"; 
 import TextInput from "../fields/TextInput";
 import { useSignIn } from "@/hooks/useAuth";
 import Image from "next/image";
@@ -19,7 +17,6 @@ const signInSchema = z.object({
 type SignInFormValues = z.infer<typeof signInSchema>;
 
 export default function LoginForm() {
-  const router = useRouter();
   const { mutate, isPending } = useSignIn();
 
   const {
@@ -36,20 +33,11 @@ export default function LoginForm() {
         email: data.email,
         password: data.password,
       },
-      {
-        onSuccess: () => {
-          toast.success("Login successful!");
-          router.push("/"); 
-        },
-        onError: (error: any) => {
-          toast.error(error?.response?.data?.message || "Invalid email or password!");
-        },
-      }
     );
   };
 
   return (
-    <div className="flex px-4 py-8 max-w-7xl mx-auto min-h-[80vh]">
+    <div className="flex h-screen items-center px-4 py-8 max-w-7xl mx-auto min-h-[80vh]">
       <div className="hidden md:flex flex-1 items-center justify-center">
         <Image
           src="/banner1.png" 

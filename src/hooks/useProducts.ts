@@ -3,10 +3,10 @@
 import { productService } from "@/services/productServices";
 import { useQuery } from "@tanstack/react-query";
 
-export const useProducts = (page: number = 1, size: number = 10) => {
+export const useProducts = (page: number = 1, limit: number = 10) => {
   return useQuery({
-    queryKey: ["products", page, size],
-    queryFn: () => productService.getProducts(page, size),
+    queryKey: ["products", page, limit],
+    queryFn: () => productService.getProducts(page, limit),
     staleTime: 5 * 60 * 1000, // 5 minutes
   }
   );

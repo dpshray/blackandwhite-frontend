@@ -9,7 +9,8 @@ interface User {
   id: string;
   email: string;
   name: string;
-  role: "user" | "admin";
+  role?: "user" | "admin";
+  is_admin?: number;
 }
 
 interface AuthContextType {
@@ -53,7 +54,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       });
 
       const token = response?.data?.token;
-      const user = response?.data?.data;
+      const user = {
+        ...response?.data?.data,
+        role: Number(response?.data?.data?.is_admin) === 1 ? "admin" : "user",
+      };
+
 
       if (!token || !user) {
         throw new Error("Invalid email or password");
@@ -98,7 +103,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   };
 
-  // ✅ Logout user
+  //  Logout user
   const logout = () => {
     Cookies.remove("auth-token");
     Cookies.remove("user-data");

@@ -31,7 +31,7 @@ axiosInstance.interceptors.response.use(
     // Handle common errors
     if (error.response?.status === 401) {
       // Handle unauthorized access
-      localStorage.removeItem("token")
+      Cookies.remove("auth-token")
       // window.location.href = "/login"
     }
     return Promise.reject(error)
