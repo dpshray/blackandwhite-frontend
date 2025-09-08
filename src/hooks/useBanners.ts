@@ -1,31 +1,70 @@
-import { useQuery, type UseQueryResult } from "@tanstack/react-query"
-import { bannerService } from "@/services/bannerServices"
-import type { BannerResponse } from "@/types/bannerTypes"
+"use client";
 
-// Query keys for banner-related queries
-export const bannerKeys = {
-  all: ["banners"] as const,
-  lists: () => [...bannerKeys.all, "list"] as const,
-  list: (filters: string) => [...bannerKeys.lists(), { filters }] as const,
-  details: () => [...bannerKeys.all, "detail"] as const,
-  detail: (id: number) => [...bannerKeys.details(), id] as const,
-}
+import { bannerService } from "@/services/bannerServices";
+import { BannerResponse } from "@/types/bannerTypes";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { AxiosError } from "axios";
+import { ApiError } from "next/dist/server/api-utils";
+import { toast } from "sonner";
 
-// Hook to get all banners
-export const useBanners = (): UseQueryResult<BannerResponse, Error> => {
-  return useQuery({
-    queryKey: bannerKeys.lists(),
-    queryFn: () => bannerService.getBanners(),
+export const useBanners = (
+  page: number = 1,
+  limit: number = 9
+) => {
+  const queryClient = useQueryClient();
+
+  //  GET Banners
+  const getBanners = useQuery<BannerResponse>({
+    queryKey: ["banners", { page, limit }],
+    queryFn: () => bannerService.getBanners({ page, limit }),
     staleTime: 5 * 60 * 1000, // 5 minutes
     gcTime: 10 * 60 * 1000, // 10 minutes
-  })
-}
+  });
 
-// Helper hook to get just the banners array
-export const useBannersData = () => {
-  const { data, ...rest } = useBanners()
+  //  ADD Banner
+  const addBanner = useMutation({
+    mutationFn: (payload: FormData) => bannerService.addBanner(payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["banners"] });
+      toast.success("Banner added successfully");
+    },
+    onError: (err: AxiosError<ApiError>) => {
+      toast.error(err.response?.data?.message || "Failed to add banner");
+    },
+  });
+
+  //  UPDATE Banner
+  const updateBanner = useMutation({
+    mutationFn: ({ id, payload }: { id: number; payload: FormData }) =>
+      bannerService.updateBanner(id, payload),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["banners"] });
+      toast.success("Banner updated successfully");
+    },
+    onError: (err: AxiosError<ApiError>) => {
+      toast.error(err.response?.data?.message || "Failed to update banner");
+    },
+  });
+
+  //  DELETE Banner
+  const deleteBanner = useMutation({
+    mutationFn: (id: number) => bannerService.deleteBanner(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["banners"] });
+      toast.success("Banner deleted successfully");
+    },
+    onError: (err: AxiosError<ApiError>) => {
+      toast.error(err.response?.data?.message || "Failed to delete banner");
+    },
+  });
+
   return {
-    banners: data?.data || [],
-    ...rest,
-  }
-}
+    // query
+    getBanners,
+
+    // mutations
+    addBanner,
+    updateBanner,
+    deleteBanner,
+  };
+};

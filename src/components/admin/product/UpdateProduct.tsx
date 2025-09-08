@@ -33,7 +33,7 @@ const variantSchema = z.object({
   images: z
     .any()
     .refine((files) => normalizeFiles(files).every((f) => f instanceof Blob), "All files must be images")
-    .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_PRODUCT_SIZE), `Image must be <1MB`)
+    .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_PRODUCT_SIZE), `Image must be less than ${MAX_PRODUCT_SIZE / (1024 * 1024)}MB`)
     .refine((files) => normalizeFiles(files).every((f) => ALLOWED_IMAGE_TYPES.includes(f.type)), "Only jpg/png/webp")
 });
 

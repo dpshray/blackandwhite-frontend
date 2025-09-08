@@ -1,25 +1,60 @@
+"use client"
+
 import Image from "next/image"
 import { Button } from "../ui/button"
 import { X } from "lucide-react"
+import { useEffect, useState } from "react"
 
 export const ImagePreview = ({
   files,
   onRemove,
+  single = false,
+  banner = false,
 }: {
   files: FileList | File[] | null
   onRemove: (index: number) => void
+  single?: boolean
+  banner?: boolean
 }) => {
+  const [previewUrls, setPreviewUrls] = useState<string[]>([])
+
+  useEffect(() => {
+    if (!files || files.length === 0) {
+      setPreviewUrls([])
+      return
+    }
+
+    const fileArray = Array.from(files)
+    const urls = fileArray.map((file) =>
+      file instanceof File ? URL.createObjectURL(file) : (file as string)
+    )
+    setPreviewUrls(urls)
+
+    // cleanup blob URLs
+    return () => {
+      urls.forEach((url) => {
+        if (url.startsWith("blob:")) URL.revokeObjectURL(url)
+      })
+    }
+  }, [files])
+
   if (!files || files.length === 0) return null
 
-  const fileArray = Array.from(files)
-
   return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-      {fileArray.map((file, index) => (
+    <div
+      className={
+        single
+          ? "flex justify-center mt-4"
+          : "grid grid-cols-2 md:grid-cols-4 gap-4 mt-4"
+      }
+    >
+      {previewUrls.map((url, index) => (
         <div key={index} className="relative group">
-          <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200">
+          <div className={`rounded-lg overflow-hidden border border-gray-200 ${
+            banner ? "aspect-[2.4/1]" : "aspect-square"
+          }`}>
             <Image
-              src={URL.createObjectURL(file) || "/placeholder.png"}
+              src={url || "/placeholder.png"}
               alt={`Preview ${index + 1}`}
               width={150}
               height={150}
