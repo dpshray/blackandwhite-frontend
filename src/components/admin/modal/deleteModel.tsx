@@ -2,7 +2,6 @@
 
 import {
   AlertDialog,
-  AlertDialogAction,
   AlertDialogCancel,
   AlertDialogContent,
   AlertDialogDescription,
@@ -10,6 +9,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
+import { Button } from "@/components/ui/button";
 import { CircleAlert, Loader2 } from "lucide-react";
 import { ReactNode   } from "react";
 
@@ -69,18 +69,19 @@ export function BaseModal({
 
         <AlertDialogFooter>
           <AlertDialogCancel disabled={loading}>{cancelText}</AlertDialogCancel>
-          <AlertDialogAction
+          <Button
             onClick={handleConfirm}
+            variant={'destructive'}
             disabled={loading}
-            className={`flex items-center justify-center gap-2 ${
+            className={`flex items-center justify-center gap-2 rounded-md px-4 py-2 text-sm font-medium ${
               isDestructive
                 ? "bg-destructive text-destructive-foreground hover:bg-destructive/90 text-white"
-                : ""
+                : "bg-primary text-primary-foreground hover:bg-primary/90"
             }`}
           >
             {loading && <Loader2 className="animate-spin h-4 w-4" />}
             {loading ? "Processing..." : confirmText}
-          </AlertDialogAction>
+          </Button>
         </AlertDialogFooter>
       </AlertDialogContent>
     </AlertDialog>
