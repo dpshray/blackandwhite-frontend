@@ -28,6 +28,7 @@ import { ImageIcon, Package, Palette, Plus, Settings, X } from "lucide-react";
 import { useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import z from "zod";
+import { ImagePreview } from "../ImagePreview";
 
 export const MAX_PRODUCT_SIZE = 1 * 1024 * 1024; // 1MB
 export const ALLOWED_IMAGE_TYPES = [
@@ -40,9 +41,9 @@ export const ALLOWED_IMAGE_TYPES = [
 const variantSchema = z.object({
   size: z.string().min(1, "Product size is required"),
   color: z.string().min(1, "Product color is required"),
-  price: z.number().min(1, "Product price is required"),
-  discount_price: z.number().nullable().optional(),
-  stock: z.number().min(1, "Product stock is required"),
+  price: z.string().min(1, "Product price is required"),
+  discount_price: z.string().nullable().optional(),
+  stock: z.string().min(1, "Product stock is required"),
   images: z.any()
     .refine((files) => normalizeFiles(files).length >= 1,"At least one image is required")
     .refine((files) => normalizeFiles(files).every((file) => file instanceof Blob),"All files must be valid images")
@@ -55,8 +56,8 @@ const variantSchema = z.object({
 const productSchema = z.object({
   name: z.string().min(1, "Product name is required"),
   description: z.string().min(1, "Product description is required"),
-  price: z.number().min(1, "Product price is required"),
-  discount_price: z.number().nullable().optional(),
+  price: z.string().min(1, "Product price is required"),
+  discount_price: z.string().nullable().optional(),
   pattern: z.string().min(1, "Product pattern is required"),
   fabric: z.string().min(1, "Product fabric is required"),
   material: z.string().min(1, "Product material is required"),
@@ -78,20 +79,24 @@ export default function AddProduct() {
   const [open, setOpen] = useState(false);
   const { getCategories } = useCategories();
   const categoriesData = getCategories.data?.data?.data || [];
+  const [productImages, setProductImages] = useState<FileList | null>(null)
+  const [variantImages, setVariantImages] = useState<{ [key: number]: FileList | null }>({})
+
 
   const {
     register,
     control,
     handleSubmit,
     reset,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<ProductFormData>({
     resolver: zodResolver(productSchema),
     defaultValues: {
       name: "",
       description: "",
-      price: undefined,
-      discount_price: undefined,
+      price: "",
+      discount_price: "",
       pattern: "",
       fabric: "",
       material: "",
@@ -101,9 +106,9 @@ export default function AddProduct() {
         {
           size: "",
           color: "",
-          price: undefined,
-          discount_price: undefined,
-          stock: undefined,
+          price: "",
+          discount_price: "",
+          stock: "",
           images: [],
         },
       ],
@@ -118,6 +123,49 @@ export default function AddProduct() {
     control,
     name: "variants",
   });
+
+  const handleProductImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    setProductImages(files)
+    setValue("images", files)
+  }
+
+  const removeProductImage = (index: number) => {
+    if (!productImages) return
+
+    const dt = new DataTransfer()
+    const files = Array.from(productImages)
+
+    files.forEach((file, i) => {
+      if (i !== index) dt.items.add(file)
+    })
+
+    const newFiles = dt.files
+    setProductImages(newFiles)
+    setValue("images", newFiles)
+  }
+
+  const handleVariantImageChange = (variantIndex: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    setVariantImages((prev) => ({ ...prev, [variantIndex]: files }))
+    setValue(`variants.${variantIndex}.images`, files)
+  }
+
+  const removeVariantImage = (variantIndex: number, imageIndex: number) => {
+    const currentFiles = variantImages[variantIndex]
+    if (!currentFiles) return
+
+    const dt = new DataTransfer()
+    const files = Array.from(currentFiles)
+
+    files.forEach((file, i) => {
+      if (i !== imageIndex) dt.items.add(file)
+    })
+
+    const newFiles = dt.files
+    setVariantImages((prev) => ({ ...prev, [variantIndex]: newFiles }))
+    setValue(`variants.${variantIndex}.images`, newFiles)
+  }
 
   const onSubmit = async (data: ProductFormData) => {
     try {
@@ -183,7 +231,7 @@ export default function AddProduct() {
         </Button>
       </DialogTrigger>
       <DialogContent className="max-h-[90vh] overflow-y-auto max-w-6xl w-full md:min-w-[800px]">
-        <DialogHeader className="">
+        <DialogHeader>
           <DialogTitle className="text-2xl font-bold flex items-center gap-2">
             <Package className="h-6 w-6 text-yellow-500" />
             Add New Product
@@ -215,7 +263,7 @@ export default function AddProduct() {
                   name="price"
                   placeholder="Enter price"
                   register={register}
-                  registerOptions={{ valueAsNumber: true }}
+                  // registerOptions={{ valueAsNumber: true }}
                   error={errors.price}
                 />
               </div>
@@ -225,7 +273,7 @@ export default function AddProduct() {
                   name="discount_price"
                   placeholder="Enter Discount Price"
                   register={register}
-                  registerOptions={{ valueAsNumber: true }}
+                  // registerOptions={{ valueAsNumber: true }}
                   error={errors.discount_price}
                 />
               </div>
@@ -259,7 +307,7 @@ export default function AddProduct() {
 
               {/* Category Selection Field */}
               <div className="md:col-span-2">
-                <Label htmlFor="category">Category</Label>
+                <Label htmlFor="categories">Category</Label>
                 <Controller
                   name="categories"
                   control={control}
@@ -314,6 +362,7 @@ export default function AddProduct() {
               </div>
             </CardContent>
           </Card>
+
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
@@ -322,17 +371,10 @@ export default function AddProduct() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Input
-                type="file"
-                multiple
-                accept="image/*"
-                {...register("images")}
-              />
-              {errors.images?.message && (
-                <p className="text-red-500 text-sm mt-1">
-                  {String(errors.images.message)}
-                </p>
-              )}
+              <Input type="file" multiple accept="image/*" onChange={handleProductImageChange} />
+              {errors.images?.message && <p className="text-red-500 text-sm mt-1">{String(errors.images.message)}</p>}
+              <ImagePreview files={productImages} onRemove={removeProductImage} />
+
             </CardContent>
           </Card>
 
@@ -351,9 +393,9 @@ export default function AddProduct() {
                     appendVariant({
                       size: "",
                       color: "",
-                      price: 0,
-                      discount_price: null,
-                      stock: 0,
+                      price: "",
+                      discount_price: "",
+                      stock: "",
                       images: [],
                     })
                   }
@@ -388,20 +430,35 @@ export default function AddProduct() {
                       error={errors.variants?.[index]?.size}
                     />
 
-                    <TextInput
-                      label="Color"
-                      name={`variants.${index}.color`}
-                      placeholder="Black, White"
-                      register={register}
-                      error={errors.variants?.[index]?.color}
-                    />
+                    <div>
+                      <Label htmlFor={`variant-color-${index}`}>Color</Label>
+                      <Controller
+                        name={`variants.${index}.color`}
+                        control={control}
+                        render={({ field }) => (
+                          <Select onValueChange={field.onChange} value={field.value}>
+                            <SelectTrigger id={`variant-color-${index}`} className="w-full mt-2">
+                              <SelectValue placeholder="Select color" />
+                            </SelectTrigger>
+                            <SelectContent>
+                              <SelectItem value="White">White</SelectItem>
+                              <SelectItem value="Black">Black</SelectItem>
+                            </SelectContent>
+                          </Select>
+                        )}
+                      />
+                      {errors.variants?.[index]?.color && (
+                        <p className="text-red-500 text-sm mt-1">{String(errors.variants?.[index]?.color?.message)}</p>
+                      )}
+                    </div>
+                      
 
                     <TextInput
                       label="Price"
                       name={`variants.${index}.price`}
                       placeholder="Enter Variant Price"
                       register={register}
-                      registerOptions={{ valueAsNumber: true }}
+                      // registerOptions={{ valueAsNumber: true }}
                       error={errors.variants?.[index]?.price}
                     />
 
@@ -410,7 +467,7 @@ export default function AddProduct() {
                       name={`variants.${index}.discount_price`}
                       placeholder="Enter Variant Discount Price"
                       register={register}
-                      registerOptions={{ valueAsNumber: true }}
+                      // registerOptions={{ valueAsNumber: true }}
                       error={errors.variants?.[index]?.discount_price}
                     />
 
@@ -419,7 +476,7 @@ export default function AddProduct() {
                       name={`variants.${index}.stock`}
                       placeholder="Enter Stock"
                       register={register}
-                      registerOptions={{ valueAsNumber: true }}
+                      // registerOptions={{ valueAsNumber: true }}
                       error={errors.variants?.[index]?.stock}
                     />
                   </div>
@@ -430,14 +487,18 @@ export default function AddProduct() {
                     <Input
                       type="file"
                       multiple
-                      {...register(`variants.${index}.images`)}
+                      accept="image/*"
+                      onChange={(e) => handleVariantImageChange(index, e)}
                       className="mt-2"
                     />
                     {errors.variants?.[index]?.images?.message && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {String(errors.variants?.[index]?.images?.message)}
-                      </p>
+                      <p className="text-red-500 text-sm mt-1">{String(errors.variants?.[index]?.images?.message)}</p>
                     )}
+                    <ImagePreview
+                      files={variantImages[index]}
+                      onRemove={(imageIndex) => removeVariantImage(index, imageIndex)}
+                    />
+
                   </div>
                 </div>
               ))}

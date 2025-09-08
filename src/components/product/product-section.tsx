@@ -28,8 +28,8 @@ export default function ProductSection({ title, products, link }: ProductSection
               id={product.id}
               image={product.image}
               title={product.title}
-              price={product.price}
-              discount_price={product.discount_price}
+              price={Number(product.price)}
+              discount_price={Number(product.discount_price)}
               discount_percent={product.discount_percent}
               slug={product.slug} 
               category={product.categories?.map(c => c.categories_title).join(", ") || "Uncategorized"}

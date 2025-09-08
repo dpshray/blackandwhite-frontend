@@ -14,19 +14,19 @@ export const categoriesService = {
 
   // Add new category
   addCategory: async (payload: FormData): Promise<Category> => {
-    const response = await axiosInstance.post("/categories", payload);
+    const response = await axiosInstance.post("/admin/add-categories", payload);
     return response.data;
   },
 
   // Update category 
   updateCategory: async (id: number, payload: FormData): Promise<Category> => {
-    const response = await axiosInstance.put(`/categories/${id}`, payload);
+    const response = await axiosInstance.post(`/admin/update-categories/${id}`, payload);
     return response.data;
   },
 
   // Delete category
   deleteCategory: async (id: number): Promise<{ message: string }> => {
-    const response = await axiosInstance.delete(`/categories/${id}`);
+    const response = await axiosInstance.delete(`/admin/delete-categories/${id}`);
     return response.data;
   },
 };

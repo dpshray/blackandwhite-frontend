@@ -57,8 +57,9 @@ export default function VariantModal({ variants }: VariantDetailsDialogProps) {
             {variants?.length > 0 ? (
                 <div className="space-y-6">
                 {variants.map((variant, index) => {
-                    const stockStatus = getStockStatus(variant.stock);
-                    const discounted = hasDiscount(variant.price, variant.discount_price);
+                    const stockStatus = getStockStatus(Number(variant.stock));
+                    const discounted = hasDiscount(Number(variant.price), variant.discount_price != null ? Number(variant.discount_price) : null);
+
 
                     return (
                     <div

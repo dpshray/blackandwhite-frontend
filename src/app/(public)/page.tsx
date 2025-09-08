@@ -17,17 +17,26 @@ export default async function Home({ searchParams }: ProductsPageProps) {
   const bannerResponse = await getBanners()
   const banners = bannerResponse.data || []
 
-  const productResponse = await getProducts(currentPage, 4)
-  const products = productResponse.data.data
+  // Fetch new arrivals (sorted by latest)
+  const newArrivalsResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "latest")
+  const newArrivals = newArrivalsResponse.data.data
+
+  // Fetch best sellers (sorted by sales or popular)
+  const bestSellersResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "bestseller")
+  const bestSellers = bestSellersResponse.data.data
+
+  // Fetch limited edition (filtered by category/flag)
+  const limitedEditionResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "limited")
+  const limitedEdition = limitedEditionResponse.data.data
 
   return (
     <div className="min-h-screen">
       <BannerSlider banners={banners} />
 
       <div className="space-y-12 my-12">
-        <ProductSection title="NEW ARRIVALS" products={products} link="/shop"/>
-        <ProductSection title="BEST SELLERS" products={products} link="/shop"/>
-        <ProductSection title="LIMITED EDITION" products={products} link="/shop"/>
+        <ProductSection title="NEW ARRIVALS" products={newArrivals} link="/shop"/>
+        <ProductSection title="BEST SELLERS" products={bestSellers} link="/shop"/>
+        <ProductSection title="LIMITED EDITION" products={limitedEdition} link="/shop"/>
       </div>
 
       {/* Newsletter Section */}

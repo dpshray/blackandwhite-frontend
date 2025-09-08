@@ -12,7 +12,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import AddProduct from "./AddProduct";
-import UpdateProductDialog from "./UpdateProduct";
+import UpdateProduct from "./UpdateProduct";
 
 export default function ProductTable() {
     const [page, setPage] = useState(1);
@@ -147,7 +147,7 @@ export default function ProductTable() {
           header: "Actions",
           cell: ({ row }) => (
             <div className="flex gap-2">
-              <UpdateProductDialog product={row.original} />
+              <UpdateProduct product={row.original} />
               <TooltipProvider>
                 <Tooltip>
                   <TooltipTrigger asChild>

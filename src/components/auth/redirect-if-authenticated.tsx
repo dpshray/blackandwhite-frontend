@@ -17,7 +17,11 @@ export function RedirectIfAuthenticated({ children, redirectTo = "/" }: Redirect
 
   useEffect(() => {
     if (!isLoading && user) {
-      router.push(redirectTo)
+      if (user.role === "admin") {
+        router.push("/admin")
+      } else {
+        router.push(redirectTo)
+      }
     }
   }, [user, isLoading, redirectTo, router])
 

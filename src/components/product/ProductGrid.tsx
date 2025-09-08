@@ -18,7 +18,7 @@ interface ProductGridProps {
   category?: string
 }
 
-export default function ProductGrid({ products, totalPages, currentPage, category }: ProductGridProps) {
+export default function   ProductGrid({ products, totalPages, currentPage, category }: ProductGridProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
   const { data: favourites } = useFavourites();
@@ -138,8 +138,8 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="best">Best Seller</SelectItem>
-                <SelectItem value="low-high">Price: Low to High</SelectItem>
-                <SelectItem value="high-low">Price: High to Low</SelectItem>
+                <SelectItem value="low">Price: Low to High</SelectItem>
+                <SelectItem value="high ">Price: High to Low</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -171,8 +171,8 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
                   id={product.id}
                   image={product.image}
                   title={product.title}
-                  price={product.price}
-                  discount_price={product.discount_price}
+                  price={Number(product.price)}
+                  discount_price={Number(product.discount_price)}
                   discount_percent={product.discount_percent}
                   slug={product.slug} 
                   category={product.categories?.map(c => c.categories_title).join(", ") || "Uncategorized"}

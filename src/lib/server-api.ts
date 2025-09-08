@@ -44,7 +44,7 @@ export async function getBanners(): Promise<BannerResponse> {
 // Products
 export async function getProducts(
   page: number = 1,
-  perPage: number = 10,
+  limit: number = 9,
   category?: string,
   size?: string,
   color?: string,
@@ -54,7 +54,7 @@ export async function getProducts(
     // Build dynamic query params
     const params = new URLSearchParams({
       page: page.toString(),
-      per_page: perPage.toString(),
+      limit: limit.toString(),
     })
 
     if (category) params.append("category", category)
@@ -71,7 +71,7 @@ export async function getProducts(
         meta: {
           current_page: 1,
           last_page: 1,
-          per_page: perPage,
+          per_page: limit,
           total: 0,
         },
       },

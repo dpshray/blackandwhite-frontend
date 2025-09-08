@@ -1,4 +1,4 @@
-import { ChevronUp, Home, Package, Receipt, Settings, User2 } from "lucide-react";
+import { ChevronRight, Home, Package, Receipt, Settings, User2 } from "lucide-react";
 
 import {
   Sidebar,
@@ -16,15 +16,10 @@ import {
 import { MdCategory } from "react-icons/md";
 import { usePathname } from "next/navigation";
 import Link from "next/link";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { PiFlagBanner } from "react-icons/pi";
 import { useLogout } from "@/hooks/useAuth";
+import { Button } from "../ui/button";
 
 const items = [
   {
@@ -61,17 +56,6 @@ const items = [
     title: "Settings",
     url: "/admin/settings",
     icon: Settings,
-  },
-];
-
-const FooterItems = [
-  {
-    title: "Account",
-    url: "#",
-  },
-  {
-    title: "Sign out",
-    action: "logout",
   },
 ];
 
@@ -121,41 +105,21 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenu>
-          <SidebarMenuItem>
-            <DropdownMenu modal={false}>
-              <DropdownMenuTrigger asChild>
-                <SidebarMenuButton className="cursor-pointer">
-                  <User2 /> Username
-                  <ChevronUp className="ml-auto" />
-                </SidebarMenuButton>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent
-                side="top"
-                className="w-full"
-              >
-                {FooterItems.map((item) => (
-                  <DropdownMenuItem
-                    key={item.title}
-                    onClick={() => {
-                      if (item.action === "logout") {
-                        handleLogout();
-                      }
-                    }}
-                  >
-                    {item.url ? (
-                      <Link href={item.url}>
-                        <span>{item.title}</span>
-                      </Link>
-                    ) : (
-                      <span>{item.title}</span>
-                    )}
-                  </DropdownMenuItem>
-                ))}
-              </DropdownMenuContent>
-            </DropdownMenu>
-          </SidebarMenuItem>
-        </SidebarMenu>
+        <Button variant="ghost" aria-busy={logout.isPending} onClick={handleLogout} className="w-full" disabled={logout.isPending}>
+            {logout.isPending ? (
+                <div className="w-full flex items-center justify-between text-red-500 hover:text-red-600">
+                    <span className="opacity-60">Logging out</span>
+                    <div>
+                        <div className="h-4 w-4 border-2 border-gray-300 border-t-black rounded-full animate-spin" />
+                    </div>
+                </div>
+            ) : (
+                <div className="w-full flex items-center justify-between text-red-500 hover:text-red-600">
+                    <span>Logout</span>
+                    <ChevronRight />             
+                </div>
+            )}
+        </Button>
       </SidebarFooter>
     </Sidebar>
   );

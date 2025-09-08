@@ -78,9 +78,16 @@ export default function ProductCard({ id, image, title, price, discount_price, d
       <div className="p-4 space-y-3">
         <h3 className="font-medium text-sm">{title}</h3>
         <div className="flex items-center space-x-2">
-          <span className="text-sm text-gray-500 line-through">Rs.{price}</span>
-          <span className="text-sm font-medium">Rs.{discount_price}</span>
+          {discount_price ? (
+            <>
+              <span className="text-sm text-gray-500 line-through">Rs.{price}</span>
+              <span className="text-sm font-medium">Rs.{discount_price}</span>
+            </>
+          ) : (
+            <span className="text-sm font-medium">Rs.{price}</span>
+          )}
         </div>
+
         <Button
           className="w-full bg-white text-black border border-gray-300 hover:bg-gray-50"
           onClick={handleAddToCart}
