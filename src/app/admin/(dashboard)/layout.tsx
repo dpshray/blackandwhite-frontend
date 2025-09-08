@@ -14,7 +14,7 @@ const breadcrumbMap: { [key: string]: string } = {
   "/admin/category": "Categories",
   "/admin/user": "Users",
   "/admin/banner": "Banners",
-  "/admin/settings": "Settings",
+  "/admin/order": "Orders",
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {

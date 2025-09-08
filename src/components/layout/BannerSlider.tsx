@@ -8,6 +8,7 @@ import type { Banner } from "@/types/bannerTypes"
 import "swiper/css"
 import "swiper/css/navigation"
 import "swiper/css/pagination"
+import Link from "next/link"
 
 interface BannerSliderProps {
   banners: Banner[]
@@ -56,20 +57,21 @@ export default function BannerSlider({ banners }: BannerSliderProps) {
                     </span>
                     <span className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-7xl">{banner.subtitle}</span>
                   </h1>
-                  <Button
-                    className="bg-black text-white px-4 py-2 text-sm sm:px-6 sm:py-2 sm:text-base md:px-8 md:py-3 md:text-lg font-medium hover:bg-gray-800 rounded-none"
-                    onClick={() => (window.location.href = banner.url)}
-                  >
-                    SHOP NOW
-                  </Button>
+                  <Link href={banner.url}>
+                    <Button
+                      className="text-sm sm:px-6 sm:py-2 sm:text-base md:px-8 md:py-3 md:text-lg font-medium rounded-none"
+                    >
+                      SHOP NOW
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </div>
           </SwiperSlide>
         ))}
 
-        <div className="swiper-button-prev !absolute !left-4 !top-1/2 !-translate-y-1/2 !z-20 !w-12 !h-12 !bg-white/20 hover:!bg-white/30 !border !border-white/30 !text-white !rounded-full !transition-colors after:!text-lg after:!font-bold after:!text-white"></div>
-        <div className="swiper-button-next !absolute !right-4 !top-1/2 !-translate-y-1/2 !z-20 !w-12 !h-12 !bg-white/20 hover:!bg-white/30 !border !border-white/30 !text-white !rounded-full !transition-colors after:!text-lg after:!font-bold after:!text-white"></div>
+        <div className="swiper-button-prev !absolute !left-4 !top-1/2 !-translate-y-1/2 !z-20 !w-12 !h-12 !bg-gray-800 hover:!bg-gray-700 !border !border-white/30 !text-white !rounded-full !transition-colors after:!text-lg after:!font-bold after:!text-white"></div>
+        <div className="swiper-button-next !absolute !right-4 !top-1/2 !-translate-y-1/2 !z-20 !w-12 !h-12 !bg-gray-800 hover:!bg-gray-700 !border !border-white/30 !text-white !rounded-full !transition-colors after:!text-lg after:!font-bold after:!text-white"></div>
 
         <div className="swiper-pagination !bottom-4 !z-20"></div>
       </Swiper>

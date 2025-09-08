@@ -7,15 +7,38 @@ import { AxiosError } from "axios";
 import { ApiError } from "next/dist/server/api-utils";
 import { toast } from "sonner";
 
-export const useProducts = (page: number = 1, limit: number = 10) => {
+export const useProducts = (page: number = 1, limit: number = 10, search?: string) => {
   const queryClient = useQueryClient();
 
   // get
   const getProducts = useQuery<ProductsResponse>({
-    queryKey: ["products", { page, limit }],
-    queryFn: () => productService.getProducts(page, limit),
-    staleTime: 5 * 60 * 1000,
-  });
+  queryKey: ["products", { page, limit, search }],
+  queryFn: async () => {
+    try {
+      return await productService.getProducts(page, limit, search);
+    } catch (error: any) {
+      if (error.response?.status === 404) {
+        // Return a fake response with empty products instead of throwing
+        return {
+          data: {
+            data: [],
+            meta: {
+              current_page: page,
+              last_page: 1,
+              per_page: limit,
+              total: 0,
+            },
+          },
+          message: "No products found",
+        } as ProductsResponse;
+      }
+      throw error; 
+    }
+  },
+  staleTime: 5 * 60 * 1000,
+  retry: false, 
+});
+
 
   // add
   const addProduct = useMutation({

@@ -2,9 +2,9 @@ import axiosInstance from "@/lib/axios";
 import { ProductsResponse } from "@/types/productTypes";
 
 export const productService = {
-  getProducts: async (page: number = 1, limit: number = 10) => {
+  getProducts: async (page: number = 1, limit: number = 10, search?: string) => {
     const { data } = await axiosInstance.get<ProductsResponse>(
-      `/product?page=${page}&limit=${limit}`
+      `/product?page=${page}&limit=${limit}&search=${search}`
     );
     return data;
   },

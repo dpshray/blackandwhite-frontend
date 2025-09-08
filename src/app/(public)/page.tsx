@@ -17,15 +17,15 @@ export default async function Home({ searchParams }: ProductsPageProps) {
   const bannerResponse = await getBanners()
   const banners = bannerResponse.data || []
 
-  // Fetch new arrivals (sorted by latest)
+  // Fetch new arrivals
   const newArrivalsResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "latest")
   const newArrivals = newArrivalsResponse.data.data
 
-  // Fetch best sellers (sorted by sales or popular)
+  // Fetch best sellers
   const bestSellersResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "bestseller")
   const bestSellers = bestSellersResponse.data.data
 
-  // Fetch limited edition (filtered by category/flag)
+  // Fetch limited edition 
   const limitedEditionResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "limited")
   const limitedEdition = limitedEditionResponse.data.data
 

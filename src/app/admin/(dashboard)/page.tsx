@@ -28,9 +28,9 @@ export default function AdminPage() {
             description: "Create and manage promotional banners",
         },
         {
-            href: "/admin/settings",
-            title: "Settings",
-            description: "Configure application options",
+            href: "/admin/order",
+            title: "Orders",
+            description: "View and manage orders",
         },
     ];
 

@@ -1,4 +1,4 @@
-import { ChevronRight, Home, Package, Receipt, Settings, User2 } from "lucide-react";
+import { ChevronRight, Home, Package, Receipt, User2 } from "lucide-react";
 
 import {
   Sidebar,
@@ -52,11 +52,11 @@ const items = [
     url: "/admin/order",
     icon: Receipt,
   },
-  {
-    title: "Settings",
-    url: "/admin/settings",
-    icon: Settings,
-  },
+  // {
+  //   title: "Settings",
+  //   url: "/admin/settings",
+  //   icon: Settings,
+  // },
 ];
 
 export function AppSidebar() {
