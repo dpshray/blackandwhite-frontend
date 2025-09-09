@@ -124,10 +124,10 @@ export default function Header({ categories }: HeaderProps) {
         </div>
 
         {/* Desktop Navigation */}
-        <nav className="hidden md:flex items-center space-x-8">
+        <nav className="hidden md:flex items-center space-x-8 px-4">
           <Link
             href="/shop"
-            className={`uppercase text-base font-medium transition-colors ${
+            className={`uppercase text-sm lg:text-base font-medium transition-colors ${
               pathname === "/shop"
                 ? "bg-black text-white font-semibold px-2 py-1 rounded"
                 : "hover:text-gray-600"
@@ -139,7 +139,7 @@ export default function Header({ categories }: HeaderProps) {
             <Link
               key={item.id}
               href={`/shop/${item.slug}`}
-              className={`uppercase text-base font-medium transition-colors ${
+              className={`uppercase text-sm lg:text-base font-medium transition-colors ${
                 pathname === `/shop/${item.slug}`
                   ? "bg-black text-white font-semibold px-2 py-1 rounded"
                   : "hover:text-gray-600"
@@ -155,15 +155,7 @@ export default function Header({ categories }: HeaderProps) {
           {/* Search */}
           <div className="relative">
             {/* Search Icon */}
-            <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setOpen((prev) => !prev)}
-                className="gap-0 p-0 m-0"
-                >
-                <Search className="h-5 w-5 sm:h-6 sm:w-6" />
-            </Button>
-
+            <Search className="h-5 w-5 sm:h-6 sm:w-6 hover:text-gray-600 cursor-pointer" onClick={() => setOpen((prev) => !prev)}/>
 
             {/* Search Bar & Dropdown */}
             <AnimatePresence>
@@ -173,7 +165,7 @@ export default function Header({ categories }: HeaderProps) {
                   animate={{ opacity: 1, scale: 1, y: 0 }}
                   exit={{ opacity: 0, scale: 0.95, y: -10 }}
                   transition={{ duration: 0.2 }}
-                  className="absolute right-0 mt-2 w-64 sm:w-80 bg-white border rounded-lg shadow-lg z-50"
+                  className="absolute right-0 mt-2 w-64 sm:w-80 bg-white border rounded-lg shadow-lg z-50 translate-x-1/3 sm:translate-x-0"
                 >
                   <div className="flex items-center border-b px-3 py-2">
                     <Input
@@ -194,8 +186,17 @@ export default function Header({ categories }: HeaderProps) {
 
                   <div className="max-h-64 overflow-y-auto">
                     {isSearching ? (
-                      <div className="p-3 text-sm text-gray-500">
-                        Searching...
+                      <div className="flex items-center justify-center space-x-2 p-4">
+                        <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce"></div>
+                        <div
+                          className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.1s" }}
+                        ></div>
+                        <div
+                          className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce"
+                          style={{ animationDelay: "0.2s" }}
+                        ></div>
+                        <span className="ml-2">Searching...</span>
                       </div>
                     ) : debouncedQuery.length === 0 ? (
                       <div className="p-3 text-sm text-gray-400">
@@ -213,7 +214,7 @@ export default function Header({ categories }: HeaderProps) {
                           onClick={() => {
                             setQuery("");
                             setOpen(false);
-                            router.push(`/product/${product.slug}`);
+                            router.push(`/shop/${product.categories?.[0]?.categories_slug}/${product.slug}`);
                           }}
                         >
                           <Image
