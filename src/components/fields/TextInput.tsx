@@ -23,6 +23,7 @@ interface TextInputProps<TFieldValues extends FieldValues> {
   showToggle?: boolean;
   icon?: React.ReactNode;
   register: UseFormRegister<TFieldValues>;
+  registerOptions?: object;
 }
 
 export default function TextInput<TFieldValues extends FieldValues>({
@@ -34,6 +35,7 @@ export default function TextInput<TFieldValues extends FieldValues>({
   label_size,
   icon,
   register,
+  registerOptions = {},
   showToggle = false,
 }: TextInputProps<TFieldValues>) {
   const [showPassword, setShowPassword] = useState(false);
@@ -54,7 +56,7 @@ export default function TextInput<TFieldValues extends FieldValues>({
             id={String(name)}
             type={inputType}
             placeholder={placeholder}
-            {...register(name)}
+            {...register(name, registerOptions)}
             className={`${icon ? "peer ps-9" : ""} ${
               showToggle ? "pe-10" : ""
             }`}

@@ -7,7 +7,7 @@ export const cartService = {
     return data;
   },
 
-  addToCart: async (payload: { product_id: number; variant_id?: number; quantity: number }) => {
+  addToCart: async (payload: { product_id: number; variant_id?: number; quantity?: number }) => {
     const { data } = await axiosInstance.post("/add-to-cart", payload);
     return data;
   },

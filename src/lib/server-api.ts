@@ -44,16 +44,25 @@ export async function getBanners(): Promise<BannerResponse> {
 // Products
 export async function getProducts(
   page: number = 1,
-  perPage: number = 10,
-  category?: string
+  limit: number = 9,
+  category?: string,
+  size?: string,
+  color?: string,
+  sort?: string,
 ): Promise<ProductsResponse> {
   try {
     // Build dynamic query params
-    const categoryQuery = category ? `&category=${encodeURIComponent(category)}` : "";
+    const params = new URLSearchParams({
+      page: page.toString(),
+      limit: limit.toString(),
+    })
 
-    return await fetchJSON<ProductsResponse>(
-      `/product?page=${page}&limit=${perPage}${categoryQuery}`
-    );
+    if (category) params.append("category", category)
+    if (size) params.append("size", size)
+    if (color) params.append("color", color)
+    if (sort) params.append("sort", sort)
+
+    return await fetchJSON<ProductsResponse>(`/product?${params.toString()}`)
   } catch {
     return {
       message: "Failed to fetch products",
@@ -62,7 +71,7 @@ export async function getProducts(
         meta: {
           current_page: 1,
           last_page: 1,
-          per_page: perPage,
+          per_page: limit,
           total: 0,
         },
       },

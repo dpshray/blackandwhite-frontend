@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ArrowRight, ShoppingCart } from "lucide-react";
 import CartSkeleton from "@/components/cart/CartSkeleton";
+import Link from "next/link";
 
 export default function Cart() {
   const { data: cart, isLoading } = useCart();
@@ -17,7 +18,7 @@ export default function Cart() {
   }
   if (!cart || cart.data.length === 0) {
     return (
-      <div className="h-screen flex flex-col items-center justify-center text-center">
+      <div className="flex flex-col items-center justify-center text-center py-12">
         <ShoppingCart size={64} className="text-gray-400 mb-4" />
         <h2 className="text-2xl font-semibold text-gray-700">Your Cart is Empty</h2>
         <p className="text-gray-500 mt-2 mb-6">
@@ -89,6 +90,7 @@ export default function Cart() {
                       })
                     }
                     className="px-2"
+                    disabled={updateCartItem.isPending || item.quantity <= 1}
                   >
                     -
                   </Button>
@@ -102,6 +104,11 @@ export default function Cart() {
                       })
                     }
                     className="px-2"
+                    disabled={
+                      updateCartItem.isPending ||
+                      (item.product?.variant?.quantity !== undefined &&
+                        item.quantity >= item.product.variant.quantity)
+                    }
                   >
                     +
                   </Button>
@@ -137,16 +144,20 @@ export default function Cart() {
               placeholder="Apply Promo Code Here"
               className="rounded-none"
             />
-            <Button className="rounded-none"><ArrowRight /></Button>
+            <Button className="rounded-none" disabled><ArrowRight /></Button>
           </div>
 
           {/* Buttons */}
-          <Button className="w-full bg-black text-white py-3 mt-4 rounded-none">
-            Proceed to Checkout
-          </Button>
-          <Button variant={"outline"} className="w-full border-2 py-3 mt-3 rounded-none">
-            Continue Shopping
-          </Button>
+          <Link href="/checkout">
+            <Button className="w-full bg-black text-white py-3 mt-4 rounded-none">
+              Proceed to Checkout
+            </Button>
+          </Link>
+          <Link href="/shop">
+            <Button variant={"outline"} className="w-full border-2 py-3 mt-3 rounded-none">
+              Continue Shopping
+            </Button>
+          </Link>
         </div>
       </div>
     </div>

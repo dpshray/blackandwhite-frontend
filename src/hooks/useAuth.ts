@@ -9,9 +9,23 @@ import { useRouter } from "next/navigation";
 //Sign In Hook
 export const useSignIn = () => {
   const { login } = useAuth();
+  const router = useRouter();
   return useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
       return login(email, password);
+    },
+    onSuccess: (data: any) => {
+      const user = data.user
+      if (user?.is_admin === 1 || user?.is_admin === "1") {
+        toast.success(`Welcome ${user.name}`);
+        router.replace("/admin");
+      } else {
+        toast.success(`Welcome ${user?.name}`);
+        router.push("/");
+      }
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Login failed");
     },
   });
 };
@@ -19,6 +33,7 @@ export const useSignIn = () => {
 //Sign Up Hook
 export const useSignUp = () => {
   const { signup } = useAuth();
+  const router = useRouter();
   return useMutation({
     mutationFn: async ({
       name,
@@ -34,6 +49,13 @@ export const useSignUp = () => {
       password_confirmation: string;
     }) => {
       return signup(name, email, mobile, password, password_confirmation);
+    },
+    onSuccess: () => {
+      toast.success("Signup successful! Please login.");
+      router.push("/login");
+    },
+    onError: (error: any) => {
+      toast.error(error?.message || "Signup failed");
     },
   });
 };
@@ -74,15 +96,23 @@ export const useResetPassword = () => {
 };
 
 export const useLogout = () => {
-  const { logout } = useAuth();
+  const { logout, user } = useAuth();
+  const router = useRouter();
 
   return useMutation({
     mutationFn: async () => {
       return authService.logout();
     },
     onSuccess: () => {
-      logout(); // Remove cookies & clear state
-      toast.success("Logged out successfully");
+      logout(); // Clear cookies & context
+
+      if (user?.is_admin === 1) {
+        toast.success("Admin logged out successfully");
+        router.push("/admin/login");
+      } else {
+        toast.success("Logged out successfully");
+        router.push("/");
+      }
     },
     onError: () => {
       toast.error("Failed to log out");

@@ -7,8 +7,6 @@ import TextInput from "../fields/TextInput"
 import Image from "next/image"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner"
-import { useRouter } from "next/navigation"
 import { useForm } from "react-hook-form"
 
 export const signUpSchema = z.object({
@@ -27,7 +25,6 @@ export const signUpSchema = z.object({
 export type SignUpForm = z.infer<typeof signUpSchema>;
 
 export default function RegisterForm() {
-    const router = useRouter();
     const {
         register,
         handleSubmit,
@@ -46,20 +43,11 @@ export default function RegisterForm() {
         password: data.password,
         password_confirmation: data.confirmPassword,
       },
-      {
-        onSuccess: () => {
-          toast.success("Account created successfully!");
-          router.push("/login");
-        },
-        onError: (err: any) => {
-          toast.error(err?.error || "Registration failed!");
-        },
-      }
     );
   };
 
     return (
-        <div className="flex px-4 py-8 max-w-7xl mx-auto min-h-[80vh]">
+        <div className="flex h-screen items-center px-4 py-8 max-w-7xl mx-auto min-h-[80vh]">
             <div className="hidden md:flex flex-1 items-center justify-center">
                 <Image
                     src="/banner1.png" 

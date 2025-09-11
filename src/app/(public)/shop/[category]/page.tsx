@@ -1,11 +1,14 @@
 import ProductGrid from "@/components/product/ProductGrid"
 import { getProducts } from "@/lib/server-api"
 
-export const dynamic = "force-dynamic";
-
 interface CategoryPageProps {
   params: Promise<{ category: string }>
-  searchParams: Promise<{ page?: string }>
+  searchParams: Promise<{
+    page?: string
+    size?: string
+    color?: string
+    sort?: string
+  }>
 }
 
 export default async function CategoryPage({ params, searchParams }: CategoryPageProps) {
@@ -15,7 +18,7 @@ export default async function CategoryPage({ params, searchParams }: CategoryPag
   const currentPage = Number.parseInt(query.page || "1", 10)
 
   // Fetch products filtered by category
-  const productResponse = await getProducts(currentPage, 9, category)
+  const productResponse = await getProducts(currentPage, 9, category, query.size, query.color, query.sort)
   const products = productResponse.data.data
   const totalPages = productResponse.data.meta.last_page
 
