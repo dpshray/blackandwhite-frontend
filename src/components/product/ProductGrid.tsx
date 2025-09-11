@@ -10,6 +10,8 @@ import { ShopBreadCrumb } from "../ShopBreadCrumb"
 import { Home, SearchX } from "lucide-react"
 import { useFavourites } from "@/hooks/useFavourite"
 import Link from "next/link"
+import { useTransition } from "react"
+import { Skeleton } from "../ui/skeleton"
 
 interface ProductGridProps {
   products: Product[]
@@ -18,13 +20,14 @@ interface ProductGridProps {
   category?: string
 }
 
-export default function   ProductGrid({ products, totalPages, currentPage, category }: ProductGridProps) {
+export default function ProductGrid({ products, totalPages, currentPage, category }: ProductGridProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const [isPending, startTransition] = useTransition()
   const { data: favourites } = useFavourites();
   const selectedSize = searchParams.get("size")
   const selectedColor = searchParams.get("color")
-  const sortOption = searchParams.get("sort") || "best"
+  const sortOption = searchParams.get("sort") ?? "";
 
   const breadcrumbs = [
     { label: < Home />, href: '/' },
@@ -52,7 +55,9 @@ export default function   ProductGrid({ products, totalPages, currentPage, categ
     // Reset to page 1 when filters change
     params.set("page", "1")
 
-    router.push(`?${params.toString()}`)
+    startTransition(() => {
+      router.push(`?${params.toString()}`)
+    })
   }
 
   const goToPage = (page: number) => {
@@ -137,9 +142,9 @@ export default function   ProductGrid({ products, totalPages, currentPage, categ
                 <SelectValue placeholder="Select an option" />
               </SelectTrigger>
               <SelectContent>
-                <SelectItem value="best">Best Seller</SelectItem>
-                <SelectItem value="low">Price: Low to High</SelectItem>
-                <SelectItem value="high ">Price: High to Low</SelectItem>
+                <SelectItem value="best_seller">Best Seller</SelectItem>
+                <SelectItem value="price_low">Price: Low to High</SelectItem>
+                <SelectItem value="price_high ">Price: High to Low</SelectItem>
               </SelectContent>
             </Select>
           </div>
@@ -160,6 +165,16 @@ export default function   ProductGrid({ products, totalPages, currentPage, categ
               </div>
             </div>
           ) : (
+            isPending ? (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {Array.from({ length: 6 }).map((_, i) => (
+                  <Skeleton
+                    key={i}
+                    className="h-72"
+                  />
+                ))}
+              </div>
+          ) : 
             <>
           {/* Product Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">

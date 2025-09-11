@@ -4,6 +4,7 @@ import { Product } from "@/types/productTypes"
 import ProductCard from "./product-card"
 import { Button } from "@/components/ui/button"
 import { useFavourites } from "@/hooks/useFavourite"
+import Link from "next/link"
 
 interface ProductSectionProps {
   title: string
@@ -41,9 +42,11 @@ export default function ProductSection({ title, products, link }: ProductSection
       
       {
         link && (
-          <Button size="lg" className="rounded-none mt-8 mx-auto block text-lg">
-            View All
-          </Button>
+          <Link href={link}>
+            <Button size="lg" className="rounded-none mt-8 mx-auto block text-lg">
+              View All
+            </Button>
+          </Link>
         )
       }
     </section>
