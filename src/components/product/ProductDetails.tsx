@@ -9,6 +9,8 @@ import { ProductVariant } from "@/types/productTypes";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Heart, Star } from "lucide-react";
+import { useAuth } from "@/context/auth-provider";
+import LoginModal from "../auth/LoginModal";
 
 interface ProductDetailsProps {
   product: any;
@@ -27,12 +29,14 @@ export default function ProductDetails({
     (v: ProductVariant) => v.images
   );
 
+  const { user } = useAuth();
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>(
     allVariantImages[0] || product.image
     );
   const [quantity, setQuantity] = useState<number>(1);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const isFavourite = favourites?.favourites.some((fav: any) => fav.product_id === product.id);
 
   const availableColors: string[] = selectedSize
@@ -62,6 +66,10 @@ export default function ProductDetails({
   const handleAddToCart = () => {
     if (!selectedVariant) {
       toast("Please select a color and size");
+      return;
+    }
+    if (!user) {
+      setLoginModalOpen(true);
       return;
     }
     addToCart.mutate({
@@ -273,6 +281,7 @@ export default function ProductDetails({
           </div>
         </div>
       </div>
+      <LoginModal open={loginModalOpen} onOpenChange={setLoginModalOpen} />
     </div>
   );
 }

@@ -2,11 +2,14 @@
 
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
+import { useAuth } from "@/context/auth-provider"
 import { useAddToCart } from "@/hooks/useCart"
 import { useAddFavourite, useRemoveFavourite } from "@/hooks/useFavourite"
 import { Heart } from "lucide-react"
 import Image from "next/image"
 import Link from "next/link"
+import { useState } from "react"
+import LoginModal from "../auth/LoginModal"
 
 interface ProductCardProps {
   id: number
@@ -24,6 +27,8 @@ export default function ProductCard({ id, image, title, price, discount_price, d
   const addToFavMutation = useAddFavourite();
   const removeFromFavMutation = useRemoveFavourite();
   const addToCartMutation = useAddToCart();
+  const { user } = useAuth();
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
 
   const handleFavourite = () => {
     if (isFavourite) {
@@ -35,6 +40,10 @@ export default function ProductCard({ id, image, title, price, discount_price, d
 
   // Handle Add to Cart
   const handleAddToCart = () => {
+    if (!user) {
+      setLoginModalOpen(true);
+      return;
+    }
     addToCartMutation.mutate(
       { product_id: id },
     );
@@ -99,6 +108,7 @@ export default function ProductCard({ id, image, title, price, discount_price, d
           {addToCartMutation.isPending ? "Adding..." : "Add to cart"}
         </Button>      
       </div>
+      <LoginModal open={loginModalOpen} onOpenChange={setLoginModalOpen} />
     </Card>
   )
 }
