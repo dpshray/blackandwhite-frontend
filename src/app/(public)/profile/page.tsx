@@ -1,17 +1,12 @@
-// app/profile/page.tsx
 "use client";
 
 import { useState } from "react";
-import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-
-interface UserProfile {
-  name: string;
-  phone_number: string;
-  gender: string;
-  date_of_birth: string;
-}
+import { useUsers } from "@/hooks/useUser";
+import { useAddress } from "@/hooks/useAddress";
+import AddressFormModal from "@/components/profile/AddressFormModal";
+import { Skeleton } from "@/components/ui/skeleton";
 
 interface Order {
   id: number;
@@ -20,13 +15,11 @@ interface Order {
 }
 
 export default function ProfilePage() {
-  // Dummy user data
-  const user: UserProfile = {
-    name: "admin",
-    phone_number: "9878665655",
-    gender: "male",
-    date_of_birth: "2002-07-10",
-  };
+  const { useUserProfile } = useUsers();
+  const { data: user, isLoading: userLoading } = useUserProfile();
+
+  const { useAddressInfo } = useAddress();
+  const { data: address, isLoading: addressLoading } = useAddressInfo();
 
   // Dummy order data
   const orders: Order[] = [
@@ -51,21 +44,58 @@ export default function ProfilePage() {
   return (
     <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
       {/* Profile Section (Left) */}
-      <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center lg:items-start h-fit">
-        <div className="w-full flex items-start justify-between gap-4 mb-6">
-            <Avatar className="w-32 h-32 border-2 border-gray-200">
-                <AvatarImage src="/placeholder.png" alt="Profile" />
-                <AvatarFallback>AD</AvatarFallback>
-            </Avatar>
-            <Button variant="outline" size="sm">
-                Update Profile
-            </Button>
+      <div className="flex flex-col gap-6">
+        {userLoading ? (
+          <div>
+            <Skeleton className="w-full h-56" />
+          </div>
+        ) : 
+          <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center lg:items-start h-fit">
+            <div className="w-full flex items-start justify-between gap-4 mb-6">
+                <Avatar className="w-32 h-32 border-2 border-gray-200">
+                    <AvatarImage src="/placeholder.png" alt="Profile" />
+                    <AvatarFallback>AD</AvatarFallback>
+                </Avatar>
+                <Button variant="outline" size="sm">
+                    Update Profile
+                </Button>
+                </div>
+            <div>
+              <h2 className="text-2xl font-semibold mb-2">{user?.name}</h2>
+              <p className="text-gray-600">📞 {user?.phone_number}</p>
+              <p className="text-gray-600">👤 {user?.gender}</p>
+              <p className="text-gray-600">🎂 {user?.date_of_birth}</p>
             </div>
-        <div>
-          <h2 className="text-2xl font-semibold mb-2">{user.name}</h2>
-          <p className="text-gray-600">📞 {user.phone_number}</p>
-          <p className="text-gray-600">👤 {user.gender}</p>
-          <p className="text-gray-600">🎂 {user.date_of_birth}</p>
+          </div>
+        }
+
+        <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center lg:items-start h-fit w-full">
+          <h3 className="text-lg font-semibold mb-3">Billing Address</h3>
+          {addressLoading ? (
+            <Skeleton className="w-full h-56" />
+          ) : address && address.length > 0 ? (
+            address.map((item) => (
+              <div
+                key={item.id}
+                className="p-4 mb-3 border rounded-lg bg-gray-50 text-sm w-full space-y-2"
+              >
+                <p className="font-medium">
+                  {item.first_name} {item.last_name}
+                </p>
+                <p>{item.email}</p>
+                <p>{item.contact_number}</p>
+                <p>
+                  {item.address}, {item.city}, {item.state}
+                </p>
+                <AddressFormModal
+                  mode="update"
+                  defaultValues={item}
+                />
+              </div>
+            ))
+          ) : (
+            <AddressFormModal mode="add" />
+          )}
         </div>
       </div>
 
