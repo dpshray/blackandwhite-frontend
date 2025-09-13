@@ -11,9 +11,9 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog";
-import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useAddress } from "@/hooks/useAddress";
+import TextInput from "../fields/TextInput";
 
 const addressSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
@@ -78,45 +78,61 @@ export default function AddressFormModal({
           </DialogTitle>
         </DialogHeader>
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-3">
-          <Input placeholder="First Name" {...register("first_name")} />
-          {errors.first_name && (
-            <p className="text-red-500 text-sm">{errors.first_name.message}</p>
-          )}
-
-          <Input placeholder="Last Name" {...register("last_name")} />
-          {errors.last_name && (
-            <p className="text-red-500 text-sm">{errors.last_name.message}</p>
-          )}
-
-          <Input placeholder="Email" {...register("email")} />
-          {errors.email && (
-            <p className="text-red-500 text-sm">{errors.email.message}</p>
-          )}
-
-          <Input placeholder="State" {...register("state")} />
-          {errors.state && (
-            <p className="text-red-500 text-sm">{errors.state.message}</p>
-          )}
-
-          <Input placeholder="City" {...register("city")} />
-          {errors.city && (
-            <p className="text-red-500 text-sm">{errors.city.message}</p>
-          )}
-
-          <Input placeholder="Address" {...register("address")} />
-          {errors.address && (
-            <p className="text-red-500 text-sm">{errors.address.message}</p>
-          )}
-
-          <Input
-            placeholder="Contact Number"
-            {...register("contact_number")}
+          <TextInput
+            label="First Name"
+            name="first_name"
+            placeholder="First Name"
+            register={register}
+            error={errors.first_name}
           />
-          {errors.contact_number && (
-            <p className="text-red-500 text-sm">
-              {errors.contact_number.message}
-            </p>
-          )}
+
+          <TextInput
+            label="Last Name"
+            name="last_name"
+            placeholder="Last Name"
+            register={register}
+            error={errors.last_name}
+          />
+
+          <TextInput
+            label="Email"
+            name="email"
+            placeholder="Email"
+            register={register}
+            error={errors.email}
+          />
+
+          <TextInput
+            label="State"
+            name="state"
+            placeholder="State"
+            register={register}
+            error={errors.state}
+          />
+
+          <TextInput
+            label="City"
+            name="city"
+            placeholder="City"
+            register={register}
+            error={errors.city}
+          />
+
+          <TextInput
+            label="Address"
+            name="address"
+            placeholder="Address"
+            register={register}
+            error={errors.address}
+          />
+
+          <TextInput
+            label="Contact Number"
+            name="contact_number"
+            placeholder="Contact Number"
+            register={register}
+            error={errors.contact_number}
+          />
 
           <Button
             type="submit"

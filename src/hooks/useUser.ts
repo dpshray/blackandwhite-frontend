@@ -44,10 +44,23 @@
     });
   };
 
+   const useUpdateProfile = () =>
+    useMutation({
+      mutationFn: (data: FormData) => userService.updateProfile(data),
+      onSuccess: () => {
+        toast.success("Profile updated successfully");
+        queryClient.invalidateQueries({ queryKey: ["userProfile"] });
+      },
+      onError: () => {
+        toast.error("Failed to update profile");
+      },
+    });
+
     return {
       // query
       getUsers,
       useUserProfile,
+      useUpdateProfile,
 
       // mutations
       deleteUser,

@@ -1,12 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { useUsers } from "@/hooks/useUser";
 import { useAddress } from "@/hooks/useAddress";
 import AddressFormModal from "@/components/profile/AddressFormModal";
 import { Skeleton } from "@/components/ui/skeleton";
+import ProfileFormModal from "@/components/profile/ProfileFormModal";
+import { Badge } from "@/components/ui/badge";
 
 interface Order {
   id: number;
@@ -49,27 +50,44 @@ export default function ProfilePage() {
           <div>
             <Skeleton className="w-full h-56" />
           </div>
-        ) : 
-          <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center lg:items-start h-fit">
+        ) : (
+          <div className="bg-white border rounded-2xl shadow-md p-6 flex flex-col items-start h-fit">
             <div className="w-full flex items-start justify-between gap-4 mb-6">
-                <Avatar className="w-32 h-32 border-2 border-gray-200">
-                    <AvatarImage src="/placeholder.png" alt="Profile" />
-                    <AvatarFallback>AD</AvatarFallback>
-                </Avatar>
-                <Button variant="outline" size="sm">
-                    Update Profile
-                </Button>
-                </div>
-            <div>
-              <h2 className="text-2xl font-semibold mb-2">{user?.name}</h2>
-              <p className="text-gray-600">📞 {user?.phone_number}</p>
-              <p className="text-gray-600">👤 {user?.gender}</p>
-              <p className="text-gray-600">🎂 {user?.date_of_birth}</p>
+              <Avatar className="w-32 h-32 border-2 border-gray-200">
+                <AvatarImage
+                  src={user?.profile_image || "/placeholder.png"}
+                  alt="Profile"
+                />
+                <AvatarFallback>AD</AvatarFallback>
+              </Avatar>
+
+              {/* Profile*/}
+              <ProfileFormModal defaultValues={user} />
+            </div>
+            <div className="space-y-2">
+              <h2 className="text-2xl font-semibold">
+                {user?.name || <Badge variant="secondary">Not Set</Badge>}
+              </h2>
+              <p className="text-gray-600">
+                📞{" "}
+                {user?.phone_number || (
+                  <Badge variant="secondary">Not Set</Badge>
+                )}
+              </p>
+              <p className="text-gray-600">
+                👤 {user?.gender || <Badge variant="secondary">Not Set</Badge>}
+              </p>
+              <p className="text-gray-600">
+                🎂{" "}
+                {user?.date_of_birth || (
+                  <Badge variant="secondary">Not Set</Badge>
+                )}
+              </p>
             </div>
           </div>
-        }
+        )}
 
-        <div className="bg-white rounded-2xl shadow-md p-6 flex flex-col items-center lg:items-start h-fit w-full">
+        <div className="bg-white border rounded-2xl shadow-md p-6 flex flex-col items-center lg:items-start h-fit w-full">
           <h3 className="text-lg font-semibold mb-3">Billing Address</h3>
           {addressLoading ? (
             <Skeleton className="w-full h-56" />
@@ -77,30 +95,40 @@ export default function ProfilePage() {
             address.map((item) => (
               <div
                 key={item.id}
-                className="p-4 mb-3 border rounded-lg bg-gray-50 text-sm w-full space-y-2"
+                className="p-4 mb-3 border rounded-lg bg-gray-50 text-sm w-full"
               >
-                <p className="font-medium">
-                  {item.first_name} {item.last_name}
-                </p>
-                <p>{item.email}</p>
-                <p>{item.contact_number}</p>
-                <p>
-                  {item.address}, {item.city}, {item.state}
-                </p>
-                <AddressFormModal
-                  mode="update"
-                  defaultValues={item}
-                />
+                <div className="space-y-1">
+                  <p className="text-base font-semibold">
+                    {item.first_name} {item.last_name}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-semibold">Email:</span> {item.email}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-semibold">Phone:</span>{" "}
+                    {item.contact_number}
+                  </p>
+                  <p className="text-gray-600">
+                    <span className="font-semibold">Address:</span> {item.address}
+                    , {item.city}, {item.state}
+                  </p>
+                </div>
+
+                <div className="mt-4">
+                  <AddressFormModal mode="update" defaultValues={item} />
+                </div>
               </div>
             ))
           ) : (
-            <AddressFormModal mode="add" />
+            <div className="mt-4">
+              <AddressFormModal mode="add" />
+            </div>
           )}
         </div>
       </div>
 
-      {/* Order History (Right, spans 2 columns) */}
-      <div className="bg-white rounded-2xl shadow-md p-6 lg:col-span-2">
+      {/* Order History */}
+      <div className="h-fit bg-white border rounded-2xl shadow-md p-6 lg:col-span-2">
         <h3 className="text-xl font-semibold mb-4">Order History</h3>
 
         <div className="space-y-3">

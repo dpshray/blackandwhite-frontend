@@ -19,7 +19,15 @@ export const userService = {
   },
 
   getProfile: async (): Promise<UserProfileResponse> => {
-    const res = await axiosInstance.get("/user/profile");
+    const res = await axiosInstance.get("/profile");
     return res.data;
   },
+
+  updateProfile: (data: FormData) =>
+    axiosInstance.post("/update-profile", data, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    }),
+
 };

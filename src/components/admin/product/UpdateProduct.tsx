@@ -347,7 +347,9 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Input type="file" multiple accept="image/*" onChange={handleProductImageChange} />
+              <Input type="file" multiple accept="image/*" onChange={handleProductImageChange} 
+                className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
+              />
               {errors.images?.message && <p className="text-red-500 text-sm mt-1">{String(errors.images.message)}</p>}
               <ImagePreview files={productImages} onRemove={removeProductImage} />
 
@@ -430,13 +432,13 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
                     />
                   </div>
                   <div>
-                    <Label>Variant Images</Label>
+                    <Label className="pb-2">Variant Images</Label>
                     <Input
                       type="file"
                       multiple
                       accept="image/*"
                       onChange={(e) => handleVariantImageChange(index, e)}
-                      className="mt-2"
+                      className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
                     />
                     {errors.variants?.[index]?.images?.message && (
                       <p className="text-red-500 text-sm mt-1">{String(errors.variants?.[index]?.images?.message)}</p>
