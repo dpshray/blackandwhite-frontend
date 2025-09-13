@@ -9,6 +9,8 @@ import { ProductVariant } from "@/types/productTypes";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Heart, Star } from "lucide-react";
+import { useAuth } from "@/context/auth-provider";
+import LoginModal from "../auth/LoginModal";
 
 interface ProductDetailsProps {
   product: any;
@@ -27,12 +29,14 @@ export default function ProductDetails({
     (v: ProductVariant) => v.images
   );
 
+  const { user } = useAuth();
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
   const [selectedImage, setSelectedImage] = useState<string>(
     allVariantImages[0] || product.image
     );
   const [quantity, setQuantity] = useState<number>(1);
+  const [loginModalOpen, setLoginModalOpen] = useState(false);
   const isFavourite = favourites?.favourites.some((fav: any) => fav.product_id === product.id);
 
   const availableColors: string[] = selectedSize
@@ -64,6 +68,10 @@ export default function ProductDetails({
       toast("Please select a color and size");
       return;
     }
+    if (!user) {
+      setLoginModalOpen(true);
+      return;
+    }
     addToCart.mutate({
       product_id: product.id,
       variant_id: selectedVariant.id,
@@ -81,7 +89,7 @@ export default function ProductDetails({
       {/* Product Details */}
       <div className="grid md:grid-cols-2 gap-6">
         {/* Images */}
-        <div className="flex md:flex-row flex-col gap-4">
+        <div className="flex md:flex-row flex-col gap-6">
             {/* Thumbnails */}
             <div className="flex flex-row md:flex-col items-center justify-center sm:justify-start gap-2">
                 {allVariantImages.map((img: string, i: number) => (
@@ -92,7 +100,7 @@ export default function ProductDetails({
                     width={90}
                     height={90}
                     onClick={() => setSelectedImage(img)}
-                    className={`rounded-lg object-cover border cursor-pointer transition 
+                    className={`rounded-lg object-cover border cursor-pointer transition aspect-4/5
                     ${selectedImage === img ? "border-black scale-105" : "border-gray-200"}`}
                 />
                 ))}
@@ -104,7 +112,7 @@ export default function ProductDetails({
                 alt={product.title}
                 width={400}
                 height={400}
-                className="rounded-xl object-cover transition-all duration-300"
+                className="rounded-xl object-cover transition-all duration-300 aspect-4/5"
             />
         </div>
 
@@ -114,21 +122,22 @@ export default function ProductDetails({
           <h1 className="text-2xl lg:text-3xl font-bold text-balance leading-tight">{product.title}</h1>
           <p className="text-sm text-gray-600 mb-4">{product.description}</p>
 
-          {/* Price */}
-          <div className="flex items-center gap-3 mb-4 text-3xl text-primary font-bold">
-            {product.discount_price ? (
-              <>
-                <span className="text-xl text-muted-foreground line-through">
-                  Rs. {product.price}
-                </span>
-                <span>Rs. {product.discount_price}</span>
-              </>
-            ) : (
-              <span>Rs. {product.price}</span>
-            )}
-          </div>
+          <div className="flex items-center justify-between">
+            {/* Price */}
+            <div className="flex items-center gap-3 mb-4 text-3xl text-primary font-bold">
+              {product.discount_price ? (
+                <>
+                  <span className="text-xl text-muted-foreground line-through">
+                    Rs. {product.price}
+                  </span>
+                  <span>Rs. {product.discount_price}</span>
+                </>
+              ) : (
+                <span>Rs. {product.price}</span>
+              )}
+            </div>
 
-          {/* Rating placeholder */}
+            {/* Rating placeholder */}
             <div className="flex items-center gap-2">
               <div className="flex">
                 {[...Array(5)].map((_, i) => (
@@ -137,34 +146,30 @@ export default function ProductDetails({
               </div>
               <span className="text-sm text-muted-foreground">(4.8) • 127 reviews</span>
             </div>
+          </div>
 
           {/* Attributes */}
-          <ul className="flex text-xl space-x-10">
+          <ul className="space-y-2 text-sm">
             {product.pattern && (
-              <li>
-                <span className="text-sm text-muted-foreground">Pattern:{" "}</span>
-                <span className="capitalize ml-2 font-medium">
-                  {product.pattern}
-                </span>
+              <li className="flex gap-4 pb-1">
+                <span className="text-muted-foreground">Pattern:</span>
+                <span className="capitalize font-medium">{product.pattern}</span>
               </li>
             )}
             {product.fabric && (
-              <li>
-                <span className="text-sm text-muted-foreground">Fabric:{" "}</span>
-                <span className="capitalize ml-2 font-medium">
-                  {product.fabric}
-                </span>
+              <li className="flex gap-4 pb-1">
+                <span className="text-muted-foreground">Fabric:</span>
+                <span className="capitalize font-medium">{product.fabric}</span>
               </li>
             )}
             {product.material && (
-              <li>
-                <span className="text-sm text-muted-foreground">Material:{" "}</span>
-                <span className="capitalize ml-2 font-medium">
-                  {product.material}
-                </span>
+              <li className="flex gap-4 pb-1">
+                <span className="text-muted-foreground">Material:</span>
+                <span className="capitalize font-medium">{product.material}</span>
               </li>
             )}
           </ul>
+
 
           {/* Colors and Sizes */}
           <div className="flex md:flex-row flex-col md:gap-14 gap-6">
@@ -187,7 +192,7 @@ export default function ProductDetails({
                         ? "opacity-40 cursor-not-allowed"
                         : ""
                     }`}
-                    onClick={() => setSelectedColor(color)}
+                    onClick={() => setSelectedColor(selectedColor === color ? null : color)}
                   >
                     {color}
                   </span>
@@ -213,7 +218,7 @@ export default function ProductDetails({
                         ? "opacity-40 cursor-not-allowed"
                         : ""
                     }`}
-                    onClick={() => setSelectedSize(size)}
+                    onClick={() => setSelectedSize(selectedSize === size ? null : size)}
                   >
                     {size}
                   </span>
@@ -276,6 +281,7 @@ export default function ProductDetails({
           </div>
         </div>
       </div>
+      <LoginModal open={loginModalOpen} onOpenChange={setLoginModalOpen} />
     </div>
   );
 }

@@ -18,11 +18,11 @@ export default async function Home({ searchParams }: ProductsPageProps) {
   const banners = bannerResponse.data || []
 
   // Fetch new arrivals
-  const newArrivalsResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "latest")
+  const newArrivalsResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "new")
   const newArrivals = newArrivalsResponse.data.data
 
   // Fetch best sellers
-  const bestSellersResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "bestseller")
+  const bestSellersResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "best_seller")
   const bestSellers = bestSellersResponse.data.data
 
   // Fetch limited edition 
@@ -35,7 +35,7 @@ export default async function Home({ searchParams }: ProductsPageProps) {
 
       <div className="space-y-12 my-12">
         <ProductSection title="NEW ARRIVALS" products={newArrivals} link="/shop"/>
-        <ProductSection title="BEST SELLERS" products={bestSellers} link="/shop"/>
+        <ProductSection title="BEST SELLERS" products={bestSellers} link="/shop?sort=best_seller"/>
         <ProductSection title="LIMITED EDITION" products={limitedEdition} link="/shop"/>
       </div>
 

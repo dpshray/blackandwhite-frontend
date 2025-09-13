@@ -7,7 +7,7 @@ import { toast } from "sonner";
 import { useRouter } from "next/navigation";
 
 //Sign In Hook
-export const useSignIn = () => {
+export const useSignIn = (options?: { preventRedirect?: boolean }) => {
   const { login } = useAuth();
   const router = useRouter();
   return useMutation({
@@ -16,12 +16,15 @@ export const useSignIn = () => {
     },
     onSuccess: (data: any) => {
       const user = data.user
-      if (user?.is_admin === 1 || user?.is_admin === "1") {
-        toast.success(`Welcome ${user.name}`);
-        router.replace("/admin");
-      } else {
-        toast.success(`Welcome ${user?.name}`);
-        router.push("/");
+      toast.success(`Welcome ${user?.name}`);
+
+      // Only redirect if not prevented
+      if (!options?.preventRedirect) {
+        if (user?.is_admin === 1 || user?.is_admin === "1") {
+          router.replace("/admin");
+        } else {
+          router.push("/");
+        }
       }
     },
     onError: (error: any) => {

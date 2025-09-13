@@ -18,7 +18,7 @@ interface TextInputProps<TFieldValues extends FieldValues> {
   name: Path<TFieldValues>;
   placeholder?: string;
   error?: FieldError;
-  type?: "text" | "email" | "password" | "number" | "textArea";
+  type?: "text" | "email" | "password" | "number" | "textArea" | "date";
   label_size?: string
   showToggle?: boolean;
   icon?: React.ReactNode;

@@ -1,10 +1,27 @@
 import axiosInstance from "@/lib/axios";
-import { ProductsResponse } from "@/types/productTypes";
+import { Product, ProductsResponse } from "@/types/productTypes";
 
 export const productService = {
-  getProducts: async (page: number = 1, limit: number = 10, search?: string) => {
+   getProducts: async (page: number = 1, limit: number = 10, search?: string) => {
+    const params = new URLSearchParams({
+      page: String(page),
+      limit: String(limit),
+    });
+
+    if (search) {
+      params.append("search", search);
+    }
+
     const { data } = await axiosInstance.get<ProductsResponse>(
-      `/product?page=${page}&limit=${limit}&search=${search}`
+      `/product?${params.toString()}`
+    );
+
+    return data;
+  },
+
+  getProductBySlug: async (slug: string) => {
+    const { data } = await axiosInstance.get<{ message: string; data: Product }>(
+      `/product-detail/${slug}`
     );
     return data;
   },

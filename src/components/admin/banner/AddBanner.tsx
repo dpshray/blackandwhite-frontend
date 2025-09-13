@@ -129,12 +129,12 @@ export default function AddBanner() {
                     />
 
                     <div>
-                        <Label>Banner Image</Label>
+                        <Label className="pb-2">Banner Image</Label>
                         <Input
                             type="file"
                             accept="image/*"
                             onChange={handleBannerImageChange}
-                            className="mt-2"
+                            className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
                         />
                         {errors.image?.message && (
                             <p className="text-red-500 text-sm mt-1">
