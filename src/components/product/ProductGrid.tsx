@@ -86,7 +86,7 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
 
       <div className="flex sm:flex-row flex-col gap-8">
         {/* Sidebar */}
-        <aside className="w-full sm:w-56 space-y-6">
+        <aside className="w-full sm:w-56 space-y-6 sm:sticky sm:top-24 sm:self-start">
           {/* Sizes */}
           <div>
             <h3 className="font-semibold mb-2">SIZE</h3>
@@ -184,7 +184,7 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
                 <ProductCard 
                   key={product.id}
                   id={product.id}
-                  image={product.image}
+                  image={product.image[0]}
                   title={product.title}
                   price={Number(product.price)}
                   discount_price={Number(product.discount_price)}

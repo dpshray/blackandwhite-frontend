@@ -37,7 +37,7 @@ export interface Product {
   pattern: string;
   fabric: string;
   material: string;
-  image: string;
+  image: string[];
   categories: ProductCategory[];
   variants: ProductVariant[];
   isFavourite?: boolean;

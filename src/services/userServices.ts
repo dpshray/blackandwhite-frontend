@@ -29,5 +29,4 @@ export const userService = {
         "Content-Type": "multipart/form-data",
       },
     }),
-
 };

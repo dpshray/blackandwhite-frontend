@@ -12,6 +12,7 @@ export default function Cart() {
   const { data: cart, isLoading } = useCart();
   const updateCartItem = useUpdateCartItem();
   const removeCartItem = useRemoveCartItem();
+  // const { mutate: addOrder, isPending } = useAddOrder();
 
   if (isLoading) {
     return <CartSkeleton />;
@@ -39,7 +40,7 @@ export default function Cart() {
       <h1 className="text-2xl font-semibold mb-6">Cart</h1>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
-        <div className="lg:col-span-2 max-h-[550px] overflow-auto">
+        <div className="lg:col-span-2 max-h-[550px] overflow-auto px-2">
           {cart.data.map((item: any) => (
             <div
               key={item.id}
@@ -79,7 +80,7 @@ export default function Cart() {
               </div>
 
               {/* Quantity + Price */}
-              <div className="flex items-center gap-12">
+              <div className="flex flex-col sm:fle-row items-center gap-12">
                 <div className="flex items-center border px-2">
                   <Button
                     variant={"ghost"}
@@ -149,7 +150,7 @@ export default function Cart() {
 
           {/* Buttons */}
           <Link href="/checkout">
-            <Button className="w-full bg-black text-white py-3 mt-4 rounded-none">
+            <Button className="w-full py-3 mt-4 rounded-none">
               Proceed to Checkout
             </Button>
           </Link>

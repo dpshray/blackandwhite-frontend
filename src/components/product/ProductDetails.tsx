@@ -25,16 +25,22 @@ export default function ProductDetails({
   const addFavourite = useAddFavourite();
   const { data: favourites } = useFavourites();
 
-  const allVariantImages = product.variants.flatMap(
-    (v: ProductVariant) => v.images
+  const productImages: string[] = Array.isArray(product.image)
+    ? product.image
+    : product.image
+    ? [product.image]
+    : [];
+
+  const variantImages: string[] = product.variants.flatMap(
+    (v: ProductVariant) => (v.images ? v.images : [])
   );
+
+  const allImages: string[] = [...productImages, ...variantImages].filter(Boolean);
 
   const { user } = useAuth();
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string>(
-    allVariantImages[0] || product.image
-    );
+  const [selectedImage, setSelectedImage] = useState<string>(allImages[0] );
   const [quantity, setQuantity] = useState<number>(1);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const isFavourite = favourites?.favourites.some((fav: any) => fav.product_id === product.id);
@@ -92,7 +98,7 @@ export default function ProductDetails({
         <div className="flex md:flex-row flex-col gap-6">
             {/* Thumbnails */}
             <div className="flex flex-row md:flex-col items-center justify-center sm:justify-start gap-2">
-                {allVariantImages.map((img: string, i: number) => (
+                {allImages.map((img: string, i: number) => (
                 <Image
                     key={i}
                     src={img}

@@ -7,22 +7,20 @@ import { AxiosError } from "axios";
 import { ApiError } from "next/dist/server/api-utils";
 import { toast } from "sonner";
 
-export const useBanners = (
-  page: number = 1,
-  limit: number = 9
-) => {
-  const queryClient = useQueryClient();
-
-  //  GET Banners
-  const getBanners = useQuery<BannerResponse>({
-    queryKey: ["banners", { page, limit }],
+//get
+export const useGetBanners = (page: number = 1, limit: number = 9) => {
+  return useQuery<BannerResponse>({
+    queryKey: ["banners", page, limit],
     queryFn: () => bannerService.getBanners({ page, limit }),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000, // 10 minutes
+    staleTime: 5 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
+};
 
-  //  ADD Banner
-  const addBanner = useMutation({
+//add
+export const useAddBanner = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
     mutationFn: (payload: FormData) => bannerService.addBanner(payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["banners"] });
@@ -32,9 +30,12 @@ export const useBanners = (
       toast.error(err.response?.data?.message || "Failed to add banner");
     },
   });
+};
 
-  //  UPDATE Banner
-  const updateBanner = useMutation({
+//update
+export const useUpdateBanner = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
     mutationFn: ({ id, payload }: { id: number; payload: FormData }) =>
       bannerService.updateBanner(id, payload),
     onSuccess: () => {
@@ -45,9 +46,12 @@ export const useBanners = (
       toast.error(err.response?.data?.message || "Failed to update banner");
     },
   });
+};
 
-  //  DELETE Banner
-  const deleteBanner = useMutation({
+//delete
+export const useDeleteBanner = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
     mutationFn: (id: number) => bannerService.deleteBanner(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["banners"] });
@@ -57,14 +61,4 @@ export const useBanners = (
       toast.error(err.response?.data?.message || "Failed to delete banner");
     },
   });
-
-  return {
-    // query
-    getBanners,
-
-    // mutations
-    addBanner,
-    updateBanner,
-    deleteBanner,
-  };
 };

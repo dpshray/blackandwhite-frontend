@@ -12,8 +12,8 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { useAddress } from "@/hooks/useAddress";
 import TextInput from "../fields/TextInput";
+import { useAddAddressInfo, useUpdateAddressInfo } from "@/hooks/useAddress";
 
 const addressSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
@@ -36,7 +36,6 @@ export default function AddressFormModal({
   mode,
   defaultValues,
 }: AddressFormModalProps) {
-  const { useAddAddressInfo, useUpdateAddressInfo } = useAddress();
   const addMutation = useAddAddressInfo();
   const updateMutation = useUpdateAddressInfo();
 

@@ -37,7 +37,7 @@ export async function getBanners(): Promise<BannerResponse> {
   try {
     return await fetchJSON<BannerResponse>("/banner");
   } catch {
-    return { message: "Failed to fetch banners", data: [], success: false };
+    return { message: "Failed to fetch banners", data: {data: [], meta: { current_page: 1, last_page: 1, per_page: 10, total: 0 }}, success: false };
   }
 }
 
@@ -85,6 +85,20 @@ export async function getProductBySlug(slug: string): Promise<SingleProductRespo
   } catch {
     return { message: "Failed to fetch product", data: null};
   }
+}
+
+export async function getRelatedProducts(
+  category: string,
+  currentProductId: number,
+  limit: number = 4
+) {
+  const res = await getProducts(1, limit + 1, category); // fetch one extra to safely exclude current
+
+  const products = res.data.data
+    .filter((p: any) => p.id !== currentProductId) // exclude current product
+    .slice(0, limit); // limit to desired count
+
+  return { data: products };
 }
 
 
