@@ -4,7 +4,7 @@ import { DataTable } from "@/components/admin/DataTable";
 import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
-import { BaseModal } from "../modal/deleteModel";
+import { BaseModal } from "../../modal/deleteModel";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
@@ -98,7 +98,7 @@ export default function UserTable() {
             <DataTable
                 columns={columns}
                 data={UserData}
-                loading={!UserData}
+                loading={getUsers.isPending}
                 totalPages={totalPages}
                 currentPage={page}
                 onPageChange={setPage}

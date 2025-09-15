@@ -2,33 +2,19 @@
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
-import { useCart } from "@/hooks/useCart";
 import { CheckCircle, Package, ArrowRight } from "lucide-react"
 import Link from "next/link"
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
 
 export default function ThankYou() {
-  const { data: cart } = useCart();
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!cart || cart.data.length === 0) {
-        router.replace("/shop"); 
-    }
-  }, [cart, router]);
-  
-  if (!cart || cart.data.length === 0) return null;
-  
   return (
-    <div className="bg-gradient-to-br from-green-50 to-blue-50 dark:from-green-950/20 dark:to-blue-950/20 flex items-center justify-center py-10 px-4">
+    <div className="bg-gradient-to-br from-green-50 to-blue-50 dark:from-blue-950/20 dark:to-green-950/20 flex items-center justify-center py-10 px-4">
       <Card className="w-full max-w-md mx-auto shadow-lg">
         <CardContent className="p-8 text-center space-y-6">
           {/* Success Icon */}
           <div className="flex justify-center">
             <div className="relative">
-              <CheckCircle className="w-16 h-16 text-green-500 animate-bounce" />
-              <div className="absolute inset-0 w-16 h-16 bg-green-500/20 rounded-full animate-ping" />
+              <CheckCircle className="w-16 h-16 text-blue-500 animate-bounce" />
+              <div className="absolute inset-0 w-16 h-16 bg-blue-500/20 rounded-full animate-ping" />
             </div>
           </div>
 

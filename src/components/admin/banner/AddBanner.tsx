@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { useBanners } from "@/hooks/useBanners";
 import { normalizeFiles } from "@/lib/normalizeFiles";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus } from "lucide-react";
@@ -14,6 +13,7 @@ import { useForm } from "react-hook-form";
 import { PiFlagBanner } from "react-icons/pi";
 import z from "zod";
 import { ImagePreview } from "../ImagePreview";
+import { useAddBanner } from "@/hooks/useBanners";
 
 export const MAX_BANNER_SIZE = 2 * 1024 * 1024; // 2MB
 export const ALLOWED_IMAGE_TYPES = [
@@ -42,7 +42,7 @@ const bannerSchema = z.object({
 type BannerFormData = z.infer<typeof bannerSchema>;
 
 export default function AddBanner() {
-    const { addBanner } = useBanners();
+    const addBanner = useAddBanner();
     const [open, setOpen] = useState(false);
     const [bannerImage, setBannerImage] = useState<File[] | null>(null)
 

@@ -8,6 +8,18 @@ export interface Banner {
 
 export interface BannerResponse {
   message: string
-  data: Banner[]
+  data: BannerData
   success: boolean
+}
+
+export interface BannerData {
+  data: Banner[];
+  meta: BannerMeta;
+}
+
+export interface BannerMeta {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
 }

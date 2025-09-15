@@ -6,7 +6,6 @@ import { DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/compo
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
-import { useBanners } from "@/hooks/useBanners";
 import { normalizeFiles } from "@/lib/normalizeFiles";
 import { Banner } from "@/types/bannerTypes";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -17,6 +16,7 @@ import { useForm } from "react-hook-form";
 import { PiFlagBanner } from "react-icons/pi";
 import z from "zod";
 import { ImagePreview } from "../ImagePreview";
+import { useUpdateBanner } from "@/hooks/useBanners";
 
 
 export const MAX_BANNER_SIZE = 2 * 1024 * 1024; // 2MB
@@ -51,7 +51,7 @@ interface UpdateBannerDialogProps {
 export default function UpdateBanner({ banner }: UpdateBannerDialogProps) {
     const [open, setOpen] = useState(false);
     const [bannerImage, setBannerImage] = useState<File[] | null>(null)
-    const { updateBanner } = useBanners();
+    const updateBanner = useUpdateBanner();
 
     const {
         register,

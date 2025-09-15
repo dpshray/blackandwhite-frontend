@@ -15,7 +15,7 @@ export default async function Home({ searchParams }: ProductsPageProps) {
   const currentPage = Number.parseInt(params.page || "1", 9)
 
   const bannerResponse = await getBanners()
-  const banners = bannerResponse.data || []
+  const banners = bannerResponse.data.data || []
 
   // Fetch new arrivals
   const newArrivalsResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "new")
@@ -36,7 +36,7 @@ export default async function Home({ searchParams }: ProductsPageProps) {
       <div className="space-y-12 my-12">
         <ProductSection title="NEW ARRIVALS" products={newArrivals} link="/shop?sort=new"/>
         <ProductSection title="BEST SELLERS" products={bestSellers} link="/shop?sort=best_seller"/>
-        <ProductSection title="LIMITED EDITION" products={limitedEdition} link="/shop"/>
+        <ProductSection title="LIMITED EDITION" products={limitedEdition} link="/shop?sort=limited"/>
       </div>
 
       {/* Newsletter Section */}

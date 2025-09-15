@@ -40,9 +40,14 @@ export default function CheckoutPage() {
   const hasAddress = addresses && addresses.length > 0;
   const defaultAddress = hasAddress ? addresses[0] : null;
   
-  const [mode, setMode] = useState<"view" | "select" | "add">(
-    hasAddress ? "view" : "add"
-    );
+  const [mode, setMode] = useState<"view" | "select" | "add">("add");
+
+  useEffect(() => {
+    if (addresses && addresses.length > 0) {
+      setMode("view");
+      setSelectedAddressId(addresses[0].id);
+    }
+  }, [addresses]);
 
   const [selectedAddressId, setSelectedAddressId] = useState<number | null>(
     defaultAddress?.id ?? null

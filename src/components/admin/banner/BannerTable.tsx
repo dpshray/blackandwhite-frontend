@@ -4,16 +4,16 @@ import { DataTable } from "@/components/admin/DataTable";
 import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
-import { BaseModal } from "../modal/deleteModel";
+import { BaseModal } from "../../modal/deleteModel";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { Banner } from "@/types/bannerTypes";
-import { useBanners } from "@/hooks/useBanners";
 import Link from "next/link";
 import Image from "next/image";
 import AddBanner from "./AddBanner";
 import UpdateBanner from "./UpdateBanner";
+import { useDeleteBanner, useGetBanners } from "@/hooks/useBanners";
 
 export default function BannerTable() {
     const [page, setPage] = useState(1);
@@ -21,9 +21,10 @@ export default function BannerTable() {
     const [selectedBanner, setselectedBanner] = useState<Banner | null>(
         null
     );
-    const { getBanners, deleteBanner } = useBanners(page, 9);
-    // const totalPages = getBanners?.data?.data?.meta?.last_page ?? 1;
-    const BannerData = getBanners?.data?.data || [];
+    const getBanners = useGetBanners(page, 9);
+    const deleteBanner = useDeleteBanner();
+    const totalPages = getBanners?.data?.data?.meta?.last_page ?? 1;
+    const BannerData = getBanners?.data?.data?.data || [];
 
     const handleDeleteClick = (banner: Banner) => {
         setselectedBanner(banner);
@@ -129,8 +130,8 @@ export default function BannerTable() {
             <DataTable
                 columns={columns}
                 data={BannerData}
-                loading={!BannerData}
-                // totalPages={totalPages}
+                loading={getBanners?.isPending}
+                totalPages={totalPages}
                 currentPage={page}
                 onPageChange={setPage}
             />

@@ -2,6 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
+  AllOrderResponse,
   OrderHistoryResponse,
 } from "@/types/orderTypes";
 import { toast } from "sonner";
@@ -12,6 +13,13 @@ export const useOrders = (page: number = 1, perPage: number = 10) => {
   return useQuery<OrderHistoryResponse>({
     queryKey: ["orders", page, perPage],
     queryFn: () => orderService.getOrders(page, perPage),
+  });
+};
+
+export const useAllOrders = (page: number = 1, perPage: number = 10) => {
+  return useQuery<AllOrderResponse>({
+    queryKey: ["all-orders", page, perPage],
+    queryFn: () => orderService.getAllOrders(page, perPage),
   });
 };
 
@@ -29,6 +37,20 @@ export const useAddOrder = () => {
     },
     onError: () => {
       toast.error("Failed to place order");
+    },
+  });
+};
+
+export const useDeleteOrder = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => orderService.deleteOrder(id),
+    onSuccess: () => {
+      toast.success("Order cancelled successfully");
+      queryClient.invalidateQueries({ queryKey: ["orders"] });
+    },
+    onError: () => {
+      toast.error("Failed to cancel order");
     },
   });
 };

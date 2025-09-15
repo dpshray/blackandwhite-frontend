@@ -25,10 +25,17 @@ export default function ProductDetails({
   const addFavourite = useAddFavourite();
   const { data: favourites } = useFavourites();
 
-  const allImages = [
-    product.image,
-    ...product.variants.flatMap((v: ProductVariant) => v.images),
-  ].filter(Boolean);
+  const productImages: string[] = Array.isArray(product.image)
+    ? product.image
+    : product.image
+    ? [product.image]
+    : [];
+
+  const variantImages: string[] = product.variants.flatMap(
+    (v: ProductVariant) => (v.images ? v.images : [])
+  );
+
+  const allImages: string[] = [...productImages, ...variantImages].filter(Boolean);
 
   const { user } = useAuth();
   const [selectedColor, setSelectedColor] = useState<string | null>(null);

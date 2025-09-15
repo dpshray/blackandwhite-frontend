@@ -38,19 +38,57 @@ export interface OrderHistoryResponse {
   success: boolean;
 }
 
-// For creating an order
-// export interface AddOrderItem {
-//   product_id: number;
-//   variant_id: number;
-//   quantity: number;
-// }
+//All Orders
+export interface OrderItem {
+  product_name: string;
+  variant_size: string;
+  variant_color: string;
+  quantity: number;
+  price: number;
+  image: string;
+}
 
-// export interface AddOrderPayload {
-//   items: AddOrderItem[];
-// }
+export interface BillingInformation {
+  first_name: string;
+  last_name: string;
+  email: string;
+  state: string;
+  city: string;
+  address: string;
+  contact_number: string;
+}
 
-// export interface AddOrderResponse {
-//   success: boolean;
-//   message: string;
-//   data?: any; 
-// }
+export interface User {
+  id: number;
+  name: string;
+  email: string;
+}
+
+export interface AllOrder {
+  id: number;
+  total_amount: string;
+  status: string;
+  created_at: string;
+  user: User;
+  billing_information: BillingInformation;
+  items: OrderItem[];
+}
+
+export interface OrderMeta {
+  current_page: number;
+  last_page: number;
+  per_page: number;
+  total: number;
+}
+
+export interface AllOrderData {
+  data: AllOrder[];
+  meta: OrderMeta;
+  links: OrderLinks;
+}
+
+export interface AllOrderResponse {
+  message: string;
+  data: AllOrderData;
+  success: boolean;
+}

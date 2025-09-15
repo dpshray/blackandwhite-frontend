@@ -23,7 +23,7 @@ const profileSchema = z.object({
   phone_number: z.string().nullable().optional(),
   gender: z.string().nullable().optional(),
   date_of_birth: z.string().nullable().optional(),
-  profile_image: z.any().optional(), 
+  image: z.any().optional(), 
 });
 
 type ProfileFormData = z.infer<typeof profileSchema>;
@@ -57,8 +57,8 @@ export default function ProfileFormModal({ defaultValues }: ProfileFormModalProp
     formData.append("phone_number", data.phone_number || "");
     formData.append("gender", data.gender || "");
     formData.append("date_of_birth", data.date_of_birth || "");
-    if (data.profile_image instanceof File) {
-      formData.append("profile_image", data.profile_image);
+    if (data.image instanceof File) {
+      formData.append("image", data.image);
     }
 
     updateMutation.mutate(formData);
@@ -141,7 +141,7 @@ export default function ProfileFormModal({ defaultValues }: ProfileFormModalProp
               accept="image/*"
               onChange={(e) => {
                 const file = e.target.files?.[0];
-                if (file) setValue("profile_image", file);
+                if (file) setValue("image", file);
               }}
               className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
             />

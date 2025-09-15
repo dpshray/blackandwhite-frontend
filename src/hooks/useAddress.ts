@@ -34,3 +34,15 @@ export const useUpdateAddressInfo = () => {
     onError: () => toast.error("Failed to update address"),
   });
 };
+
+export const useDeleteAddressInfo = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: number) => addressService.deleteAddressInfo(id),
+    onSuccess: () => {
+      toast.success("Address deleted successfully");
+      queryClient.invalidateQueries({ queryKey: ["address-info"] });
+    },
+    onError: () => toast.error("Failed to delete address"),
+  });
+};

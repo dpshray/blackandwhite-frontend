@@ -7,12 +7,13 @@ import { Product } from "@/types/productTypes";
 import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 import VariantModal from "../modal/VariantModel";
-import { BaseModal } from "../modal/deleteModel";
+import { BaseModal } from "../../modal/deleteModel";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import AddProduct from "./AddProduct";
 import UpdateProduct from "./UpdateProduct";
+import PhotoCell from "./PhotoCell";
 
 export default function ProductTable() {
     const [page, setPage] = useState(1);
@@ -75,13 +76,6 @@ export default function ProductTable() {
             size: 80,
             enableSorting: true,
         },
-        // {
-        //     accessorKey: "model_no",
-        //     header: "Model_no",
-        //     cell: ({ row }) => <div className="break-words whitespace-normal">{row.original.model_no}</div>,
-        //     size: 100,
-        //     enableSorting: false,
-        // },
         {
             accessorKey: "description",
             header: "Description",
@@ -111,17 +105,21 @@ export default function ProductTable() {
             size: 60,
             enableSorting: false,
         },
-        // {
-        //     accessorKey: "image",
-        //     header: "Image",
-        //     size: 100,
-        //     cell: ({ row }) => {
-        //         const images = row.getValue("image") as string[] | undefined;
-        //         const validImages = Array.isArray(images) ? images : [];
+        {
+            accessorKey: "image",
+            header: "Image",
+            size: 100,
+            cell: ({ row }) => {
+                const rawImages = row.getValue("image");
+                const validImages = Array.isArray(rawImages)
+                ? rawImages
+                : rawImages
+                ? [rawImages]
+                : [];
 
-        //         return <PhotoCell photos={validImages} />;
-        // },
-        // },
+                return <PhotoCell photos={validImages} />;
+            },
+        },
         {
             accessorKey: "pattern",
             header: "Pattern",
@@ -183,7 +181,7 @@ export default function ProductTable() {
             <DataTable
                 columns={columns}
                 data={productData}
-                loading={!productData}
+                loading={getProducts.isPending}
                 totalPages={totalPages}
                 currentPage={page}
                 onPageChange={setPage}

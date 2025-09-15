@@ -218,7 +218,7 @@ export default function Header({ categories }: HeaderProps) {
                           }}
                         >
                           <Image
-                            src={product.image || "/placeholder.png"}
+                            src={product.image[0] || "/placeholder.png"}
                             width={40}
                             height={40}
                             alt={product.title}

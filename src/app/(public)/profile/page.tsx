@@ -7,19 +7,66 @@ import AddressFormModal from "@/components/profile/AddressFormModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProfileFormModal from "@/components/profile/ProfileFormModal";
 import { Badge } from "@/components/ui/badge";
-import { useAddressInfo } from "@/hooks/useAddress";
-import { useOrders } from "@/hooks/useOrder";
+import { useAddressInfo, useDeleteAddressInfo } from "@/hooks/useAddress";
+import { useDeleteOrder, useOrders } from "@/hooks/useOrder";
 import Pagination from "@/components/Pagination";
 import { FaBirthdayCake, FaPhoneAlt, FaRegFrown, FaUser } from "react-icons/fa";
+import { Button } from "@/components/ui/button";
+import { RxCross2 } from "react-icons/rx";
+import { BaseModal } from "@/components/modal/deleteModel";
+import { AddressInfo } from "@/services/addressServices";
 
 export default function ProfilePage() {
   const [page, setPage] = useState(1);
+  const [deleteProfileModalOpen, setDeleteProfileModalOpen] = useState(false);
+  const [selectedAddress, setselectedAddress] = useState<AddressInfo | null>(
+    null
+  );
+
+  const [deleteOrderModalOpen, setDeleteOrderModalOpen] = useState(false);
+  const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
+  const deleteOrder = useDeleteOrder();
+
   const { useUserProfile } = useUsers();
   const { data: user, isLoading: userLoading } = useUserProfile();
   const { data: address, isLoading: addressLoading } = useAddressInfo();
+  const deleteAddress = useDeleteAddressInfo();
   const { data: orders, isLoading: ordersLoading } = useOrders(page, 9);
   const totalPages = Math.ceil(orders?.data.meta.total ?? 1);
   const paginatedOrders = orders?.data.orders || [];
+
+  const handleDeleteProfileClick = (address: AddressInfo) => {
+    setselectedAddress(address);
+    setDeleteProfileModalOpen(true);
+  };
+
+  const handleConfirmDeleteProfile = async () => {
+    if (!selectedAddress) return;
+
+    try {
+        await deleteAddress.mutateAsync(selectedAddress.id)
+        setDeleteProfileModalOpen(false)
+        setselectedAddress(null)
+    } catch (error) {
+        console.error("Failed to delete user:", error)
+    }
+  };
+
+  const handleDeleteOrderClick = (id: number) => {
+    setSelectedOrderId(id);
+    setDeleteOrderModalOpen(true);
+  };
+
+  const handleConfirmDeleteOrder = async () => {
+    if (!selectedOrderId) return;
+    try {
+      await deleteOrder.mutateAsync(selectedOrderId);
+      setDeleteOrderModalOpen(false);
+      setSelectedOrderId(null);
+    } catch (error) {
+      console.error("Failed to delete order:", error);
+    }
+  };
 
   return (
     <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -67,6 +114,7 @@ export default function ProfilePage() {
           </div>
         )}
 
+        {/* address */}
         <div className="bg-white border rounded-2xl shadow-md p-6 flex flex-col items-center lg:items-start h-fit w-full">
           <h3 className="text-lg font-semibold mb-3">Billing Address</h3>
           {addressLoading ? (
@@ -78,9 +126,12 @@ export default function ProfilePage() {
                 className="p-4 mb-3 border rounded-lg bg-gray-50 text-sm w-full"
               >
                 <div className="space-y-1">
-                  <p className="text-base font-semibold">
-                    {item.first_name} {item.last_name}
-                  </p>
+                  <div className="flex text-base font-semibold justify-between">
+                    <span>{item.first_name} {item.last_name}</span>
+                    <Button size="icon" variant={"ghost"} className="text-red-500 hover:text-red-600" onClick={() => handleDeleteProfileClick(item)}>
+                      <RxCross2 />
+                    </Button>
+                  </div>
                   <p className="text-gray-600">
                     <span className="font-semibold">Email:</span> {item.email}
                   </p>
@@ -111,7 +162,7 @@ export default function ProfilePage() {
       <div className="h-fit bg-white border rounded-2xl shadow-md p-6 lg:col-span-2">
         <h3 className="text-xl font-semibold mb-4">Order History</h3>
 
-        <div className="space-y-3 min-h-[200px] flex flex-col items-center justify-center">
+        <div className="space-y-3 min-h-[200px] flex flex-col items-center">
           {ordersLoading ? (
             // Skeletons
             Array.from({ length: 5 }).map((_, idx) => (
@@ -135,11 +186,38 @@ export default function ProfilePage() {
               >
                 <div>
                   <p className="font-medium">Order #{order.id}</p>
-                  <p className="text-sm text-gray-500">
-                    Status: {order.status}
-                  </p>
+                  <Badge
+                    variant={
+                      order.status === "Pending"
+                        ? "warning"
+                        : order.status === "Processing"
+                        ? "secondary"
+                        : order.status === "Shipped"
+                        ? "outline"
+                        : order.status === "Delivered"
+                        ? "success"
+                        : order.status === "Cancelled"
+                        ? "destructive"
+                        : "secondary"
+                    }
+                    className="mt-1"
+                  >
+                    {order.status}
+                  </Badge>
                 </div>
-                <p className="font-semibold">Rs. {order.total_amount}</p>
+                <div className="flex flex-col items-end">
+                  {order.status !== "Cancelled" && (
+                    <Button
+                      size="icon"
+                      variant="ghost"
+                      className="text-red-500 hover:text-red-600"
+                      onClick={() => handleDeleteOrderClick(order.id)}
+                    >
+                      <RxCross2 />
+                    </Button>
+                  )}
+                  <p className="font-semibold">Rs. {order.total_amount}</p>
+                </div>
               </div>
             ))
           ) : (
@@ -164,6 +242,30 @@ export default function ProfilePage() {
           />
         )}
       </div>
+
+      <BaseModal
+        open={deleteProfileModalOpen}
+        onOpenChangeAction={setDeleteProfileModalOpen}
+        title="Delete User"
+        description={`Are you sure you want to delete this address?`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={handleConfirmDeleteProfile}
+        isDestructive
+        loading={deleteAddress.isPending}
+      />
+
+      <BaseModal
+        open={deleteOrderModalOpen}
+        onOpenChangeAction={setDeleteOrderModalOpen}
+        title="Cancel Order"
+        description="Are you sure you want to cancel this order?"
+        confirmText="Yes"
+        cancelText="No"
+        onConfirm={handleConfirmDeleteOrder}
+        isDestructive
+        loading={deleteOrder.isPending}
+      />
     </div>
   );
 }

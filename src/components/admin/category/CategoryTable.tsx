@@ -4,7 +4,7 @@ import { DataTable } from "@/components/admin/DataTable";
 import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
-import { BaseModal } from "../modal/deleteModel";
+import { BaseModal } from "../../modal/deleteModel";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
@@ -100,7 +100,7 @@ export default function CategoryTable() {
             <DataTable
                 columns={columns}
                 data={CategoryData}
-                loading={!CategoryData}
+                loading={getCategories.isPending}
                 totalPages={totalPages}
                 currentPage={page}
                 onPageChange={setPage}

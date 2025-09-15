@@ -37,7 +37,7 @@ export async function getBanners(): Promise<BannerResponse> {
   try {
     return await fetchJSON<BannerResponse>("/banner");
   } catch {
-    return { message: "Failed to fetch banners", data: [], success: false };
+    return { message: "Failed to fetch banners", data: {data: [], meta: { current_page: 1, last_page: 1, per_page: 10, total: 0 }}, success: false };
   }
 }
 

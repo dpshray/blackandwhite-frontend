@@ -29,4 +29,9 @@ export const addressService = {
     const { data } = await axiosInstance.post(`/edit-address/${id}`, payload);
     return data.data;
   },
+
+  deleteAddressInfo: async (id: number): Promise<{ message: string }> => {
+    const { data } = await axiosInstance.delete(`/delete-address/${id}`); 
+    return data;
+  },
 };
