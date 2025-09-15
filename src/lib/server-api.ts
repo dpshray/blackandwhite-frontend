@@ -87,4 +87,18 @@ export async function getProductBySlug(slug: string): Promise<SingleProductRespo
   }
 }
 
+export async function getRelatedProducts(
+  category: string,
+  currentProductId: number,
+  limit: number = 4
+) {
+  const res = await getProducts(1, limit + 1, category); // fetch one extra to safely exclude current
+
+  const products = res.data.data
+    .filter((p: any) => p.id !== currentProductId) // exclude current product
+    .slice(0, limit); // limit to desired count
+
+  return { data: products };
+}
+
 

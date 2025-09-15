@@ -86,7 +86,7 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
 
       <div className="flex sm:flex-row flex-col gap-8">
         {/* Sidebar */}
-        <aside className="w-full sm:w-56 space-y-6">
+        <aside className="w-full sm:w-56 space-y-6 sticky top-24 self-start">
           {/* Sizes */}
           <div>
             <h3 className="font-semibold mb-2">SIZE</h3>

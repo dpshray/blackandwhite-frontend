@@ -113,7 +113,7 @@ export default function LoginModal({
                 Don&apos;t have an account?{" "}
                 <Link
                   href="/signup"
-                  className="font-medium text-amber-600 hover:text-amber-500 transition-colors"
+                  className="font-bold hover:underline transition-colors"
                 >
                   Sign Up
                 </Link>
