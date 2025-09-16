@@ -16,6 +16,7 @@ import {
 import { useAddOrder } from "@/hooks/useOrder";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const checkoutSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
@@ -30,9 +31,9 @@ const checkoutSchema = z.object({
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutPage() {
-    const [paymentMethod, setPaymentMethod] = useState("connect-ips");
-    const { data: cart } = useCart();
-    const { data: addresses } = useAddressInfo();
+    const [paymentMethod, setPaymentMethod] = useState("cod");
+    const { data: cart, isLoading, isFetched } = useCart();
+    const { data: addresses, isLoading: isLoadingAddresses } = useAddressInfo();
     const addAddress = useAddAddressInfo();
     const { mutate: addOrder, isPending: isPlacingOrder } = useAddOrder();
     const router = useRouter();
@@ -53,6 +54,15 @@ export default function CheckoutPage() {
     defaultAddress?.id ?? null
   );
 
+  useEffect(() => {
+    if (!isLoading && isFetched) {
+      if (!cart || cart.data.length === 0) {
+        toast.error("Your cart is empty");
+        router.replace("/shop");
+      }
+    }
+  }, [cart, isLoading, isFetched, router]);
+
   const {
     register,
     handleSubmit,
@@ -64,21 +74,11 @@ export default function CheckoutPage() {
   const onAddAddressSubmit = (data: CheckoutFormData) => {
     addAddress.mutate(data, {
       onSuccess: (newAddr: any) => {
-        // if hook returns new address, set selected id
         if (newAddr?.id) setSelectedAddressId(newAddr.id);
         setMode("select");
       },
     });
   };
-
-  useEffect(() => {
-    if (!cart || cart.data.length === 0) {
-        toast.error("Your cart is empty");
-        router.replace("/shop"); 
-    }
-  }, [cart, router]);
-
-  if (!cart || cart.data.length === 0) return null;
 
   const handleCheckout = () => {
     if (!selectedAddressId) {
@@ -87,6 +87,46 @@ export default function CheckoutPage() {
     }
     addOrder(selectedAddressId);
   };
+
+  if (isLoading) {
+    return (
+      <div className="container max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="lg:col-span-2 space-y-6">
+          <Skeleton className="h-6 w-40" /> 
+          <Skeleton className="h-40 w-full rounded-md" /> 
+          <div className="flex gap-4">
+            <Skeleton className="h-10 w-32 rounded-md" />
+            <Skeleton className="h-10 w-32 rounded-md" />
+          </div>
+        </div>
+
+        <div className="h-fit border p-6 rounded-md space-y-6">
+          <Skeleton className="h-6 w-32" /> 
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-5 w-full" />
+          <Skeleton className="h-10 w-full rounded-md" /> 
+        </div>
+      </div>
+    );
+  }
+
+  if (isFetched && (!cart || cart.data.length === 0)) {
+    return null; 
+  }
+
+  if (isLoadingAddresses) {
+    return (
+      <div className="max-w-7xl mx-auto px-4 py-10 lg:col-span-2 space-y-6">
+        <Skeleton className="h-6 w-40" /> 
+        <Skeleton className="h-40 w-full rounded-md" />
+        <div className="flex gap-4">
+          <Skeleton className="h-10 w-32 rounded-md" />
+          <Skeleton className="h-10 w-32 rounded-md" />
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="container max-w-7xl mx-auto px-4 py-10 grid grid-cols-1 lg:grid-cols-3 gap-10">
@@ -122,28 +162,36 @@ export default function CheckoutPage() {
         {/* SELECT MODE */}
         {mode === "select" && (
           <div className="space-y-4">
-            {addresses?.map((addr) => (
-              <div
-                key={addr.id}
-                className="border p-3 rounded-md flex items-center justify-between"
-              >
-                <div>
-                  <p>
-                    {addr.first_name} {addr.last_name}
-                  </p>
-                  <p>{addr.email}</p>
-                  <p>{addr.contact_number}</p>
-                  <p>
-                    {addr.address}, {addr.city}, {addr.state}
-                  </p>
-                </div>
-                <input
-                  type="radio"
-                  checked={selectedAddressId === addr.id}
-                  onChange={() => setSelectedAddressId(addr.id)}
-                />
-              </div>
-            ))}
+            <RadioGroup
+              value={selectedAddressId?.toString()}
+              onValueChange={(value) => setSelectedAddressId(Number(value))}
+              className="space-y-4"
+            >
+              {addresses?.map((addr) => (
+                <Label
+                  key={addr.id}
+                  htmlFor={`address-${addr.id}`}
+                  className="border p-3 rounded-md flex items-center justify-between cursor-pointer hover:bg-accent"
+                >
+                  <div className="space-y-2">
+                    <p>
+                      {addr.first_name} {addr.last_name}
+                    </p>
+                    <p>{addr.email}</p>
+                    <p>{addr.contact_number}</p>
+                    <p>
+                      {addr.address}, {addr.city}, {addr.state}
+                    </p>
+                  </div>
+                  <RadioGroupItem
+                    id={`address-${addr.id}`}
+                    value={addr.id.toString()}
+                    className="ml-2"
+                  />
+                </Label>
+              ))}
+            </RadioGroup>
+
             <div className="flex gap-4">
               <Button onClick={() => setMode("add")}>Add New Address</Button>
               <Button
@@ -250,29 +298,14 @@ export default function CheckoutPage() {
         {/* Payment Method */}
         <div>
           <h3 className="font-medium mb-2">Payment Method</h3>
-          <RadioGroup
-            value={paymentMethod}
-            onValueChange={setPaymentMethod}
-            className="space-y-3"
-          >
+          <RadioGroup value={paymentMethod} onValueChange={setPaymentMethod} className="space-y-3">
             <div className="flex items-center space-x-2">
-              <RadioGroupItem value="connect-ips" id="connect-ips" />
-              <Label htmlFor="connect-ips">Connect IPS</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="khalti" id="khalti" />
-              <Label htmlFor="khalti">Khalti by IME</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="card" id="card" />
-              <Label htmlFor="card">Credit/Debit Card</Label>
-            </div>
-            <div className="flex items-center space-x-2">
-              <RadioGroupItem value="esewa" id="esewa" />
-              <Label htmlFor="esewa">Esewa</Label>
+              <RadioGroupItem value="cod" id="cod" disabled />
+              <Label htmlFor="cod">Cash on Delivery</Label>
             </div>
           </RadioGroup>
         </div>
+
 
         <Button
           className="w-full"

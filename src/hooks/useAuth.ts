@@ -106,8 +106,8 @@ export const useLogout = () => {
     mutationFn: async () => {
       return authService.logout();
     },
-    onSuccess: () => {
-      logout(); // Clear cookies & context
+   onSettled: () => { 
+      logout(); 
 
       if (user?.is_admin === 1) {
         toast.success("Admin logged out successfully");
@@ -116,9 +116,6 @@ export const useLogout = () => {
         toast.success("Logged out successfully");
         router.push("/");
       }
-    },
-    onError: () => {
-      toast.error("Failed to log out");
     },
   });
 };
