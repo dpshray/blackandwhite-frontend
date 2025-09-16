@@ -21,9 +21,10 @@ interface ProductCardProps {
   category: string
   slug: string
   isFavourite?: boolean;
+  favouriteId?: number;
 }
 
-export default function ProductCard({ id, image, title, price, discount_price, discount_percent, category, slug, isFavourite }: ProductCardProps) {
+export default function ProductCard({ id, image, title, price, discount_price, discount_percent, category, slug, isFavourite, favouriteId }: ProductCardProps) {
   const addToFavMutation = useAddFavourite();
   const removeFromFavMutation = useRemoveFavourite();
   const addToCartMutation = useAddToCart();
@@ -32,7 +33,7 @@ export default function ProductCard({ id, image, title, price, discount_price, d
 
   const handleFavourite = () => {
     if (isFavourite) {
-      removeFromFavMutation.mutate(id);
+      removeFromFavMutation.mutate(favouriteId ?? 0);
     } else {
       addToFavMutation.mutate(id);
     }

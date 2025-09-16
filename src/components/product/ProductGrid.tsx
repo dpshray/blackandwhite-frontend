@@ -179,7 +179,10 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
           {/* Product Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {products.map((product) => {
-              const isFav = favourites?.favourites.some((fav: any) => fav.product_id === product.id.toString()) || false;
+              const favObj = favourites?.favourites?.find((fav: any) => String(fav.product_id) === String(product.id));
+              const isFav = !!favObj; 
+              const favId = favObj?.id;
+
               return (  
                 <ProductCard 
                   key={product.id}
@@ -192,6 +195,7 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
                   slug={product.slug} 
                   category={product.categories?.map(c => c.categories_title).join(", ") || "Uncategorized"}
                   isFavourite={isFav}
+                  favouriteId={favId}
                 />
               )
             })}
