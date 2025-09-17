@@ -42,7 +42,7 @@ export default function WistlistPage() {
               <ProductCard
                 key={fav.id}
                 id={Number(fav.id)}
-                image={variant.images?.[0] || "/placeholder.png"}
+                image={fav.images?.[0] || "/placeholder.png"}
                 title={fav.title}
                 price={variant.price || 0}
                 discount_price={variant.discount_price || 0}
