@@ -1,4 +1,4 @@
-import { ChevronRight, Home, Package, Receipt, User2 } from "lucide-react";
+import { ChevronRight, Home, LogOut, Package, Receipt, User2 } from "lucide-react";
 
 import {
   Sidebar,
@@ -19,7 +19,6 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { PiFlagBanner } from "react-icons/pi";
 import { useLogout } from "@/hooks/useAuth";
-import { Button } from "../ui/button";
 
 const items = [
   {
@@ -105,21 +104,35 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <Button variant="ghost" aria-busy={logout.isPending} onClick={handleLogout} className="w-full" disabled={logout.isPending}>
-            {logout.isPending ? (
-                <div className="w-full flex items-center justify-between text-red-500 hover:text-red-600">
-                    <span className="opacity-60">Logging out</span>
-                    <div>
-                        <div className="h-4 w-4 border-2 border-gray-300 border-t-black rounded-full animate-spin" />
-                    </div>
-                </div>
-            ) : (
-                <div className="w-full flex items-center justify-between text-red-500 hover:text-red-600">
-                    <span>Logout</span>
-                    <ChevronRight />             
-                </div>
-            )}
-        </Button>
+        <SidebarMenu>
+          <SidebarMenuItem>
+            <SidebarMenuButton
+              tooltip="Logout"
+              aria-busy={logout.isPending}
+              onClick={() => {
+                setOpenMobile(false); 
+                handleLogout();
+              }}
+              className="w-full cursor-pointer"
+              disabled={logout.isPending}
+            >
+              <div className="flex w-full items-center justify-between">
+                {/* left part = text (hidden when collapsed) */}
+                <span className="flex items-center gap-2 text-red-500">
+                  <LogOut className="h-4 w-4"/>
+                  {logout.isPending ? 'Logging out…' : 'Logout'}
+                </span>
+
+                {/* right part = icon (always visible) */}
+                {logout.isPending ? (
+                  <div className="h-4 w-4 border-2 border-gray-300 border-t-black rounded-full animate-spin" />
+                ) : (
+                  <ChevronRight className="text-red-500 h-4 w-4" />
+                )}
+              </div>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+        </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
   );

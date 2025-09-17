@@ -38,7 +38,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
 
   return (
-    <div className="lg:flex overflow-x-hidden max-w-screen min-h-screen">
+    <div className="lg:flex overflow-x-hidden max-w-screen">
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
@@ -57,7 +57,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </BreadcrumbList>
               </Breadcrumb>
           </header>
-          <main className="flex-1 max-w-screen overflow-x-hidden">{children}</main>
+          <main className="flex-1 min-h-screen max-w-screen overflow-x-hidden">{children}</main>
         </SidebarInset>
       </SidebarProvider>
     </div>
