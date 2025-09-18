@@ -15,6 +15,7 @@ const breadcrumbMap: { [key: string]: string } = {
   "/admin/user": "Users",
   "/admin/banner": "Banners",
   "/admin/order": "Orders",
+  "/admin/contact": "Contacts",
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -31,14 +32,23 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     }
   }, [user, isLoading, router]);
 
-  if (isLoading) return <p>Loading...</p>;
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center">
+        <span className="animate-pulse text-lg font-bold tracking-widest">
+          BLACK AND WHITE TREND...
+        </span>
+      </div>
+    );
+  }
+ 
   if (!user || Number(user?.is_admin) !== 1) {
     return null;
   }
 
 
   return (
-    <div className="lg:flex overflow-x-hidden max-w-screen min-h-screen">
+    <div className="lg:flex min-h-screen overflow-x-hidden max-w-screen">
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
@@ -57,7 +67,9 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </BreadcrumbList>
               </Breadcrumb>
           </header>
-          <main className="flex-1 max-w-screen overflow-x-hidden">{children}</main>
+           <main className="flex-1 max-w-screen overflow-x-hidden">
+            {children}
+          </main>
         </SidebarInset>
       </SidebarProvider>
     </div>

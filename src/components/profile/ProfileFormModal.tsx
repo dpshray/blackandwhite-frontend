@@ -14,7 +14,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
-import { useUsers } from "@/hooks/useUser";
+import { useUpdateProfile } from "@/hooks/useUser";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import TextInput from "../fields/TextInput";
 
@@ -33,7 +33,6 @@ interface ProfileFormModalProps {
 }
 
 export default function ProfileFormModal({ defaultValues }: ProfileFormModalProps) {
-  const { useUpdateProfile } = useUsers();
   const updateMutation = useUpdateProfile();
 
   const {

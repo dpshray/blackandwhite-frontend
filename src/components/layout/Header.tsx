@@ -27,8 +27,9 @@ import { useEffect, useMemo, useState } from "react";
 import { useProducts } from "@/hooks/useProducts";
 import Image from "next/image";
 import { Input } from "../ui/input";
-import { Avatar, AvatarFallback } from "../ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { motion, AnimatePresence } from "framer-motion";
+import { useUserProfile } from "@/hooks/useUser";
 
 interface HeaderProps {
   categories: Category[];
@@ -41,6 +42,7 @@ export default function Header({ categories }: HeaderProps) {
   const totalCartItems = useCart().data?.total_cart;
   const totalWishlistItems = useFavourites().data?.total_favourites;
   const { user } = useAuth();
+  const { data: profile } = useUserProfile();
   const { mutate: handleLogout, isPending } = useLogout();
 
   // Search state + debounce
@@ -273,7 +275,16 @@ export default function Header({ categories }: HeaderProps) {
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               {user ? (
-                <Avatar className="cursor-pointer border border-gray-300">
+                // <Avatar className="cursor-pointer border border-gray-300">
+                //   <AvatarFallback>
+                //     {user?.name?.charAt(0)?.toUpperCase() || "U"}
+                //   </AvatarFallback>
+                // </Avatar>
+                <Avatar className=" border-2 border-gray-200 cursor-pointer">
+                  <AvatarImage
+                    src={profile?.profile_image}
+                    alt="Profile"
+                  />
                   <AvatarFallback>
                     {user?.name?.charAt(0)?.toUpperCase() || "U"}
                   </AvatarFallback>

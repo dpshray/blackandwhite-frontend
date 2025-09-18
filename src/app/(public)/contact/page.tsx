@@ -6,17 +6,16 @@ import { Phone, Mail, MapPin, Home } from "lucide-react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toast } from "sonner";
 import TextInput from "@/components/fields/TextInput";
+import { useAddContactInfo } from "@/hooks/useContact";
 
-// ✅ Zod Validation Schema
 const contactSchema = z.object({
-  firstName: z.string().min(2, "First name must be at least 2 characters"),
-  lastName: z.string().min(2, "Last name must be at least 2 characters"),
+  firstname: z.string().min(2, "First name must be at least 2 characters"),
+  lastname: z.string().min(2, "Last name must be at least 2 characters"),
   email: z.string().email("Invalid email address"),
   phone: z
     .string()
-    .min(7, "Phone number must be at least 7 digits")
+    .min(10, "Phone number must be at least 10 digits")
     .max(15, "Phone number too long"),
   message: z.string().min(10, "Message must be at least 10 characters"),
 });
@@ -24,6 +23,7 @@ const contactSchema = z.object({
 type ContactFormValues = z.infer<typeof contactSchema>;
 
 export default function ContactPage() {
+  const addMutation = useAddContactInfo();
   const breadcrumbs = [
     { label: <Home />, href: "/" },
     { label: "Contact", href: "/contact" },
@@ -32,14 +32,14 @@ export default function ContactPage() {
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
     reset,
   } = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
   });
 
   const onSubmit = async (data: ContactFormValues) => {
-    toast.success("Your message has been sent!");
+    addMutation.mutate(data)
     reset();
   };
 
@@ -58,18 +58,18 @@ export default function ContactPage() {
             >
               <TextInput<ContactFormValues>
                 label="First Name"
-                name="firstName"
+                name="firstname"
                 placeholder="Enter your First Name"
                 register={register}
-                error={errors.firstName}
+                error={errors.firstname}
               />
 
               <TextInput<ContactFormValues>
                 label="Last Name"
-                name="lastName"
+                name="lastname"
                 placeholder="Enter your Last Name"
                 register={register}
-                error={errors.lastName}
+                error={errors.lastname}
               />
 
               <TextInput<ContactFormValues>
@@ -101,9 +101,9 @@ export default function ContactPage() {
               <Button
                 type="submit"
                 className="w-full bg-white text-gray-900 hover:bg-gray-100 font-medium py-3"
-                disabled={isSubmitting}
+                disabled={addMutation.isPending}
               >
-                {isSubmitting ? "Submitting..." : "Submit"}
+                {addMutation.isPending ? "Submitting..." : "Submit"}
               </Button>
             </form>
           </div>

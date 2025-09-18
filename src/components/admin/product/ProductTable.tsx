@@ -171,34 +171,34 @@ export default function ProductTable() {
 
     return (
         <div className="space-y-4 py-4">
-        <div className="w-full md:w-auto">
-            <AddProduct />
-        </div>
+            <div className="w-full md:w-auto">
+                <AddProduct />
+            </div>
 
-        {!productData ? (
-            <TableSkeleton />
-        ) : (
-            <DataTable
-                columns={columns}
-                data={productData}
-                loading={getProducts.isPending}
-                totalPages={totalPages}
-                currentPage={page}
-                onPageChange={setPage}
+            {!productData ? (
+                <TableSkeleton />
+            ) : (
+                <DataTable
+                    columns={columns}
+                    data={productData}
+                    loading={getProducts.isPending}
+                    totalPages={totalPages}
+                    currentPage={page}
+                    onPageChange={setPage}
+                />
+            )}
+
+            <BaseModal
+                open={deleteModalOpen}
+                onOpenChangeAction={setDeleteModalOpen}
+                title="Delete Product"
+                description={`Are you sure you want to delete ${selectedProduct?.title}?`}
+                confirmText="Delete"
+                cancelText="Cancel"
+                onConfirm={handleConfirmDelete}
+                isDestructive
+                loading={deleteProduct.isPending}
             />
-        )}
-
-        <BaseModal
-            open={deleteModalOpen}
-            onOpenChangeAction={setDeleteModalOpen}
-            title="Delete Product"
-            description={`Are you sure you want to delete ${selectedProduct?.title}?`}
-            confirmText="Delete"
-            cancelText="Cancel"
-            onConfirm={handleConfirmDelete}
-            isDestructive
-            loading={deleteProduct.isPending}
-        />
         </div>
     );
 }

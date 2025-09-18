@@ -57,7 +57,7 @@ export function DataTable<TData, TValue>({
   const skeletonRows = 5;
 
   return (
-    <div className="w-full">
+    <div className="w-full overflow-auto">
       <div className="rounded-md bg-white max-w-screen overflow-x-auto">
         <Table>
           <TableHeader>

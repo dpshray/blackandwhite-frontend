@@ -50,6 +50,7 @@ export default function WistlistPage() {
                 slug={fav.title.toLowerCase().replace(/\s+/g, "-")}
                 category={`${variant.color || ""} ${variant.size ? `(${variant.size})` : ""}`}
                 isFavourite={true} 
+                favouriteId={fav.id}
               />
             );
           })}

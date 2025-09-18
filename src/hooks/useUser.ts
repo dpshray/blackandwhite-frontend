@@ -8,21 +8,20 @@ import { AxiosError } from "axios";
 import { ApiError } from "next/dist/server/api-utils";
 import { toast } from "sonner";
 
-export const useUsers = (
-  page: number = 1,
-  limit: number = 9,
-) => {
-  const queryClient = useQueryClient();
-
-  //  GET User
-  const getUsers = useQuery<UserResponse>({
+// GET Users
+export const useUsers = (page: number = 1, limit: number = 9) => {
+  return useQuery<UserResponse>({
     queryKey: ["users", { page, limit }],
     queryFn: () => userService.getUsers({ page, limit }),
     staleTime: 5 * 60 * 1000,
   });
+};
 
-  //  DELETE User
-  const deleteUser = useMutation({
+// DELETE User
+export const useDeleteUser = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
     mutationFn: (id: number) => userService.deleteUser(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["users"] });
@@ -32,21 +31,25 @@ export const useUsers = (
       toast.error(err.response?.data?.message || "Failed to delete user");
     },
   });
+};
 
-  const useUserProfile = () => {
+// GET Profile
+export const useUserProfile = () => {
   return useQuery<UserProfile>({
     queryKey: ["userProfile"],
     queryFn: async () => {
       const res = await userService.getProfile();
-      return res.data; 
+      return res.data;
     },
     staleTime: 5 * 60 * 1000, // cache for 5 mins
   });
 };
 
-//update Profile
-  const useUpdateProfile = () =>
-  useMutation({
+// UPDATE Profile
+export const useUpdateProfile = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
     mutationFn: (data: FormData) => userService.updateProfile(data),
     onSuccess: () => {
       toast.success("Profile updated successfully");
@@ -56,14 +59,4 @@ export const useUsers = (
       toast.error("Failed to update profile");
     },
   });
-
-  return {
-    // query
-    getUsers,
-    useUserProfile,
-    useUpdateProfile,
-
-    // mutations
-    deleteUser,
-  };
 };
