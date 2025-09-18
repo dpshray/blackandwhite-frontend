@@ -1,4 +1,4 @@
-import { ChevronRight, Home, LogOut, Package, Receipt, User2 } from "lucide-react";
+import { ChevronRight, Contact, Home, LogOut, Package, Receipt, User2 } from "lucide-react";
 
 import {
   Sidebar,
@@ -50,6 +50,11 @@ const items = [
     title: "Orders",
     url: "/admin/order",
     icon: Receipt,
+  },
+  {
+    title: "Contacts",
+    url: "/admin/contact",
+    icon: Contact,
   },
   // {
   //   title: "Settings",

@@ -32,6 +32,11 @@ export default function AdminPage() {
             title: "Orders",
             description: "View and manage orders",
         },
+        {
+            href: "/admin/contact",
+            title: "Contacts",
+            description: "View and manage contacts",
+        },
     ];
 
 
