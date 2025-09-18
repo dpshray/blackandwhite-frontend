@@ -9,7 +9,7 @@ import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/comp
 import { Button } from "@/components/ui/button";
 import { Trash2 } from "lucide-react";
 import { User } from "@/types/userTypes";
-import { useUsers } from "@/hooks/useUser";
+import { useDeleteUser, useUsers } from "@/hooks/useUser";
 
 export default function UserTable() {
     const [page, setPage] = useState(1);
@@ -17,7 +17,8 @@ export default function UserTable() {
     const [selectedUser, setselectedUser] = useState<User | null>(
         null
     );
-    const { getUsers, deleteUser } = useUsers(page, 9);
+    const getUsers = useUsers(page, 9);
+    const deleteUser = useDeleteUser();
     const totalPages = getUsers?.data?.data?.meta?.last_page ?? 1;
     const UserData = getUsers?.data?.data.data || [];
 

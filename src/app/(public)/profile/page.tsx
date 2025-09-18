@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { useUsers } from "@/hooks/useUser";
+import { useUserProfile } from "@/hooks/useUser";
 import AddressFormModal from "@/components/profile/AddressFormModal";
 import { Skeleton } from "@/components/ui/skeleton";
 import ProfileFormModal from "@/components/profile/ProfileFormModal";
@@ -27,7 +27,6 @@ export default function ProfilePage() {
   const [selectedOrderId, setSelectedOrderId] = useState<number | null>(null);
   const deleteOrder = useDeleteOrder();
 
-  const { useUserProfile } = useUsers();
   const { data: user, isLoading: userLoading } = useUserProfile();
   const { data: address, isLoading: addressLoading } = useAddressInfo();
   const deleteAddress = useDeleteAddressInfo();

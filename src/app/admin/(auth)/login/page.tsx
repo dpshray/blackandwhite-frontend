@@ -3,7 +3,7 @@ import { RedirectIfAuthenticated } from "@/components/auth/redirect-if-authentic
 
 export default function LoginPage() {
   return (
-    <RedirectIfAuthenticated redirectTo="/admin">
+    <RedirectIfAuthenticated>
       <LoginForm />
     </RedirectIfAuthenticated>
   );

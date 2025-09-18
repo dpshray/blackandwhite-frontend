@@ -34,7 +34,7 @@ export default async function RootLayout({
         <TanstackProvider>
           <AuthProvider>
             {children}
-            <Toaster />
+            <Toaster richColors/>
           </AuthProvider>
         </TanstackProvider>
       </body>
