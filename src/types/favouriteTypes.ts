@@ -3,14 +3,24 @@ export interface FavouriteVariant {
   color: string;
   price: number;
   discount_price: number;
+  discount_percent: number;
   stock: number;
   images: string[];
+}
+
+export interface FavouriteCategory {
+  id: number;
+  slug: string;
+  name: string;
 }
 
 export interface FavouriteItem {
   id: number;
   product_id: number;
   title: string;
+  images: string[];
+  categories: FavouriteCategory[];
+  slug: string;
   variant_id: number;
   variant: FavouriteVariant;
 }

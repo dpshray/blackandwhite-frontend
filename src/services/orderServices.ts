@@ -25,8 +25,10 @@ export const orderService = {
     return res.data;
   },
 
-  addOrder: async ( addressId: number ) => {
-    const res = await axiosInstance.post(`/order-item/${addressId}`);
+  addOrder: async ( addressId: number, buynow: number ) => {
+    const res = await axiosInstance.post(`/order-item/${addressId}`, {
+      buynow
+    });
     return res.data;
   },
 

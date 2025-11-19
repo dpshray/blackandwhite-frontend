@@ -15,6 +15,7 @@ import { Button } from "@/components/ui/button";
 import { RxCross2 } from "react-icons/rx";
 import { BaseModal } from "@/components/modal/deleteModel";
 import { AddressInfo } from "@/services/addressServices";
+import Link from "next/link";
 
 export default function ProfilePage() {
   const [page, setPage] = useState(1);
@@ -31,7 +32,7 @@ export default function ProfilePage() {
   const { data: address, isLoading: addressLoading } = useAddressInfo();
   const deleteAddress = useDeleteAddressInfo();
   const { data: orders, isLoading: ordersLoading } = useOrders(page, 9);
-  const totalPages = Math.ceil(orders?.data.meta.total ?? 1);
+  const totalPages = Math.ceil(orders?.data.meta?.last_page ?? 1);
   const paginatedOrders = orders?.data.orders || [];
 
   const handleDeleteProfileClick = (address: AddressInfo) => {
@@ -78,13 +79,15 @@ export default function ProfilePage() {
         ) : (
           <div className="bg-white border rounded-2xl shadow-md p-6 flex flex-col items-start h-fit">
             <div className="w-full flex items-start justify-between gap-4 mb-6">
-              <Avatar className="w-32 h-32 border-2 border-gray-200">
-                <AvatarImage
-                  src={user?.profile_image || "/placeholder.png"}
-                  alt="Profile"
-                />
-                <AvatarFallback>AD</AvatarFallback>
-              </Avatar>
+              <Link href={user?.profile_image || "#"} target="_blank">
+                <Avatar className="w-32 h-32 border-2 border-gray-200">
+                  <AvatarImage
+                    src={user?.profile_image || "/placeholder.png"}
+                    alt="Profile"
+                  />
+                  <AvatarFallback>AD</AvatarFallback>
+                </Avatar>
+              </Link>
 
               {/* Profile*/}
               <ProfileFormModal defaultValues={user} />
@@ -233,7 +236,7 @@ export default function ProfilePage() {
         </div>
 
         {/* Pagination */}
-        {!ordersLoading && paginatedOrders && paginatedOrders.length > 0 && (
+        {totalPages > 1 && setPage && (
           <Pagination
             currentPage={page}
             totalPages={totalPages}

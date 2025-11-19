@@ -131,7 +131,7 @@ export default function Header({ categories }: HeaderProps) {
             href="/shop"
             className={`uppercase text-sm lg:text-base font-medium transition-colors ${
               pathname === "/shop"
-                ? "bg-black text-white font-semibold px-2 py-1 rounded"
+                ? "bg-black text-white font-semibold px-2 py-1"
                 : "hover:text-gray-600"
             }`}
           >
@@ -143,7 +143,7 @@ export default function Header({ categories }: HeaderProps) {
               href={`/shop/${item.slug}`}
               className={`uppercase text-sm lg:text-base font-medium transition-colors ${
                 pathname === `/shop/${item.slug}`
-                  ? "bg-black text-white font-semibold px-2 py-1 rounded"
+                  ? "bg-black text-white font-semibold px-2 py-1"
                   : "hover:text-gray-600"
               }`}
             >
@@ -186,7 +186,7 @@ export default function Header({ categories }: HeaderProps) {
                     </Button>
                   </div>
 
-                  <div className="max-h-64 overflow-y-auto">
+                  <div className="max-h-64 overflow-y-auto custom-scrollbar">
                     {isSearching ? (
                       <div className="flex items-center justify-center space-x-2 p-4">
                         <div className="w-2 h-2 bg-yellow-500 rounded-full animate-bounce"></div>
@@ -275,11 +275,6 @@ export default function Header({ categories }: HeaderProps) {
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               {user ? (
-                // <Avatar className="cursor-pointer border border-gray-300">
-                //   <AvatarFallback>
-                //     {user?.name?.charAt(0)?.toUpperCase() || "U"}
-                //   </AvatarFallback>
-                // </Avatar>
                 <Avatar className=" border-2 border-gray-200 cursor-pointer">
                   <AvatarImage
                     src={profile?.profile_image}

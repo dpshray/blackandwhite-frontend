@@ -1,6 +1,6 @@
 "use client";
 
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "@/context/authContext";
 import { authService } from "@/services/authServces";
 import { toast } from "sonner";
@@ -10,6 +10,7 @@ import { useRouter } from "next/navigation";
 export const useSignIn = (options?: { preventRedirect?: boolean }) => {
   const { login } = useAuth();
   const router = useRouter();
+  const queryClient = useQueryClient();
   return useMutation({
     mutationFn: async ({ email, password }: { email: string; password: string }) => {
       return login(email, password);
@@ -17,6 +18,9 @@ export const useSignIn = (options?: { preventRedirect?: boolean }) => {
     onSuccess: (data: any) => {
       const user = data.user
       toast.success(`Welcome ${user?.name}`);
+      queryClient.invalidateQueries({ queryKey: ["cart"] });
+      queryClient.invalidateQueries({ queryKey: ["favourites"] });
+      queryClient.invalidateQueries({ queryKey: ["userProfile"] });
 
       // Only redirect if not prevented
       if (!options?.preventRedirect) {

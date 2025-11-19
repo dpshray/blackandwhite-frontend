@@ -230,7 +230,7 @@ export default function AddProduct() {
           Add Product
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[90vh] overflow-y-auto max-w-6xl w-full md:min-w-[800px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto custom-scrollbar max-w-6xl w-full md:min-w-[800px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold flex items-center gap-2">
             <Package className="h-6 w-6 text-yellow-500" />

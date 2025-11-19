@@ -92,7 +92,7 @@ export function AppSidebar() {
                     <Link
                       href={item.url}
                       className={cn(
-                        pathname === item.url
+                        pathname.startsWith(item.url)
                           ? "bg-gradient-to-r from-black to-gray-400 text-gray-200 font-semibold shadow-sm hover:shadow-2xl hover:!text-gray-200"
                           : "",
                         "flex items-center gap-2 w-full px-3 py-2 rounded hover:!bg-black hover:!text-gray-200 transition-colors"

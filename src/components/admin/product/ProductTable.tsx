@@ -10,10 +10,11 @@ import VariantModal from "../modal/VariantModel";
 import { BaseModal } from "../../modal/deleteModel";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { Trash2 } from "lucide-react";
+import { Eye, Trash2 } from "lucide-react";
 import AddProduct from "./AddProduct";
 import UpdateProduct from "./UpdateProduct";
 import PhotoCell from "./PhotoCell";
+import { useRouter } from "next/navigation";
 
 export default function ProductTable() {
     const [page, setPage] = useState(1);
@@ -24,6 +25,7 @@ export default function ProductTable() {
     const { getProducts, deleteProduct } = useProducts(page, 9);
     const totalPages = getProducts?.data?.data?.meta?.last_page ?? 1;
     const productData = getProducts?.data?.data.data || [];
+    const router = useRouter();
 
     const handleDeleteClick = (product: Product) => {
         setSelectedProduct(product);
@@ -52,8 +54,8 @@ export default function ProductTable() {
             accessorKey: "title",
             header: "Product Name",
             cell: ({ row }) => (
-                <div className="font-medium break-words whitespace-normal">
-                {row.original.title}
+                <div className="font-medium break-words whitespace-normal line-clamp-2">
+                    {row.original.title}
                 </div>
             ),
             size: 50,
@@ -145,6 +147,23 @@ export default function ProductTable() {
           header: "Actions",
           cell: ({ row }) => (
             <div className="flex gap-2">
+                <TooltipProvider>
+                <Tooltip>
+                  <TooltipTrigger asChild>
+                    <div>
+                      <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => router.push(`/admin/product/${row.original.slug}`)}
+                    >
+                        <Eye className="w-4 h-4" />
+                    </Button>
+                    </div>
+                  </TooltipTrigger>
+                  <TooltipContent>View Product Detail</TooltipContent>
+                </Tooltip>
+              </TooltipProvider>
+                
               <UpdateProduct product={row.original} />
               <TooltipProvider>
                 <Tooltip>

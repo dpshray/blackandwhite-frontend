@@ -97,7 +97,7 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
                   variant={selectedSize === size ? "default" : "outline"}
                   size="sm"
                   onClick={() => handleSizeChange(size)}
-                  className="min-w-[40px]"
+                  className="min-w-[40px] rounded-none"
                 >
                   {size}
                 </Button>

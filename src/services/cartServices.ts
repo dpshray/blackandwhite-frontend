@@ -21,4 +21,9 @@ export const cartService = {
     const { data } = await axiosInstance.delete(`/delete-cart/${id}`);
     return data;
   },
+
+  buyNow: async (payload: { product_id: number; variant_id?: number; quantity?: number }) => {
+    const { data } = await axiosInstance.post("/buy-now", payload);
+    return data;
+  },
 };

@@ -51,7 +51,7 @@ export default function ProductCard({ id, image, title, price, discount_price, d
   };
 
   return (
-    <Card className="relative overflow-hidden group py-0">
+    <Card className="relative overflow-hidden group py-0 rounded-none">
       <div className="relative w-full aspect-[4/5]">
         <Link href={`/shop/${category}/${slug}`}>
           {/* size: responsive fill, aspect ratio 4/5 (example: 320x400) */}
@@ -60,10 +60,10 @@ export default function ProductCard({ id, image, title, price, discount_price, d
             alt={title}
             fill
             sizes="(max-width: 768px) 100vw, 320px"
-            className="object-cover group-hover:scale-105 transition-transform duration-300 shadow-md rounded-t"
+            className="object-cover group-hover:scale-105 transition-transform duration-300 shadow-md"
           />
           {discount_percent > 0 && (
-            <div className="absolute top-3 left-3 bg-black text-white px-2 py-1 text-xs font-medium rounded">
+            <div className="absolute top-3 left-3 bg-black text-white px-2 py-1 text-xs font-medium">
               {discount_percent}% OFF
             </div>
           )}
@@ -88,21 +88,24 @@ export default function ProductCard({ id, image, title, price, discount_price, d
         />
       </Button>
       </div>
-      <div className="px-4 pb-4 space-y-3">
-        <h3 className="font-medium text-sm">{title}</h3>
-        <div className="flex items-center space-x-2">
-          {discount_price ? (
-            <>
-              <span className="text-sm text-gray-500 line-through">Rs.{price}</span>
-              <span className="text-sm font-medium">Rs.{discount_price}</span>
-            </>
-          ) : (
-            <span className="text-sm font-medium">Rs.{price}</span>
-          )}
+      <div className="h-full flex flex-col justify-between px-4 pb-4 gap-4">
+        <div className="space-y-3">
+          <h3 className="font-medium text-sm line-clamp-2">{title}</h3>
+          <div className="flex items-center space-x-2">
+            {discount_price ? (
+              <>
+                <span className="text-sm text-gray-500 line-through">Rs.{price}</span>
+                <span className="text-sm font-medium">Rs.{discount_price}</span>
+              </>
+            ) : (
+              <span className="text-sm font-medium">Rs.{price}</span>
+            )}
+          </div>
         </div>
 
         <Button
-          className="w-full bg-white text-black border border-gray-300 hover:bg-gray-50"
+          className="w-full rounded-none"
+          variant={"outline"}
           onClick={handleAddToCart}
           disabled={addToCartMutation.isPending}
         >

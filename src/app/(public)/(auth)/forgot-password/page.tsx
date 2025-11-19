@@ -42,8 +42,9 @@ export default function ForgetPasswordPage() {
             icon={<AtSignIcon size={16} />}
             register={register}
             error={errors.email}
+
           />
-          <Button disabled={forgotPasswordMutation.isPending} variant={"outline"} className="text-black w-full" type="submit">
+          <Button disabled={forgotPasswordMutation.isPending} variant={"outline"} className="text-black hover:text-gray-800 w-full rounded-none" type="submit">
             { forgotPasswordMutation.isPending ? "Sending..." : "Send Reset Link" }
           </Button>
         </form>
