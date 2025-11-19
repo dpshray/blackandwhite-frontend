@@ -77,3 +77,15 @@ export interface SingleProductResponse {
   data: Product | null;
   message: string;
 }
+
+export interface BuyNowItem {
+  product_id: number;
+  variant_id: number;
+  title: string;
+  image: string;
+  size: string;
+  color: string;
+  quantity: number;
+  price: number;
+}
+

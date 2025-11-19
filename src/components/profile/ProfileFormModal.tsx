@@ -70,7 +70,7 @@ export default function ProfileFormModal({ defaultValues }: ProfileFormModalProp
           Update Profile
         </Button>
       </DialogTrigger>
-      <DialogContent className="max-h-[95vh] overflow-y-auto">
+      <DialogContent className="max-h-[95vh] overflow-y-auto custom-scrollbar">
         <DialogHeader>
           <DialogTitle>Update Profile</DialogTitle>
         </DialogHeader>

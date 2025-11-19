@@ -40,7 +40,7 @@ export default function Cart() {
       <h1 className="text-2xl font-semibold mb-6">Cart</h1>
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
         {/* Cart Items */}
-        <div className="lg:col-span-2 max-h-[550px] overflow-auto px-2">
+        <div className="lg:col-span-2 max-h-[550px] overflow-auto custom-scrollbar px-2">
           {cart.data.map((item: any) => (
             <div
               key={item.id}
@@ -68,14 +68,16 @@ export default function Cart() {
                 />
 
                 {/* Product Info */}
-                <div>
-                  <h2 className="font-semibold">{item.product.title}</h2>
-                  <p className="text-gray-500 text-sm">
-                    SIZE- {item.product.variant.size}
-                  </p>
-                  <p className="text-gray-500 text-sm">
-                    COLOR- {item.product.variant.color}
-                  </p>
+                <div className="space-y-1">
+                  <h2 className="font-semibold line-clamp-2">{item.product.title}</h2>
+                  <div>
+                    <p className="text-gray-500 text-sm">
+                      SIZE- {item.product.variant.size}
+                    </p>
+                    <p className="text-gray-500 text-sm">
+                      COLOR- {item.product.variant.color}
+                    </p>
+                  </div>
                 </div>
               </div>
 

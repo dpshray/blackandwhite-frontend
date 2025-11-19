@@ -53,7 +53,7 @@ export default function VariantModal({ variants }: VariantDetailsDialogProps) {
             </DialogDescription>
             </DialogHeader>
 
-            <div className="overflow-y-auto pr-2 max-h-[calc(85vh-120px)] py-2">
+            <div className="overflow-y-auto custom-scrollbar pr-2 max-h-[calc(85vh-120px)] py-2">
             {variants?.length > 0 ? (
                 <div className="space-y-6">
                 {variants.map((variant, index) => {
@@ -89,7 +89,7 @@ export default function VariantModal({ variants }: VariantDetailsDialogProps) {
                             <Eye className="w-4 h-4" />
                             Product Images
                         </h4>
-                        <div className="flex gap-3 overflow-x-auto pb-2">
+                        <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-2">
                             {variant.images && variant.images.length > 0 ? (
                             variant.images.map((img, idx) => (
                                 <Link

@@ -3,14 +3,15 @@
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { ShopBreadCrumb } from "@/components/ShopBreadCrumb";
-import { useAddToCart } from "@/hooks/useCart";
+import { useAddToCart, useBuyNow } from "@/hooks/useCart";
 import { useAddFavourite, useFavourites } from "@/hooks/useFavourite";
 import { ProductVariant } from "@/types/productTypes";
 import { useState } from "react";
 import { toast } from "sonner";
-import { Heart, Star } from "lucide-react";
+import { Heart, Share2 } from "lucide-react";
 import { useAuth } from "@/context/auth-provider";
 import LoginModal from "../auth/LoginModal";
+import { useRouter } from "next/navigation";
 
 interface ProductDetailsProps {
   product: any;
@@ -21,6 +22,8 @@ export default function ProductDetails({
   product,
   breadcrumbs,
 }: ProductDetailsProps) {
+  const buyNow = useBuyNow();
+  const router = useRouter();
   const addToCart = useAddToCart();
   const addFavourite = useAddFavourite();
   const { data: favourites } = useFavourites();
@@ -71,7 +74,7 @@ export default function ProductDetails({
 
   const handleAddToCart = () => {
     if (!selectedVariant) {
-      toast("Please select a color and size");
+      toast.warning("Please select a color and size");
       return;
     }
     if (!user) {
@@ -85,6 +88,65 @@ export default function ProductDetails({
     });
   };
 
+  const handleBuyNow = () => {
+    if (!selectedVariant) {
+      toast.warning("Please select a color and size");
+      return;
+    }
+    if (!user) {
+      setLoginModalOpen(true);
+      return;
+    }
+
+  // Save Buy Now item into localStorage
+    const buyNowItem = {
+      product_id: product.id,
+      variant_id: selectedVariant.id,
+      title: product.title,
+      image: selectedImage,
+      color: selectedVariant.color,
+      size: selectedVariant.size,
+      quantity,
+      price: product.discount_price || product.price,
+    };
+
+    localStorage.setItem("buyNowItem", JSON.stringify(buyNowItem));
+
+    // Call API only if backend needs it
+    buyNow.mutate(
+      {
+        product_id: product.id,
+        variant_id: selectedVariant.id,
+        quantity,
+      },
+      {
+        onSuccess: () => {
+          router.push("/checkout?mode=buy-now");
+        },
+      }
+    );
+  };
+
+  const handleShare = async () => {
+    const shareData = {
+      title: product.title,
+      text: product.description || "Check out this product!",
+      url: typeof window !== "undefined" ? window.location.href : "",
+    };
+
+    if (navigator.share) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        console.error("Error sharing:", err);
+      }
+    } else {
+      // fallback - copy link
+      navigator.clipboard.writeText(shareData.url);
+      toast("Link copied to clipboard!");
+    }
+  };
+
   return (
     <div className="container max-w-7xl mx-auto px-4 py-8">
       {/* Breadcrumb */}
@@ -93,26 +155,27 @@ export default function ProductDetails({
       </div>
 
       {/* Product Details */}
-      <div className="grid md:grid-cols-2 gap-6">
+      <div className="grid sm:grid-cols-2 gap-6">
         {/* Images */}
         <div className="flex md:flex-row flex-col gap-6">
-            {/* Thumbnails */}
-            <div className="flex flex-row md:flex-col items-center justify-center sm:justify-start gap-2">
-                {allImages.map((img: string, i: number) => (
-                <Image
-                    key={i}
-                    src={img}
-                    alt={`variant ${i}`}
-                    width={90}
-                    height={90}
-                    onClick={() => setSelectedImage(img)}
-                    className={`rounded-lg object-cover border cursor-pointer transition aspect-4/5
-                    ${selectedImage === img ? "border-black scale-105" : "border-gray-200"}`}
-                />
-                ))}
-            </div>
+          {/* Thumbnails */}
+          <div className="flex flex-row md:flex-col items-center justify-center sm:justify-start gap-2">
+              {allImages.map((img: string, i: number) => (
+              <Image
+                  key={i}
+                  src={img}
+                  alt={`variant ${i}`}
+                  width={90}
+                  height={90}
+                  onClick={() => setSelectedImage(img)}
+                  className={`rounded-lg object-cover border cursor-pointer transition aspect-4/5
+                  ${selectedImage === img ? "border-black scale-105" : "border-gray-200"}`}
+              />
+              ))}
+          </div>
 
-            {/* Big Image */}
+          {/* Big Image */}
+          <div className="flex justify-center md:justify-start">
             <Image
                 src={selectedImage}
                 alt={product.title}
@@ -120,6 +183,7 @@ export default function ProductDetails({
                 height={400}
                 className="rounded-xl object-cover transition-all duration-300 aspect-4/5"
             />
+          </div>
         </div>
 
 
@@ -145,13 +209,17 @@ export default function ProductDetails({
 
             {/* Rating placeholder */}
             <div className="flex items-center gap-2">
-              <div className="flex">
+              {/* <div className="flex">
                 {[...Array(5)].map((_, i) => (
                   <Star key={i} className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                 ))}
               </div>
-              <span className="text-sm text-muted-foreground">(4.8) • 127 reviews</span>
+              <span className="text-sm text-muted-foreground">(4.8) • 127 reviews</span> */}
+              <Button onClick={handleShare} aria-label="Share product" variant="ghost">
+                <Share2 className="w-4 h-4" />
+              </Button>
             </div>
+
           </div>
 
           {/* Attributes */}
@@ -182,53 +250,53 @@ export default function ProductDetails({
             <div className="min-w-[150px]">
               <b>Color:</b>
               <div className="flex gap-2 mt-2">
-                {availableColors.map((color: string) => (
-                  <span
-                    key={color}
-                    className={`px-3 py-1 border rounded cursor-pointer transition-colors ${
-                      selectedColor === color
-                        ? "bg-black text-white border-black"
-                        : "hover:bg-gray-200"
-                    } ${
-                      !product.variants.some(
-                        (v: ProductVariant) =>
-                          v.color === color &&
-                          (!selectedSize || v.size === selectedSize)
-                      )
-                        ? "opacity-40 cursor-not-allowed"
-                        : ""
-                    }`}
-                    onClick={() => setSelectedColor(selectedColor === color ? null : color)}
-                  >
-                    {color}
-                  </span>
-                ))}
+                {availableColors.map((color: string) => {
+                  const isSelected = selectedColor === color;
+                  const isDisabled = !product.variants.some(
+                    (v: ProductVariant) =>
+                      v.color === color && (!selectedSize || v.size === selectedSize)
+                  );
+
+                   return (
+                    <Button
+                      key={color}
+                      type="button"
+                      variant={isSelected ? "default" : "outline"}
+                      size="sm"
+                      disabled={isDisabled}
+                      onClick={() => setSelectedColor(isSelected ? null : color)}
+                      className="capitalize rounded-none"
+                    >
+                      {color}
+                    </Button>
+                  );
+                })}
               </div>
             </div>
             <div className="min-w-[150px]">
               <b>Size:</b>
               <div className="flex gap-2 mt-2">
-                {availableSizes.map((size: string) => (
-                  <span
-                    key={size}
-                    className={`px-3 py-1 border rounded cursor-pointer transition-colors ${
-                      selectedSize === size
-                        ? "bg-black text-white border-black"
-                        : "hover:bg-gray-200"
-                    } ${
-                      !product.variants.some(
-                        (v: ProductVariant) =>
-                          v.size === size &&
-                          (!selectedColor || v.color === selectedColor)
-                      )
-                        ? "opacity-40 cursor-not-allowed"
-                        : ""
-                    }`}
-                    onClick={() => setSelectedSize(selectedSize === size ? null : size)}
-                  >
-                    {size}
-                  </span>
-                ))}
+                {availableSizes.map((size: string) => {
+                  const isSelected = selectedSize === size;
+                  const isDisabled = !product.variants.some(
+                    (v: ProductVariant) =>
+                      v.size === size && (!selectedColor || v.color === selectedColor)
+                  );
+
+                  return (
+                    <Button
+                      key={size}
+                      type="button"
+                      variant={isSelected ? "default" : "outline"}
+                      size="sm"
+                      disabled={isDisabled}
+                      onClick={() => setSelectedSize(isSelected ? null : size)}
+                      className="capitalize rounded-none"
+                    >
+                      {size}
+                    </Button>
+                  );
+                })}
               </div>
             </div>
           </div>
@@ -241,6 +309,7 @@ export default function ProductDetails({
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
                 size="sm"
                 variant="outline"
+                className="rounded-none"
               >
                 -
               </Button>
@@ -249,6 +318,7 @@ export default function ProductDetails({
                 onClick={() => setQuantity(quantity + 1)}
                 size="sm"
                 variant="outline"
+                className="rounded-none"
               >
                 +
               </Button>
@@ -258,18 +328,19 @@ export default function ProductDetails({
           {/* Buttons */}
           <div className="flex gap-3 mt-4">
             <Button
-                // onClick={handleAddToCheckout}
-                // disabled={addToCheckout.isPending}
-                disabled
+              onClick={handleBuyNow}
+              disabled={buyNow.isPending}
+              className="rounded-none"
             >
-              {/* {addToCheckout.isPending ? "ADDING..." : "ADD TO Checkout"} */}
-              BUY NOW
+              {buyNow.isPending ? "PROCESSING..." : "BUY NOW"}
             </Button>
+
             <Button
                 variant={"outline"}
                 onClick={handleAddToCart}
                 disabled={addToCart.isPending}
                 aria-label="Add to cart"
+                className="rounded-none"
             >
               {addToCart.isPending ? "ADDING..." : "ADD TO CART"}
             </Button>

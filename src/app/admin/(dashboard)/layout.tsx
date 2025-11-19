@@ -5,7 +5,7 @@ import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/authContext";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect } from "react";
+import { Fragment, useEffect } from "react";
 
 const breadcrumbMap: { [key: string]: string } = {
   "/admin": "",
@@ -23,6 +23,19 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const currentLabel = breadcrumbMap[pathname] ?? "Admin";
   const router = useRouter();
+
+  const generateBreadcrumbs = () => {
+    const segments = pathname.split("/").filter(Boolean); 
+
+    const paths = segments.map((_, i) => "/" + segments.slice(0, i + 1).join("/"));
+
+    return paths.map((p, i) => {
+      const label = breadcrumbMap[p] || segments[i]; 
+      return { href: p, label };
+    });
+  };
+
+  const breadcrumbs = generateBreadcrumbs();
 
   useEffect(() => {
     if (!isLoading) {
@@ -56,15 +69,25 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <SidebarTrigger className="-ml-1" />
               <Separator orientation="vertical" className="mr-2 h-4" />
               <Breadcrumb>
-                  <BreadcrumbList>
-                      <BreadcrumbItem className="hidden md:block">
-                          <BreadcrumbLink href="/admin">Admin</BreadcrumbLink>
-                      </BreadcrumbItem>
-                      <BreadcrumbSeparator className="hidden md:block" />
+                <BreadcrumbList>
+                  {breadcrumbs.map((bc, i) => (
+                    <Fragment key={bc.href}>
                       <BreadcrumbItem>
-                          <BreadcrumbPage>{currentLabel}</BreadcrumbPage>
+                        {i < breadcrumbs.length - 1 ? (
+                          <BreadcrumbLink href={bc.href}>
+                            {bc.label.charAt(0).toUpperCase() + bc.label.slice(1)}
+                          </BreadcrumbLink>
+                        ) : (
+                          <BreadcrumbPage>
+                            {bc.label.charAt(0).toUpperCase() + bc.label.slice(1)}
+                          </BreadcrumbPage>
+                        )}
                       </BreadcrumbItem>
-                  </BreadcrumbList>
+
+                      {i < breadcrumbs.length - 1 && <BreadcrumbSeparator />}
+                    </Fragment>
+                  ))}
+                </BreadcrumbList>
               </Breadcrumb>
           </header>
            <main className="flex-1 max-w-screen overflow-x-hidden">

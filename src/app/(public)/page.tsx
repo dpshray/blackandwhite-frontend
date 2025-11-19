@@ -5,6 +5,7 @@ import { ArrowRight } from "lucide-react";
 import Image from "next/image";
 import BannerSlider from "@/components/layout/BannerSlider";
 import { getBanners, getProducts } from "@/lib/server-api";
+import Link from "next/link";
 
 interface ProductsPageProps {
   searchParams: Promise<{ page?: string }>
@@ -93,10 +94,11 @@ export default async function Home({ searchParams }: ProductsPageProps) {
                   confidence, and convenience from the moment you land on our site to the time your order arrives at your
                   door.
                 </p>
-
-                <Button className="bg-black text-white hover:bg-gray-800 px-6 py-3 rounded-none flex items-center gap-2 w-fit">
-                  Shop Now
-                </Button>
+                <Link href="/shop">
+                  <Button className="rounded-none w-fit">
+                    Shop Now
+                  </Button>
+                </Link>
               </div>
             </div>
           </div>

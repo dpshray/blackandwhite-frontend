@@ -4,6 +4,7 @@ import ProductCard from "@/components/product/product-card";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useFavourites } from "@/hooks/useFavourite";
+import { FavouriteItem } from "@/types/favouriteTypes";
 import { Heart } from "lucide-react";
 import Link from "next/link";
 
@@ -36,19 +37,19 @@ export default function WistlistPage() {
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {favourites.map((fav: any) => {
+          {favourites.map((fav: FavouriteItem) => {
             const variant = fav.variant || {};
             return (
               <ProductCard
                 key={fav.id}
-                id={Number(fav.id)}
+                id={Number(fav.product_id)}
                 image={fav.images?.[0] || "/placeholder.png"}
                 title={fav.title}
                 price={variant.price || 0}
                 discount_price={variant.discount_price || 0}
                 discount_percent={variant.discount_percent || 0}
-                slug={fav.title.toLowerCase().replace(/\s+/g, "-")}
-                category={`${variant.color || ""} ${variant.size ? `(${variant.size})` : ""}`}
+                slug={fav.slug}
+                category={fav.categories[0]?.slug}
                 isFavourite={true} 
                 favouriteId={fav.id}
               />

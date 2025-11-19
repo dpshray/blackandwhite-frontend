@@ -4,7 +4,7 @@ import { RedirectIfAuthenticated } from "@/components/auth/redirect-if-authentic
 export default function LoginPage() {
   return (
     <RedirectIfAuthenticated>
-      <LoginForm />
+      <LoginForm admin/>
     </RedirectIfAuthenticated>
   );
 }

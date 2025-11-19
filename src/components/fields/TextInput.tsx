@@ -57,7 +57,7 @@ export default function TextInput<TFieldValues extends FieldValues>({
             type={inputType}
             placeholder={placeholder}
             {...register(name, registerOptions)}
-            className={`${icon ? "peer ps-9" : ""} ${
+            className={` rounded-none ${icon ? "peer ps-9" : ""} ${
               showToggle ? "pe-10" : ""
             }`}
           />

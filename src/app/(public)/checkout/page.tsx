@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -15,13 +15,15 @@ import {
 } from "@/hooks/useAddress";
 import { useAddOrder } from "@/hooks/useOrder";
 import { toast } from "sonner";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
+import Image from "next/image";
+import { BuyNowItem } from "@/types/productTypes";
 
 const checkoutSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
   last_name: z.string().min(1, "Last name is required"),
-  email: z.string().email("Invalid email"),
+  email: z.email("Invalid email"),
   contact_number: z.string().min(7, "Contact number is too short"),
   state: z.string().min(1, "State is required"),
   city: z.string().min(1, "City is required"),
@@ -31,12 +33,15 @@ const checkoutSchema = z.object({
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutPage() {
-    const [paymentMethod, setPaymentMethod] = useState("cod");
-    const { data: cart, isLoading, isFetched } = useCart();
-    const { data: addresses, isLoading: isLoadingAddresses } = useAddressInfo();
-    const addAddress = useAddAddressInfo();
-    const { mutate: addOrder, isPending: isPlacingOrder } = useAddOrder();
-    const router = useRouter();
+  const [paymentMethod, setPaymentMethod] = useState("cod");
+  const { data: cart, isLoading, isFetched } = useCart();
+  const { data: addresses, isLoading: isLoadingAddresses } = useAddressInfo();
+  const addAddress = useAddAddressInfo();
+  const { mutate: addOrder, isPending: isPlacingOrder } = useAddOrder();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const isBuyNow = searchParams.get("mode") === "buy-now";
+  const [buyNowItem, setBuyNowItem] = useState<BuyNowItem | null>(null);
 
   const hasAddress = addresses && addresses.length > 0;
   const defaultAddress = hasAddress ? addresses[0] : null;
@@ -55,13 +60,20 @@ export default function CheckoutPage() {
   );
 
   useEffect(() => {
-    if (!isLoading && isFetched) {
+    if (!isLoading && isFetched && !isBuyNow) {
       if (!cart || cart.data.length === 0) {
         toast.error("Your cart is empty");
         router.replace("/shop");
       }
     }
-  }, [cart, isLoading, isFetched, router]);
+  }, [cart, isLoading, isFetched, router, isBuyNow]);
+
+  useEffect(() => {
+    if (isBuyNow) {
+      const item = localStorage.getItem("buyNowItem");
+      if (item) setBuyNowItem(JSON.parse(item));
+    }
+  }, [isBuyNow]);
 
   const {
     register,
@@ -85,8 +97,21 @@ export default function CheckoutPage() {
       toast.error("Please select or add an address");
       return;
     }
-    addOrder(selectedAddressId);
+    const buyNowFlag = isBuyNow ? 1 : 0;
+    addOrder({ 
+      addressId: selectedAddressId,
+      buynow: buyNowFlag,
+    });
   };
+
+  const itemsToRender = useMemo(() => {
+    if (isBuyNow) {
+      if (!buyNowItem) return [];  
+      return [buyNowItem];          
+    }
+    return cart?.data || [];        
+  }, [isBuyNow, buyNowItem, cart]);
+
 
   if (isLoading) {
     return (
@@ -111,9 +136,10 @@ export default function CheckoutPage() {
     );
   }
 
-  if (isFetched && (!cart || cart.data.length === 0)) {
-    return null; 
+  if (!isBuyNow && isFetched && (!cart || cart.data.length === 0)) {
+    return null;
   }
+
 
   if (isLoadingAddresses) {
     return (
@@ -281,19 +307,81 @@ export default function CheckoutPage() {
 
       {/* Right Side - Cart Total + Payment */}
       <div className="h-fit border p-6 rounded-md space-y-6">
-        <h2 className="text-xl font-semibold mb-4">Cart Total</h2>
-        <div className="flex justify-between py-2 border-b">
-          <span>Delivery Charge</span>
-          <span>Rs {cart?.delivery_charge}</span>
+        <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
+
+        <div className="space-y-4 max-h-80 overflow-y-auto custom-scrollbar pr-1">
+          {itemsToRender.map((item: any, i: number) => (
+            <div key={i} className="flex gap-4 border rounded-md p-3">
+              <Image
+                src={isBuyNow ? item.image : item.product.variant.image}
+                width={200}
+                height={200}
+                className="w-20 h-24 object-cover rounded-md"
+                alt="product"
+              />
+
+              <div className="flex flex-col justify-between">
+                <p className="font-medium line-clamp-2">
+                  {isBuyNow ? item.title : item.product.title}
+                </p>
+
+                <p className="text-sm text-gray-500 capitalize">
+                  Color: {isBuyNow ? item.color : item.product.variant.color} • 
+                  Size: {isBuyNow ? item.size : item.product.variant.size}
+                </p>
+
+                <p className="text-sm">Qty: {item.quantity}</p>
+
+                <p className="font-semibold">
+                  Rs{" "}
+                  {isBuyNow
+                    ? item.price
+                    : item.product.variant.discount_price ||
+                      item.product.variant.price}
+                </p>
+              </div>
+            </div>
+          ))}
         </div>
-        <div className="flex justify-between py-2 border-b">
-          <span>Sub-total</span>
-          <span>Rs {cart?.subtotal}</span>
-        </div>
-        <div className="flex justify-between py-2 border-b font-semibold">
-          <span>Total</span>
-          <span>Rs {cart?.total}</span>
-        </div>
+
+        {!isBuyNow ? (
+          <>
+            <div className="flex justify-between py-2 border-b">
+              <span>Delivery Charge</span>
+              <span>Rs {cart?.delivery_charge}</span>
+            </div>
+            <div className="flex justify-between py-2 border-b">
+              <span>Sub-total</span>
+              <span>Rs {cart?.subtotal}</span>
+            </div>
+            <div className="flex justify-between py-2 border-b font-semibold">
+              <span>Total</span>
+              <span>Rs {cart?.total}</span>
+            </div>
+          </>
+        ) : (
+          // BUY NOW TOTALS
+          <>
+            {buyNowItem && (
+              <>
+                <div className="flex justify-between py-2 border-b">
+                  <span>Delivery Charge</span>
+                  <span>Rs {buyNowItem.price > 1000 ? 0 : 200}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b">
+                  <span>Sub-total</span>
+                  <span>Rs {buyNowItem.price * buyNowItem.quantity}</span>
+                </div>
+                <div className="flex justify-between py-2 border-b font-semibold">
+                  <span>Total</span>
+                  <span>
+                    Rs {buyNowItem.price * buyNowItem.quantity + (buyNowItem.price > 1000 ? 0 : 200)}
+                  </span>
+                </div>
+              </>
+            )}
+          </>
+        )}
 
         {/* Payment Method */}
         <div>

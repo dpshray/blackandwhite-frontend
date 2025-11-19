@@ -28,7 +28,7 @@ export const useAddOrder = () => {
   const router = useRouter();
 
   return useMutation({
-    mutationFn: (addressId: number) => orderService.addOrder(addressId),
+    mutationFn: ({addressId, buynow}: {addressId: number, buynow: number}) => orderService.addOrder(addressId, buynow),
     onSuccess: () => {
       toast.success("Order placed successfully");
       queryClient.invalidateQueries({ queryKey: ["orders"] });

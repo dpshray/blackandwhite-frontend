@@ -53,7 +53,7 @@ export default function AddCategory() {
                     Add Category
                 </Button>
         </DialogTrigger>
-            <DialogContent className="max-h-[90vh] overflow-y-auto max-w-6xl w-full">
+            <DialogContent className="max-h-[90vh] overflow-y-auto custom-scrollbar max-w-6xl w-full">
                 <DialogHeader>
                     <DialogTitle className="text-2xl font-bold flex items-center gap-2">
                         <MdCategory className="h-6 w-6 text-yellow-500" />

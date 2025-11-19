@@ -33,7 +33,7 @@ export default async function NotFound() {
                 </p>
                 
                 <Link href="/">
-                    <Button className="text-white mt-4 rounded-md">Return to Homepage</Button>
+                    <Button className="mt-4 rounded-none">Return to Homepage</Button>
                 </Link>
             </div>
             {/* <Footer categories={categories}/> */}

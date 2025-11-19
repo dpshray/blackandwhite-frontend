@@ -74,7 +74,7 @@ export default function ResetPasswordPage() {
             error={errors.password_confirmation}
           />
 
-          <Button disabled={resetMutation.isPending} variant={"outline"} className="text-black w-full" type="submit">
+          <Button disabled={resetMutation.isPending} variant={"outline"} className="rounded-none text-black w-full" type="submit">
             { resetMutation.isPending ? "Processing..." : "Reset Password" }
           </Button>
         </form>

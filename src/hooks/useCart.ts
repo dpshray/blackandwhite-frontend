@@ -57,3 +57,18 @@ export const useRemoveCartItem = () => {
     },
   });
 };
+
+export const useBuyNow = () => {
+  // const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: cartService.buyNow,
+    onSuccess: (res) => {
+        // toast.success(res.message || "Order placed successfully");
+        // queryClient.invalidateQueries({ queryKey: ["cart"] });
+    },
+    onError: (err: AxiosError<ApiError>) => {
+      toast.error(err.response?.data?.message || "Failed to Buy");
+    },
+  });
+};

@@ -25,6 +25,7 @@ const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/jpg
 
 // Variant Schema
 const variantSchema = z.object({
+  id: z.number().optional(),
   size: z.string().min(1),
   color: z.string().min(1),
   price: z.string().min(1),
@@ -124,6 +125,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       images: [],
       categories: product.categories?.map((c: any) => c.categories_id) || [],
       variants: product.variants?.map((v: any) => ({
+        id: v.id,
         size: v.size,
         color: v.color,
         price: String(v.price),
@@ -133,6 +135,8 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       })) || [],
     },
   });
+
+  console.log("ppp", product)
 
   const { fields: variantFields, append: appendVariant, remove: removeVariant } = useFieldArray({
     control,
@@ -194,6 +198,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       images: [],
       categories: product.categories?.map((c: any) => c.categories_id) || [],
       variants: product.variants?.map((v: any) => ({
+        id: v.id,
         size: v.size,
         color: v.color,
         price: String(v.price),
@@ -222,6 +227,9 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       }
 
       data.variants.forEach((variant, index) => {
+        if (variant.id) {
+          formData.append(`variant[${index}][id]`, variant.id.toString());
+        }
         formData.append(`variant[${index}][size]`, variant.size);
         formData.append(`variant[${index}][color]`, variant.color);
         formData.append(`variant[${index}][price]`, variant.price);
@@ -255,7 +263,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
           <p>Edit Product</p>
         </TooltipContent>
       </Tooltip>
-      <DialogContent className="max-h-[90vh] overflow-y-auto max-w-6xl w-full md:min-w-[800px]">
+      <DialogContent className="max-h-[90vh] overflow-y-auto custom-scrollbar max-w-6xl w-full md:min-w-[800px]">
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold flex items-center gap-2">
             <Package className="h-6 w-6 text-yellow-500" />
@@ -366,7 +374,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => appendVariant({ size: "", color: "", price: "", discount_price: null, stock: "", images: [] })}
+                  onClick={() => appendVariant({ id: 0, size: "", color: "", price: "", discount_price: null, stock: "", images: [] })}
                 >
                   <Plus className="h-4 w-4 mr-2" /> Add Variant
                 </Button>
