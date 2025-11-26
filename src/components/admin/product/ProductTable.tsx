@@ -15,6 +15,7 @@ import AddProduct from "./AddProduct";
 import UpdateProduct from "./UpdateProduct";
 import PhotoCell from "./PhotoCell";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function ProductTable() {
     const [page, setPage] = useState(1);
@@ -121,18 +122,6 @@ export default function ProductTable() {
 
                 return <PhotoCell photos={validImages} />;
             },
-        },
-        {
-            accessorKey: "pattern",
-            header: "Pattern",
-        },
-        {
-            accessorKey: "fabric",
-            header: "Fabric",
-        },
-        {
-            accessorKey: "material",
-            header: "Material",
         },
         {
           accessorKey: "variants",

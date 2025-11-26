@@ -30,7 +30,7 @@ export default function PhotoCell({ photos }: PhotoCellProps) {
         <Image
           width={100}
           height={100}
-          src={firstPhoto}
+          src={firstPhoto || "/placeholder.png"}
           alt="Photo Preview"
           className="object-cover rounded"
         />

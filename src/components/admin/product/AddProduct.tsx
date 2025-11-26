@@ -25,7 +25,7 @@ import { useProducts } from "@/hooks/useProducts";
 import { normalizeFiles } from "@/lib/normalizeFiles";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ImageIcon, Package, Palette, Plus, Settings, X } from "lucide-react";
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import z from "zod";
 import { ImagePreview } from "../ImagePreview";
@@ -69,6 +69,13 @@ const productSchema = z.object({
       "Only jpg, jpeg, png, or webp files are allowed"
     ),
   categories: z.number().min(1, "At least one category is required"),
+  sizeDetail: z.any()
+    .refine((files) => normalizeFiles(files).length >= 1,"At least one image is required")
+    .refine((files) => normalizeFiles(files).every((file) => file instanceof Blob),"All files must be valid images")
+    .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_PRODUCT_SIZE),`Image must be less than ${MAX_PRODUCT_SIZE / (1024 * 1024)}MB`)
+    .refine((files) =>normalizeFiles(files).every((f) =>ALLOWED_IMAGE_TYPES.includes(f.type)),
+      "Only jpg, jpeg, png, or webp files are allowed"
+    ),
   variants: z.array(variantSchema).min(1, "At least one variant is required"),
 });
 
@@ -81,7 +88,8 @@ export default function AddProduct() {
   const categoriesData = getCategories.data?.data?.data || [];
   const [productImages, setProductImages] = useState<FileList | null>(null)
   const [variantImages, setVariantImages] = useState<{ [key: number]: FileList | null }>({})
-
+  const [sizeDetailImage, setSizeDetailImage] = useState<FileList | null>(null);
+  const variantInputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({})
 
   const {
     register,
@@ -102,6 +110,7 @@ export default function AddProduct() {
       material: "",
       images: [],
       categories: undefined,
+      sizeDetail: null,
       variants: [
         {
           size: "",
@@ -123,6 +132,7 @@ export default function AddProduct() {
     control,
     name: "variants",
   });
+
 
   const handleProductImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -165,6 +175,31 @@ export default function AddProduct() {
     const newFiles = dt.files
     setVariantImages((prev) => ({ ...prev, [variantIndex]: newFiles }))
     setValue(`variants.${variantIndex}.images`, newFiles)
+
+    if (variantInputRefs.current[variantIndex]) {
+      variantInputRefs.current[variantIndex]!.value = ""
+    }
+  }
+
+  const handleThumbnailImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files
+    setSizeDetailImage(files)
+    setValue("sizeDetail", files)
+  }
+
+  const removeThumbnailImage = (index: number) => {
+    if (!sizeDetailImage) return
+
+    const dt = new DataTransfer()
+    const files = Array.from(sizeDetailImage)
+
+    files.forEach((file, i) => {
+      if (i !== index) dt.items.add(file)
+    })
+
+    const newFiles = dt.files
+    setSizeDetailImage(newFiles)
+    setValue("sizeDetail", newFiles)
   }
 
   const onSubmit = async (data: ProductFormData) => {
@@ -180,6 +215,10 @@ export default function AddProduct() {
       formData.append("material", data.material);
 
       formData.append("categories", data.categories.toString());
+
+      if (data.sizeDetail && data.sizeDetail.length > 0) {
+        formData.append("size_detail", data.sizeDetail[0]);
+      }
 
       if (data.images && data.images.length > 0) {
         Array.from(data.images).forEach((file) => {
@@ -205,14 +244,6 @@ export default function AddProduct() {
           });
         }
       });
-
-      //   for (const [key, value] of formData.entries()) {
-      //     if (value instanceof File) {
-      //       console.log(`${key}: File -> name=${value.name}, size=${value.size}, type=${value.type}`)
-      //     } else {
-      //       console.log(`${key}: ${typeof value} -> ${value}`)
-      //     }
-      //   }
 
       await addProduct.mutateAsync(formData);
       setOpen(false);
@@ -263,7 +294,6 @@ export default function AddProduct() {
                   name="price"
                   placeholder="Enter price"
                   register={register}
-                  // registerOptions={{ valueAsNumber: true }}
                   error={errors.price}
                 />
               </div>
@@ -273,7 +303,6 @@ export default function AddProduct() {
                   name="discount_price"
                   placeholder="Enter Discount Price"
                   register={register}
-                  // registerOptions={{ valueAsNumber: true }}
                   error={errors.discount_price}
                 />
               </div>
@@ -338,6 +367,15 @@ export default function AddProduct() {
                   </p>
                 )}
               </div>
+
+              <div>
+                <Label className="pb-2">Size Details Image</Label>
+                <Input type="file" accept="image/*" onChange={handleThumbnailImageChange} 
+                  className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
+                />
+                {errors.sizeDetail?.message && <p className="text-red-500 text-sm mt-1">{String(errors.sizeDetail?.message)}</p>}
+                <ImagePreview files={sizeDetailImage} onRemove={removeThumbnailImage} single/>
+              </div>
             </CardContent>
           </Card>
 
@@ -372,7 +410,7 @@ export default function AddProduct() {
             </CardHeader>
             <CardContent>
               <Input type="file" multiple accept="image/*" onChange={handleProductImageChange} 
-                className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
+                className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
               />
               {errors.images?.message && <p className="text-red-500 text-sm mt-1">{String(errors.images.message)}</p>}
               <ImagePreview files={productImages} onRemove={removeProductImage} />
@@ -460,7 +498,6 @@ export default function AddProduct() {
                       name={`variants.${index}.price`}
                       placeholder="Enter Variant Price"
                       register={register}
-                      // registerOptions={{ valueAsNumber: true }}
                       error={errors.variants?.[index]?.price}
                     />
 
@@ -469,7 +506,6 @@ export default function AddProduct() {
                       name={`variants.${index}.discount_price`}
                       placeholder="Enter Variant Discount Price"
                       register={register}
-                      // registerOptions={{ valueAsNumber: true }}
                       error={errors.variants?.[index]?.discount_price}
                     />
 
@@ -478,7 +514,6 @@ export default function AddProduct() {
                       name={`variants.${index}.stock`}
                       placeholder="Enter Stock"
                       register={register}
-                      // registerOptions={{ valueAsNumber: true }}
                       error={errors.variants?.[index]?.stock}
                     />
                   </div>
@@ -490,8 +525,9 @@ export default function AddProduct() {
                       type="file"
                       multiple
                       accept="image/*"
+                      ref={(el) => {variantInputRefs.current[index] = el}}
                       onChange={(e) => handleVariantImageChange(index, e)}
-                      className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
+                      className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
                     />
                     {errors.variants?.[index]?.images?.message && (
                       <p className="text-red-500 text-sm mt-1">{String(errors.variants?.[index]?.images?.message)}</p>

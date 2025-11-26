@@ -33,7 +33,7 @@ export const useAddOrder = () => {
       toast.success("Order placed successfully");
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["cart"] });
-      router.push("/checkout/thank-you");
+      router.push("/thank-you");
     },
     onError: () => {
       toast.error("Failed to place order");

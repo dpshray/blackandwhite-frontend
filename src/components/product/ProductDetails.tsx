@@ -12,6 +12,7 @@ import { Heart, Share2 } from "lucide-react";
 import { useAuth } from "@/context/auth-provider";
 import LoginModal from "../auth/LoginModal";
 import { useRouter } from "next/navigation";
+import ViewSizeGuideButton from "./ViewSizeGuideButton";
 
 interface ProductDetailsProps {
   product: any;
@@ -355,6 +356,9 @@ export default function ProductDetails({
                 className={isFavourite ? "fill-black" : "stroke-gray-500"}
                 />
             </Button>
+            {product.size_detail && (
+              <ViewSizeGuideButton image={product.size_detail} />
+            )}
           </div>
         </div>
       </div>

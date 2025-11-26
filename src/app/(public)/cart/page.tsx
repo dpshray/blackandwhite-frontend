@@ -46,7 +46,7 @@ export default function Cart() {
               key={item.id}
               className="flex items-center justify-between border-b py-6"
             >
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-2 sm:gap-4">
                 {/* Remove */}
                 <Button
                     variant={"ghost"}
@@ -116,9 +116,18 @@ export default function Cart() {
                     +
                   </Button>
                 </div>
-                <p className="font-semibold">
-                  Rs {item.product.variant.price * item.quantity}
-                </p>
+
+                <div className="flex items-baseline sm:gap-3">
+                  { item.product.variant.discount_price && (
+                    <span className="text-lg text-gray-400 line-through">
+                      Rs. {item.product.variant.price}
+                    </span>
+                  )}
+                  <span className="text-2xl font-bold text-gray-900">
+                    Rs. {item.product.variant.discount_price ?? item.product.variant.price}
+                  </span>
+                </div>
+
               </div>
             </div>
           ))}
