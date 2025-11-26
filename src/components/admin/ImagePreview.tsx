@@ -11,7 +11,7 @@ export const ImagePreview = ({
   single = false,
   banner = false,
 }: {
-  files: FileList | File[] | null
+  files: File | FileList | File[] | null
   onRemove: (index: number) => void
   single?: boolean
   banner?: boolean
@@ -19,18 +19,24 @@ export const ImagePreview = ({
   const [previewUrls, setPreviewUrls] = useState<string[]>([])
 
   useEffect(() => {
-    if (!files || files.length === 0) {
+    if (!files) {
       setPreviewUrls([])
       return
     }
 
-    const fileArray = Array.from(files)
+    const fileArray =
+      files instanceof File
+        ? [files]
+        : Array.isArray(files)
+        ? files
+        : Array.from(files)
+
     const urls = fileArray.map((file) =>
       file instanceof File ? URL.createObjectURL(file) : (file as string)
     )
+
     setPreviewUrls(urls)
 
-    // cleanup blob URLs
     return () => {
       urls.forEach((url) => {
         if (url.startsWith("blob:")) URL.revokeObjectURL(url)
@@ -38,7 +44,16 @@ export const ImagePreview = ({
     }
   }, [files])
 
-  if (!files || files.length === 0) return null
+  const normalizedFiles =
+    files instanceof File
+      ? [files]
+      : Array.isArray(files)
+      ? files
+      : files
+      ? Array.from(files)
+      : [];
+
+  if (normalizedFiles.length === 0) return null;
 
   return (
     <div

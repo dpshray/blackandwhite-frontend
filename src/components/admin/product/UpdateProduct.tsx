@@ -16,9 +16,9 @@ import { normalizeFiles } from "@/lib/normalizeFiles";
 import TextInput from "@/components/fields/TextInput";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Product } from "@/types/productTypes";
-import Image from "next/image";
 import { useCategories } from "@/hooks/useCategories";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { ImagePreview } from "../ImagePreview";
 
 const MAX_PRODUCT_SIZE = 1 * 1024 * 1024;
 const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
@@ -49,49 +49,11 @@ const productSchema = z.object({
   material: z.string().min(1),
   images: z.any(),
   categories: z.array(z.number()).min(1),
+  size_detail: z.any(),
   variants: z.array(variantSchema).min(1),
 });
 
 type ProductFormData = z.infer<typeof productSchema>;
-
-const ImagePreview = ({
-  files,
-  onRemove,
-}: {
-  files: FileList | File[] | null
-  onRemove: (index: number) => void
-}) => {
-  if (!files || files.length === 0) return null
-
-  const fileArray = Array.from(files)
-
-  return (
-    <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mt-4">
-      {fileArray.map((file, index) => (
-        <div key={index} className="relative group">
-          <div className="aspect-square rounded-lg overflow-hidden border-2 border-gray-200">
-            <Image
-              src={URL.createObjectURL(file) || "/placeholder.png"}
-              alt={`Preview ${index + 1}`}
-              width={150}
-              height={150}
-              className="w-full h-full object-cover"
-            />
-          </div>
-          <Button
-            type="button"
-            variant="destructive"
-            size="icon"
-            className="absolute -top-2 -right-2 h-6 w-6 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
-            onClick={() => onRemove(index)}
-          >
-            <X className="h-3 w-3" />
-          </Button>
-        </div>
-      ))}
-    </div>
-  )
-}
 
 interface UpdateProductDialogProps {
   product: Product; 
@@ -104,6 +66,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
   const categoriesData = getCategories.data?.data?.data || [];
   const [productImages, setProductImages] = useState<FileList | null>(null)
   const [variantImages, setVariantImages] = useState<{ [key: number]: FileList | null }>({})
+  const [sizeDetailsImage, setSizeDetailsImage] = useState<File | null>(null)
 
   const {
     register,
@@ -124,6 +87,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       material: product.material || "",
       images: [],
       categories: product.categories?.map((c: any) => c.categories_id) || [],
+      size_detail: null,
       variants: product.variants?.map((v: any) => ({
         id: v.id,
         size: v.size,
@@ -136,7 +100,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
     },
   });
 
-  console.log("ppp", product)
+  // console.log("ppp", product)
 
   const { fields: variantFields, append: appendVariant, remove: removeVariant } = useFieldArray({
     control,
@@ -186,6 +150,19 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
     setValue(`variants.${variantIndex}.images`, newFiles)
   }
 
+  const handleSizeDetailImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+
+    setSizeDetailsImage(file);
+    setValue("size_detail", file); 
+  };
+
+
+  const removeSizeDetailImage = () => {
+    setSizeDetailsImage(null);
+    setValue("size_detail", null);
+  };
+
   useEffect(() => {
     reset({
       name: product.title || "",
@@ -197,6 +174,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       material: product.material || "",
       images: [],
       categories: product.categories?.map((c: any) => c.categories_id) || [],
+      size_detail: null,
       variants: product.variants?.map((v: any) => ({
         id: v.id,
         size: v.size,
@@ -221,6 +199,10 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       formData.append("material", data.material);
 
       data.categories.forEach((id) => formData.append("categories[]", id.toString()));
+
+      if (data.size_detail) {
+        formData.append("size_detail", data.size_detail);
+      }
 
       if (data.images && data.images.length > 0) {
         Array.from(data.images).forEach((file) => formData.append("images[]", file as Blob));
@@ -285,14 +267,12 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
                 label="Price"
                 name="price"
                 register={register}
-                // registerOptions={{ valueAsNumber: true }}
                 error={errors.price}
               />
               <TextInput
                 label="Discount Price"
                 name="discount_price"
                 register={register}
-                // registerOptions={{ valueAsNumber: true }}
                 error={errors.discount_price}
               />
               <TextInput label="Pattern" name="pattern" register={register} error={errors.pattern} />
@@ -332,6 +312,15 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
                   </p>
                 )}
               </div>
+
+              <div>
+                <Label htmlFor="size_detail" className="pb-2">Size Details Images</Label>
+                <Input type="file" accept="image/*" onChange={handleSizeDetailImageChange} 
+                  className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
+                />
+                {errors.size_detail?.message && <p className="text-red-500 text-sm mt-1">{String(errors.size_detail.message)}</p>}
+                <ImagePreview files={sizeDetailsImage} onRemove={removeSizeDetailImage} />
+              </div>
             </CardContent>
           </Card>
 
@@ -356,7 +345,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
             </CardHeader>
             <CardContent>
               <Input type="file" multiple accept="image/*" onChange={handleProductImageChange} 
-                className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
+                className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
               />
               {errors.images?.message && <p className="text-red-500 text-sm mt-1">{String(errors.images.message)}</p>}
               <ImagePreview files={productImages} onRemove={removeProductImage} />
@@ -421,21 +410,18 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
                       label="Price"
                       name={`variants.${index}.price`}
                       register={register}
-                      // registerOptions={{ valueAsNumber: true }}
                       error={errors.variants?.[index]?.price}
                     />
                     <TextInput
                       label="Discount Price"
                       name={`variants.${index}.discount_price`}
-                      register={register}
-                      // registerOptions={{ valueAsNumber: true }}                     
+                      register={register}                     
                       error={errors.variants?.[index]?.discount_price}
                     />
                     <TextInput
                       label="Stock"
                       name={`variants.${index}.stock`}
                       register={register}
-                      // registerOptions={{ valueAsNumber: true }}
                       error={errors.variants?.[index]?.stock}
                     />
                   </div>
@@ -446,7 +432,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
                       multiple
                       accept="image/*"
                       onChange={(e) => handleVariantImageChange(index, e)}
-                      className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
+                      className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
                     />
                     {errors.variants?.[index]?.images?.message && (
                       <p className="text-red-500 text-sm mt-1">{String(errors.variants?.[index]?.images?.message)}</p>

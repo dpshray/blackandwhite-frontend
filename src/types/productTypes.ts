@@ -39,6 +39,7 @@ export interface Product {
   material: string;
   image: string[];
   categories: ProductCategory[];
+  size_detail: string | null;
   variants: ProductVariant[];
   isFavourite?: boolean;
 }

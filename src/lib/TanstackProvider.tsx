@@ -18,7 +18,7 @@ const TanstackProvider = ({ children }: { children: React.ReactNode }) => {
             gcTime: 1000 * 60 * 10, // 10 minutes
           },
         },
-      })
+      })  
   );
 
   return (
