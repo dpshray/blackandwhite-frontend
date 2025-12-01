@@ -29,6 +29,7 @@ import { useRef, useState } from "react";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import z from "zod";
 import { ImagePreview } from "../ImagePreview";
+import SelectInputField from "@/components/fields/SelectInput";
 
 export const MAX_PRODUCT_SIZE = 1 * 1024 * 1024; // 1MB
 export const ALLOWED_IMAGE_TYPES = [
@@ -38,19 +39,28 @@ export const ALLOWED_IMAGE_TYPES = [
   "image/jpg",
 ];
 
+export const SIZE_OPTIONS = [
+  { value: "S", label: "S" },
+  { value: "M", label: "M" },
+  { value: "L", label: "L" },
+  { value: "XL", label: "XL" },
+  { value: "2XL", label: "2XL" },
+  { value: "3XL", label: "3XL" },
+  { value: "4XL", label: "4XL" },
+];
+
+
 const variantSchema = z.object({
   size: z.string().min(1, "Product size is required"),
   color: z.string().min(1, "Product color is required"),
-  price: z.string().min(1, "Product price is required"),
-  discount_price: z.string().nullable().optional(),
   stock: z.string().min(1, "Product stock is required"),
-  images: z.any()
-    .refine((files) => normalizeFiles(files).length >= 1,"At least one image is required")
-    .refine((files) => normalizeFiles(files).every((file) => file instanceof Blob),"All files must be valid images")
-    .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_PRODUCT_SIZE),`Image must be less than ${MAX_PRODUCT_SIZE / (1024 * 1024)}MB`)
-    .refine((files) =>normalizeFiles(files).every((f) =>ALLOWED_IMAGE_TYPES.includes(f.type)),
-      "Only jpg, jpeg, png, or webp files are allowed"
-    ),
+  // images: z.any()
+  //   .refine((files) => normalizeFiles(files).length >= 1,"At least one image is required")
+  //   .refine((files) => normalizeFiles(files).every((file) => file instanceof Blob),"All files must be valid images")
+  //   .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_PRODUCT_SIZE),`Image must be less than ${MAX_PRODUCT_SIZE / (1024 * 1024)}MB`)
+  //   .refine((files) =>normalizeFiles(files).every((f) =>ALLOWED_IMAGE_TYPES.includes(f.type)),
+  //     "Only jpg, jpeg, png, or webp files are allowed"
+  //   ),
 });
 
 const productSchema = z.object({
@@ -87,9 +97,9 @@ export default function AddProduct() {
   const { getCategories } = useCategories();
   const categoriesData = getCategories.data?.data?.data || [];
   const [productImages, setProductImages] = useState<FileList | null>(null)
-  const [variantImages, setVariantImages] = useState<{ [key: number]: FileList | null }>({})
   const [sizeDetailImage, setSizeDetailImage] = useState<FileList | null>(null);
-  const variantInputRefs = useRef<{ [key: number]: HTMLInputElement | null }>({})
+  const productInputRefs = useRef<HTMLInputElement | null>(null)
+  const sizeDetailInputRefs = useRef<HTMLInputElement | null>(null)
 
   const {
     register,
@@ -115,10 +125,7 @@ export default function AddProduct() {
         {
           size: "",
           color: "",
-          price: "",
-          discount_price: "",
           stock: "",
-          images: [],
         },
       ],
     },
@@ -153,32 +160,9 @@ export default function AddProduct() {
     const newFiles = dt.files
     setProductImages(newFiles)
     setValue("images", newFiles)
-  }
 
-  const handleVariantImageChange = (variantIndex: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    setVariantImages((prev) => ({ ...prev, [variantIndex]: files }))
-    setValue(`variants.${variantIndex}.images`, files)
-  }
+    if (productInputRefs.current) productInputRefs.current.value = ""
 
-  const removeVariantImage = (variantIndex: number, imageIndex: number) => {
-    const currentFiles = variantImages[variantIndex]
-    if (!currentFiles) return
-
-    const dt = new DataTransfer()
-    const files = Array.from(currentFiles)
-
-    files.forEach((file, i) => {
-      if (i !== imageIndex) dt.items.add(file)
-    })
-
-    const newFiles = dt.files
-    setVariantImages((prev) => ({ ...prev, [variantIndex]: newFiles }))
-    setValue(`variants.${variantIndex}.images`, newFiles)
-
-    if (variantInputRefs.current[variantIndex]) {
-      variantInputRefs.current[variantIndex]!.value = ""
-    }
   }
 
   const handleThumbnailImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -186,6 +170,7 @@ export default function AddProduct() {
     setSizeDetailImage(files)
     setValue("sizeDetail", files)
   }
+
 
   const removeThumbnailImage = (index: number) => {
     if (!sizeDetailImage) return
@@ -200,6 +185,8 @@ export default function AddProduct() {
     const newFiles = dt.files
     setSizeDetailImage(newFiles)
     setValue("sizeDetail", newFiles)
+
+    if (sizeDetailInputRefs.current) sizeDetailInputRefs.current.value = ""
   }
 
   const onSubmit = async (data: ProductFormData) => {
@@ -228,21 +215,11 @@ export default function AddProduct() {
       data.variants.forEach((variant, index) => {
         formData.append(`variant[${index}][size]`, variant.size);
         formData.append(`variant[${index}][color]`, variant.color);
-        formData.append(`variant[${index}][price]`, variant.price.toString());
-        formData.append(
-          `variant[${index}][discount_price]`,
-          variant.discount_price?.toString() ?? ""
-        );
+       
         formData.append(
           `variant[${index}][stock]`,
           variant.stock?.toString() ?? ""
         );
-
-        if (variant.images && variant.images.length > 0) {
-          Array.from(variant.images).forEach((file) => {
-            formData.append(`variant[${index}][images][]`, file as Blob);
-          });
-        }
       });
 
       await addProduct.mutateAsync(formData);
@@ -370,7 +347,7 @@ export default function AddProduct() {
 
               <div>
                 <Label className="pb-2">Size Details Image</Label>
-                <Input type="file" accept="image/*" onChange={handleThumbnailImageChange} 
+                <Input type="file" accept="image/*" onChange={handleThumbnailImageChange} ref={sizeDetailInputRefs}
                   className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
                 />
                 {errors.sizeDetail?.message && <p className="text-red-500 text-sm mt-1">{String(errors.sizeDetail?.message)}</p>}
@@ -409,7 +386,7 @@ export default function AddProduct() {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Input type="file" multiple accept="image/*" onChange={handleProductImageChange} 
+              <Input type="file" multiple accept="image/*" onChange={handleProductImageChange}  ref={productInputRefs}
                 className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
               />
               {errors.images?.message && <p className="text-red-500 text-sm mt-1">{String(errors.images.message)}</p>}
@@ -433,10 +410,7 @@ export default function AddProduct() {
                     appendVariant({
                       size: "",
                       color: "",
-                      price: "",
-                      discount_price: "",
                       stock: "",
-                      images: [],
                     })
                   }
                 >
@@ -462,13 +436,25 @@ export default function AddProduct() {
                     >
                       <X />
                     </Button>
-                    <TextInput
-                      label="Size"
-                      name={`variants.${index}.size`}
-                      placeholder="M, L, XL"
-                      register={register}
-                      error={errors.variants?.[index]?.size}
-                    />
+                    <div>
+                      <Controller
+                        control={control}
+                        name={`variants.${index}.size`}
+                        render={({ field }) => (
+                          <SelectInputField
+                            label="Size"
+                            placeholder="Select Size"
+                            name={field.name}
+                            value={field.value}
+                            options={SIZE_OPTIONS}
+                            error={errors.variants?.[index]?.size?.message}
+                            onChangeAction={field.onChange}
+                          />
+                        )}
+                      />
+                    </div>
+
+
 
                     <div>
                       <Label htmlFor={`variant-color-${index}`}>Color</Label>
@@ -491,23 +477,6 @@ export default function AddProduct() {
                         <p className="text-red-500 text-sm mt-1">{String(errors.variants?.[index]?.color?.message)}</p>
                       )}
                     </div>
-                      
-
-                    <TextInput
-                      label="Price"
-                      name={`variants.${index}.price`}
-                      placeholder="Enter Variant Price"
-                      register={register}
-                      error={errors.variants?.[index]?.price}
-                    />
-
-                    <TextInput
-                      label="Discount Price"
-                      name={`variants.${index}.discount_price`}
-                      placeholder="Enter Variant Discount Price"
-                      register={register}
-                      error={errors.variants?.[index]?.discount_price}
-                    />
 
                     <TextInput
                       label="Stock"
@@ -518,26 +487,6 @@ export default function AddProduct() {
                     />
                   </div>
 
-                  {/* Variant Images */}
-                  <div>
-                    <Label className="pb-2">Variant Images</Label>
-                    <Input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      ref={(el) => {variantInputRefs.current[index] = el}}
-                      onChange={(e) => handleVariantImageChange(index, e)}
-                      className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
-                    />
-                    {errors.variants?.[index]?.images?.message && (
-                      <p className="text-red-500 text-sm mt-1">{String(errors.variants?.[index]?.images?.message)}</p>
-                    )}
-                    <ImagePreview
-                      files={variantImages[index]}
-                      onRemove={(imageIndex) => removeVariantImage(index, imageIndex)}
-                    />
-
-                  </div>
                 </div>
               ))}
             </CardContent>

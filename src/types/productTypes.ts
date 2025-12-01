@@ -2,22 +2,14 @@ export interface ProductVariant {
   id: number;
   size: string;
   color: string;
-  price: number | string;
-  discount_price: number | string | null;
-  discount_percent: number | null;
   stock: number | string;
-  images: string[];
 }
 
 export interface UpdateProductVariant {
   id: number;
   size: string;
   color: string;
-  price: string;
-  discount_price: string | null;
-  discount_percent: number | null;
   stock: string;
-  images: string[];
 }
 
 export interface ProductCategory {

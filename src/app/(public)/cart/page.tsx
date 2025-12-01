@@ -4,12 +4,13 @@ import Image from "next/image";
 import { useCart, useUpdateCartItem, useRemoveCartItem } from "@/hooks/useCart";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { ArrowRight, ShoppingCart } from "lucide-react";
+import { ArrowRight, ShoppingCart, X } from "lucide-react";
 import CartSkeleton from "@/components/cart/CartSkeleton";
 import Link from "next/link";
 
 export default function Cart() {
   const { data: cart, isLoading } = useCart();
+  console.log("cccc", cart)
   const updateCartItem = useUpdateCartItem();
   const removeCartItem = useRemoveCartItem();
   // const { mutate: addOrder, isPending } = useAddOrder();
@@ -53,14 +54,14 @@ export default function Cart() {
                     onClick={() => removeCartItem.mutate(item.id)}
                     disabled={updateCartItem.isPending}
                     aria-label="Remove Cart Item"
-                    className="text-xl text-gray-500 hover:text-red-500"
+                    className="text-xl text-gray-500 hover:text-red-500 !py-0 !p-0 hover:bg-white"
                 >
-                  ✕
+                  <X />
                 </Button>
 
                 {/* Image */}
                 <Image
-                  src={item.product.variant.image}
+                  src={item.product.image}
                   alt={item.product.title}
                   width={80}
                   height={80}
@@ -118,13 +119,13 @@ export default function Cart() {
                 </div>
 
                 <div className="flex items-baseline sm:gap-3">
-                  { item.product.variant.discount_price && (
-                    <span className="text-lg text-gray-400 line-through">
-                      Rs. {item.product.variant.price}
+                  { item.product.discount_price && (
+                    <span className="sm:text-lg text-gray-400 line-through">
+                      Rs. {item.product.price}
                     </span>
                   )}
-                  <span className="text-2xl font-bold text-gray-900">
-                    Rs. {item.product.variant.discount_price ?? item.product.variant.price}
+                  <span className="sm:text-2xl font-bold text-gray-900">
+                    Rs. {item.product.discount_price ?? item.product.price}
                   </span>
                 </div>
 

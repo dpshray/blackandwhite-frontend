@@ -38,16 +38,15 @@ export default function WistlistPage() {
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {favourites.map((fav: FavouriteItem) => {
-            const variant = fav.variant || {};
             return (
               <ProductCard
                 key={fav.id}
                 id={Number(fav.product_id)}
                 image={fav.images?.[0] || "/placeholder.png"}
                 title={fav.title}
-                price={variant.price || 0}
-                discount_price={variant.discount_price || 0}
-                discount_percent={variant.discount_percent || 0}
+                price={fav.price || 0}
+                discount_price={fav.discount_price || 0}
+                discount_percent={fav.discount_percent || 0}
                 slug={fav.slug}
                 category={fav.categories[0]?.slug}
                 isFavourite={true} 

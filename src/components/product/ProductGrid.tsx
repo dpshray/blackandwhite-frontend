@@ -75,7 +75,7 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
   }
 
   const handleSortChange = (sort: string) => {
-    updateFilters({ sort })
+    updateFilters({ sort: sort === "none" ? null : sort });
   }
 
   return (
@@ -137,11 +137,12 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
           {/* Sort */}
           <div className="flex items-center justify-end space-x-4 mb-6">
             <h3 className="font-semibold">SORT BY:</h3>
-            <Select value={sortOption} onValueChange={(value) => handleSortChange(value)}>
+            <Select value={sortOption || "none"} onValueChange={(value) => handleSortChange(value)}>
               <SelectTrigger className="w-[200px]">
                 <SelectValue placeholder="Select an option" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="none">None</SelectItem>
                 <SelectItem value="best_seller">Best Seller</SelectItem>
                 <SelectItem value="price_low">Price: Low to High</SelectItem>
                 <SelectItem value="price_high ">Price: High to Low</SelectItem>

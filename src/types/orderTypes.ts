@@ -3,6 +3,8 @@ export interface OrderItem {
   variant_size: string;
   variant_color: string;
   quantity: number;
+  discount_price: number;
+  discount_percent: number;
   price: number;
   image: string;
 }

@@ -21,7 +21,7 @@ export default async function ProductPage({ params }: { params: Promise<{slug: s
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12">
         {/* IMAGE GALLERY */}
         <div className="space-y-4">
-          <div className="relative aspect-square rounded-xl overflow-hidden border shadow-lg bg-gray-50">
+          <div className="relative aspect-[4/5] rounded-xl overflow-hidden border shadow-lg bg-gray-50">
             <Image
               src={p.image?.[0]}
               alt={p.title}
@@ -35,7 +35,7 @@ export default async function ProductPage({ params }: { params: Promise<{slug: s
             {p.image?.map((img: any, idx: number) => (
               <div
                 key={idx}
-                className="relative aspect-square rounded-lg overflow-hidden border hover:border-gray-400 transition-colors cursor-pointer bg-gray-50"
+                className="relative aspect-[4/5] rounded-lg overflow-hidden border hover:border-gray-400 transition-colors cursor-pointer bg-gray-50"
               >
                 <Image
                   src={img}
@@ -170,19 +170,7 @@ export default async function ProductPage({ params }: { params: Promise<{slug: s
                     Color
                   </th>
                   <th className="p-3 text-left font-semibold text-gray-700">
-                    Price
-                  </th>
-                  <th className="p-3 text-left font-semibold text-gray-700">
-                    Discount Price
-                  </th>
-                  <th className="p-3 text-left font-semibold text-gray-700">
-                    Discount
-                  </th>
-                  <th className="p-3 text-left font-semibold text-gray-700">
                     Stock
-                  </th>
-                  <th className="p-3 text-left font-semibold text-gray-700">
-                    Images
                   </th>
                 </tr>
               </thead>
@@ -196,19 +184,7 @@ export default async function ProductPage({ params }: { params: Promise<{slug: s
                         {v.color}
                       </span>
                     </td>
-                    <td className="p-3 text-gray-600">Rs. {v.price}</td>
-                    <td className="p-3 font-semibold">
-                      {v.discount_price ? `Rs. ${v.discount_price}` : "—"}
-                    </td>
-                    <td className="p-3">
-                      {v.discount_percent ? (
-                        <Badge variant="outline" className="text-xs">
-                          -{v.discount_percent}%
-                        </Badge>
-                      ) : (
-                        "—"
-                      )}
-                    </td>
+      
                     <td className="p-3">
                       <span
                         className={`inline-flex items-center px-2 py-1 rounded-full text-xs font-medium ${
@@ -224,23 +200,7 @@ export default async function ProductPage({ params }: { params: Promise<{slug: s
                           : "Out of stock"}
                       </span>
                     </td>
-                    <td className="p-3">
-                      <div className="flex gap-2">
-                        {v.images?.map((img, idx) => (
-                          <div
-                            key={idx}
-                            className="relative w-12 h-12 rounded border overflow-hidden bg-gray-50"
-                          >
-                            <Image
-                              src={img}
-                              alt={`Variant ${idx + 1}`}
-                              fill
-                              className="object-cover"
-                            />
-                          </div>
-                        ))}
-                      </div>
-                    </td>
+                  
                   </tr>
                 ))}
               </tbody>
