@@ -30,7 +30,7 @@ export default function ProductDetails({
   const addToCart = useAddToCart();
   const addFavourite = useAddFavourite();
   const { data: favourites } = useFavourites();
-  console.log("ppppp", product)
+  // console.log("ppppp", product)
 
   const { user } = useAuth();
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
