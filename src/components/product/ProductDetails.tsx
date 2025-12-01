@@ -156,7 +156,7 @@ export default function ProductDetails({
         <div className="flex sm:flex-row flex-col gap-6">
           {/* Thumbnails */}
           <div className="flex sm:flex-col flex-row gap-2 sm:order-1 order-2">
-            {product.image && product.image.length > 4 ? (
+            {product.image && product.image.length > 3 ? (
               <Carousel orientation="vertical" className="sm:w-[120px] w-full hidden sm:block relative mt-6">
                 <CarouselContent className="h-[460px]">
                   {product.image.map((img: string, i: number) => (
@@ -180,7 +180,7 @@ export default function ProductDetails({
             ) : null}
 
             {/* Horizontal carousel for mobile only */}
-            {product.image && product.image.length > 4 ? (
+            {product.image && product.image.length > 3 ? (
               <Carousel orientation="horizontal" className="sm:hidden w-full block relative">
                 <CarouselContent>
                   {allImages.map((img: string, i: number) => (
@@ -198,8 +198,8 @@ export default function ProductDetails({
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="-left-3" />
-                <CarouselNext className="-right-3" />
+                <CarouselPrevious className="-left-2" />
+                <CarouselNext className="-right-2" />
               </Carousel>
             ) : (
               <div className="flex flex-row gap-2 w-full overflow-x-hidden pb-2 sm:flex-col sm:w-full">
@@ -382,7 +382,7 @@ export default function ProductDetails({
           </div>
 
           {/* Buttons */}
-          <div className="flex gap-3 mt-4">
+          <div className="flex flex-col sm:flex-row gap-3 mt-4">
             <Button
               onClick={handleBuyNow}
               disabled={buyNow.isPending}
@@ -392,14 +392,18 @@ export default function ProductDetails({
             </Button>
 
             <Button
-                variant={"outline"}
-                onClick={handleAddToCart}
-                disabled={addToCart.isPending}
-                aria-label="Add to cart"
-                className="rounded-none"
+              variant={"outline"}
+              onClick={handleAddToCart}
+              disabled={addToCart.isPending}
+              aria-label="Add to cart"
+              className="rounded-none"
             >
               {addToCart.isPending ? "ADDING..." : "ADD TO CART"}
             </Button>
+            
+            {product.size_detail && (
+              <ViewSizeGuideButton image={product.size_detail} />
+            )}
 
             <Button
               variant="ghost"
@@ -411,9 +415,6 @@ export default function ProductDetails({
                 className={isFavourite ? "fill-black" : "stroke-gray-500"}
                 />
             </Button>
-            {product.size_detail && (
-              <ViewSizeGuideButton image={product.size_detail} />
-            )}
           </div>
         </div>
       </div>
