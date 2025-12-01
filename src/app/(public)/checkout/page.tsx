@@ -313,7 +313,7 @@ export default function CheckoutPage() {
           {itemsToRender.map((item: any, i: number) => (
             <div key={i} className="flex gap-4 border rounded-md p-3">
               <Image
-                src={isBuyNow ? item.image : item.product.image}
+                src={isBuyNow ? item.image : item.product.image || "/placeholder.png"}
                 width={200}
                 height={200}
                 className="w-20 h-24 object-cover rounded-md"

@@ -238,7 +238,7 @@ export default function ProfilePage() {
                     >
                       <div className="flex items-center gap-3">
                         <Image
-                          src={item.image}
+                          src={item.image || "/placeholder.png"}
                           alt={item.product_name}
                           width={48}
                           height={48}

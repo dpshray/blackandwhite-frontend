@@ -10,7 +10,7 @@ import Link from "next/link";
 
 export default function Cart() {
   const { data: cart, isLoading } = useCart();
-  console.log("cccc", cart)
+  // console.log("cccc", cart)
   const updateCartItem = useUpdateCartItem();
   const removeCartItem = useRemoveCartItem();
   // const { mutate: addOrder, isPending } = useAddOrder();
@@ -61,7 +61,7 @@ export default function Cart() {
 
                 {/* Image */}
                 <Image
-                  src={item.product.image}
+                  src={item.product.image || "/placeholder.png"}
                   alt={item.product.title}
                   width={80}
                   height={80}
