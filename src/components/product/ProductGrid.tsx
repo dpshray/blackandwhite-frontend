@@ -188,7 +188,7 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
                 <ProductCard 
                   key={product.id}
                   id={product.id}
-                  image={product.image[0]}
+                  image={product.main_image || "/placeholder.png"}
                   title={product.title}
                   price={Number(product.price)}
                   discount_price={Number(product.discount_price)}

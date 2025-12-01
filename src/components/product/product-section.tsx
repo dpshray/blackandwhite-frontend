@@ -30,7 +30,7 @@ export default function ProductSection({ title, products, link }: ProductSection
             <ProductCard 
               key={product.id}
               id={product.id}
-              image={product.image[0]}
+              image={product.main_image}
               title={product.title}
               price={Number(product.price)}
               discount_price={Number(product.discount_price)}

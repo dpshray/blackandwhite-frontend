@@ -14,6 +14,7 @@ export interface FavouriteItem {
   id: number;
   product_id: number;
   title: string;
+  main_image: string;
   images: string[];
   price: number;
   discount_price: number;

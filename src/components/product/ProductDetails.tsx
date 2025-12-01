@@ -30,15 +30,20 @@ export default function ProductDetails({
   const addToCart = useAddToCart();
   const addFavourite = useAddFavourite();
   const { data: favourites } = useFavourites();
-  console.log("ppppp", product)
+  // console.log("ppppp", product)
 
   const { user } = useAuth();
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string>(product.image[0] );
+  const [selectedImage, setSelectedImage] = useState<string>(
+    product.main_image || product.image?.[0] || "/placeholder.svg"
+  );
+
   const [quantity, setQuantity] = useState<number>(1);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const isFavourite = favourites?.favourites.some((fav: any) => fav.product_id === product.id);
+
+  const allImages = [product.main_image, ...(product.image || []).filter((img: any) => img !== product.main_image)];
 
   const availableColors: string[] = selectedSize
     ? Array.from(
@@ -104,7 +109,6 @@ export default function ProductDetails({
 
     localStorage.setItem("buyNowItem", JSON.stringify(buyNowItem));
 
-    // Call API only if backend needs it
     buyNow.mutate(
       {
         product_id: product.id,
@@ -179,8 +183,8 @@ export default function ProductDetails({
             {product.image && product.image.length > 4 ? (
               <Carousel orientation="horizontal" className="sm:hidden w-full block relative">
                 <CarouselContent>
-                  {product.image.map((img: string, i: number) => (
-                    <CarouselItem key={i} className="basis-1/3 pl-2">
+                  {allImages.map((img: string, i: number) => (
+                    <CarouselItem key={i} className="basis-1/4">
                       <Image
                         src={img || "/placeholder.svg"}
                         alt={`Product variant ${i}`}
@@ -188,19 +192,19 @@ export default function ProductDetails({
                         height={90}
                         onClick={() => setSelectedImage(img)}
                         className={`rounded-lg object-cover border cursor-pointer transition flex-shrink-0 ${
-                          selectedImage === img ? "border-black scale-105" : "border-gray-200"
+                          selectedImage === img ? "border-black" : "border-gray-200"
                         }`}
                       />
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="-left-2" />
-                <CarouselNext className="-right-2" />
+                <CarouselPrevious className="-left-3" />
+                <CarouselNext className="-right-3" />
               </Carousel>
             ) : (
               <div className="flex flex-row gap-2 w-full overflow-x-hidden pb-2 sm:flex-col sm:w-full">
                 {product.image &&
-                  product.image.map((img: string, i: number) => (
+                  allImages.map((img: string, i: number) => (
                     <Image
                       key={i}
                       src={img || "/placeholder.svg"}
@@ -233,7 +237,7 @@ export default function ProductDetails({
         <div className="space-y-4">
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold text-balance leading-tight">{product.title}</h1>
-            <Badge className="rounded-none">{product.categories[0].categories_title}</Badge>
+            <Badge className="rounded-none mt-2">{product.categories[0].categories_title}</Badge>
           </div>
           <p className="text-sm text-gray-600 mb-4">{product.description}</p>
 

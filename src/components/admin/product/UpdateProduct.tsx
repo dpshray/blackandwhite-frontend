@@ -41,6 +41,7 @@ const productSchema = z.object({
   images: z.any(),
   categories: z.number().min(1, "Category is required"),
   size_detail: z.any(),
+  main_image:z.any(),
   variants: z.array(variantSchema).min(1),
 });
 
@@ -59,6 +60,8 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
   const [sizeDetailsImage, setSizeDetailsImage] = useState<File | null>(null)
   const productInputRefs = useRef<HTMLInputElement | null>(null)
   const sizeDetailInputRefs = useRef<HTMLInputElement | null>(null)
+  const [mainImage, setMainImage] = useState<File | null>(null);
+  const mainImageInputRef = useRef<HTMLInputElement | null>(null);
 
   const categoryOptions = categoriesData.map((category) => ({
     value: category.id,
@@ -86,6 +89,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       images: [],
       categories: product.categories?.[0]?.categories_id || undefined,
       size_detail: null,
+      main_image: null,
       variants: product.variants?.map((v: any) => ({
         id: v.id,
         size: v.size,
@@ -101,6 +105,16 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
     control,
     name: "variants",
   });
+
+  const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    setMainImage(file);
+  };
+
+  const removeMainImage = () => {
+    setMainImage(null);
+    if (mainImageInputRef.current) mainImageInputRef.current.value = "";
+  };
 
   const handleProductImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -173,6 +187,10 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       formData.append("fabric", data.fabric);
       formData.append("material", data.material);
       formData.append("categories", data.categories.toString());
+
+      if (mainImage) {
+        formData.append("main_image", mainImage);
+      }
 
       if (data.size_detail) {
         formData.append("size_detail", data.size_detail);
@@ -249,22 +267,24 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
               <TextInput label="Material" name="material" register={register} error={errors.material} />
 
               {/* Category Selection Field */}
-              <Controller
-                name="categories"
-                control={control}
-                render={({ field }) => (
-                  <SelectInputField
-                    label="Category"
-                    placeholder="Select a category"
-                    name={field.name}
-                    options={categoryOptions}
-                    value={field.value}               
-                    onChangeAction={(value) => field.onChange(Number(value))}
-                    error={errors.categories?.message}
-                    required
-                  />
-                )}
-              />
+              <div className="md:col-span-2">
+                <Controller
+                  name="categories"
+                  control={control}
+                  render={({ field }) => (
+                    <SelectInputField
+                      label="Category"
+                      placeholder="Select a category"
+                      name={field.name}
+                      options={categoryOptions}
+                      value={field.value}               
+                      onChangeAction={(value) => field.onChange(Number(value))}
+                      error={errors.categories?.message}
+                      required
+                    />
+                  )}
+                />
+              </div>
 
               <div>
                 <Label htmlFor="size_detail" className="pb-2">Size Details Images</Label>
@@ -274,6 +294,25 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
                 {errors.size_detail?.message && <p className="text-red-500 text-sm mt-1">{String(errors.size_detail.message)}</p>}
                 <ImagePreview files={sizeDetailsImage} onRemove={removeSizeDetailImage}/>
               </div>
+
+              <div>
+                <Label htmlFor="main_image" className="pb-2">Main Image</Label>
+
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleMainImageChange}
+                  ref={mainImageInputRef}
+                  className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none 
+                            file:border-0 file:text-sm file:font-medium 
+                            file:bg-black file:text-white file:hover:bg-black/80 
+                            file:cursor-pointer"
+                />
+
+                {/* Preview */}
+                <ImagePreview files={mainImage} onRemove={removeMainImage} />
+              </div>
+
             </CardContent>
           </Card>
 
@@ -293,7 +332,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
           <Card>
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
-                <ImageIcon className="h-5 w-5 text-purple-500" /> Product Images
+                <ImageIcon className="h-5 w-5 text-purple-500" /> Product Gallery Images
               </CardTitle>
             </CardHeader>
             <CardContent>

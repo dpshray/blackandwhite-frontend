@@ -23,7 +23,7 @@ export default async function ProductPage({ params }: { params: Promise<{slug: s
         <div className="space-y-4">
           <div className="relative aspect-[4/5] rounded-xl overflow-hidden border shadow-lg bg-gray-50">
             <Image
-              src={p.image?.[0]}
+              src={p.main_image}
               alt={p.title}
               fill
               className="object-cover"

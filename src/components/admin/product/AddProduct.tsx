@@ -71,6 +71,11 @@ const productSchema = z.object({
   pattern: z.string().min(1, "Product pattern is required"),
   fabric: z.string().min(1, "Product fabric is required"),
   material: z.string().min(1, "Product material is required"),
+  main_image: z.any()
+    .refine((files) => normalizeFiles(files).length === 1, "Main image is required")
+    .refine((files) => normalizeFiles(files).every((file) => file instanceof Blob), "Invalid file")
+    .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_PRODUCT_SIZE), `Image must be less than ${MAX_PRODUCT_SIZE / (1024 * 1024)}MB`)
+    .refine((files) => normalizeFiles(files).every((f) => ALLOWED_IMAGE_TYPES.includes(f.type)), "Only jpg, jpeg, png or webp allowed"),
   images: z.any()
     .refine((files) => normalizeFiles(files).length >= 1,"At least one image is required")
     .refine((files) => normalizeFiles(files).every((file) => file instanceof Blob),"All files must be valid images")
@@ -100,6 +105,9 @@ export default function AddProduct() {
   const [sizeDetailImage, setSizeDetailImage] = useState<FileList | null>(null);
   const productInputRefs = useRef<HTMLInputElement | null>(null)
   const sizeDetailInputRefs = useRef<HTMLInputElement | null>(null)
+  const [mainImage, setMainImage] = useState<FileList | null>(null);
+  const mainImageInputRef = useRef<HTMLInputElement | null>(null);
+
 
   const {
     register,
@@ -140,6 +148,17 @@ export default function AddProduct() {
     name: "variants",
   });
 
+  const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const files = e.target.files;
+    setMainImage(files);
+    setValue("main_image", files);
+  };
+
+  const removeMainImage = () => {
+    setMainImage(null);
+    setValue("main_image", null);
+    if (mainImageInputRef.current) mainImageInputRef.current.value = "";
+  };
 
   const handleProductImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const files = e.target.files
@@ -202,6 +221,9 @@ export default function AddProduct() {
       formData.append("material", data.material);
 
       formData.append("categories", data.categories.toString());
+      if (data.main_image && data.main_image.length > 0) {
+        formData.append("main_image", data.main_image[0]);
+      }
 
       if (data.sizeDetail && data.sizeDetail.length > 0) {
         formData.append("size_detail", data.sizeDetail[0]);
@@ -353,6 +375,23 @@ export default function AddProduct() {
                 {errors.sizeDetail?.message && <p className="text-red-500 text-sm mt-1">{String(errors.sizeDetail?.message)}</p>}
                 <ImagePreview files={sizeDetailImage} onRemove={removeThumbnailImage} single/>
               </div>
+
+              <div>
+                <Label className="pb-2">Main Image (Single)</Label>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleMainImageChange}
+                  ref={mainImageInputRef}
+                  className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
+                />
+                {errors.main_image?.message && (
+                  <p className="text-red-500 text-sm mt-1">{String(errors.main_image.message)}</p>
+                )}
+
+                <ImagePreview files={mainImage} onRemove={removeMainImage} single />
+              </div>
+
             </CardContent>
           </Card>
 
@@ -382,7 +421,7 @@ export default function AddProduct() {
             <CardHeader>
               <CardTitle className="text-lg flex items-center gap-2">
                 <ImageIcon className="h-5 w-5 text-purple-500" />
-                Product Images
+                Product Gallery Images
               </CardTitle>
             </CardHeader>
             <CardContent>

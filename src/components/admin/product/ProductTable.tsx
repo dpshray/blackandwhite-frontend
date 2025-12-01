@@ -13,7 +13,6 @@ import { Button } from "@/components/ui/button";
 import { Eye, Trash2 } from "lucide-react";
 import AddProduct from "./AddProduct";
 import UpdateProduct from "./UpdateProduct";
-import PhotoCell from "./PhotoCell";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 
@@ -109,19 +108,22 @@ export default function ProductTable() {
             enableSorting: false,
         },
         {
-            accessorKey: "image",
-            header: "Image",
+            accessorKey: "main_image",
+            header: "Main Image",
             size: 100,
             cell: ({ row }) => {
-                const rawImages = row.getValue("image");
-                const validImages = Array.isArray(rawImages)
-                ? rawImages
-                : rawImages
-                ? [rawImages]
-                : [];
-
-                return <PhotoCell photos={validImages} />;
-            },
+                const image = row.original.main_image; 
+                
+                return (
+                <Image
+                    src={image ? image : "/no-image.png"}  
+                    alt="Product Image"
+                    width={50}
+                    height={50}
+                    className="rounded-md object-cover border"
+                />
+                );
+            }
         },
         {
           accessorKey: "variants",
