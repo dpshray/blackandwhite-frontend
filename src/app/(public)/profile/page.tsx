@@ -16,6 +16,8 @@ import { RxCross2 } from "react-icons/rx";
 import { BaseModal } from "@/components/modal/deleteModel";
 import { AddressInfo } from "@/services/addressServices";
 import Link from "next/link";
+import { Separator } from "@/components/ui/separator";
+import Image from "next/image";
 
 export default function ProfilePage() {
   const [page, setPage] = useState(1);
@@ -31,7 +33,7 @@ export default function ProfilePage() {
   const { data: user, isLoading: userLoading } = useUserProfile();
   const { data: address, isLoading: addressLoading } = useAddressInfo();
   const deleteAddress = useDeleteAddressInfo();
-  const { data: orders, isLoading: ordersLoading } = useOrders(page, 9);
+  const { data: orders, isLoading: ordersLoading } = useOrders(page, 2);
   const totalPages = Math.ceil(orders?.data.meta?.last_page ?? 1);
   const paginatedOrders = orders?.data.orders || [];
 
@@ -69,7 +71,7 @@ export default function ProfilePage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div className="max-w-7xl mx-auto p-4 sm:p-6 grid grid-cols-1 lg:grid-cols-3 gap-8">
       {/* Profile Section (Left) */}
       <div className="flex flex-col gap-6">
         {userLoading ? (
@@ -77,7 +79,7 @@ export default function ProfilePage() {
             <Skeleton className="w-full h-56" />
           </div>
         ) : (
-          <div className="bg-white border rounded-2xl shadow-md p-6 flex flex-col items-start h-fit">
+          <div className="bg-white border rounded-2xl shadow-md p-4 sm:p-6 flex flex-col items-start h-fit">
             <div className="w-full flex items-start justify-between gap-4 mb-6">
               <Link href={user?.profile_image || "#"} target="_blank">
                 <Avatar className="w-32 h-32 border-2 border-gray-200">
@@ -117,7 +119,7 @@ export default function ProfilePage() {
         )}
 
         {/* address */}
-        <div className="bg-white border rounded-2xl shadow-md p-6 flex flex-col items-center lg:items-start h-fit w-full">
+        <div className="bg-white border rounded-2xl shadow-md p-4 sm:p-6 flex flex-col items-center lg:items-start h-fit w-full">
           <h3 className="text-lg font-semibold mb-3">Billing Address</h3>
           {addressLoading ? (
             <Skeleton className="w-full h-56" />
@@ -161,12 +163,12 @@ export default function ProfilePage() {
       </div>
 
       {/* Order History */}
-      <div className="h-fit bg-white border rounded-2xl shadow-md p-6 lg:col-span-2">
+      <div className="h-fit bg-white border rounded-2xl shadow-md p-4 sm:p-6 lg:col-span-2">
         <h3 className="text-xl font-semibold mb-4">Order History</h3>
 
-        <div className="space-y-3 min-h-[200px] flex flex-col items-center">
+        <div className="space-y-3 min-h-[200px] flex flex-col max-h-[600px] overflow-auto custom-scrollbar">
           {ordersLoading ? (
-            // Skeletons
+            // Skeletons while loading
             Array.from({ length: 5 }).map((_, idx) => (
               <div
                 key={idx}
@@ -180,45 +182,96 @@ export default function ProfilePage() {
               </div>
             ))
           ) : paginatedOrders && paginatedOrders.length > 0 ? (
-            // Actual order data
+            // Actual orders
             paginatedOrders.map((order) => (
               <div
                 key={order.id}
-                className="flex justify-between items-center p-4 border rounded-lg hover:bg-gray-50 transition w-full"
+                className="border rounded-lg hover:bg-gray-50 transition w-full"
               >
-                <div>
-                  <p className="font-medium">Order #{order.id}</p>
-                  <Badge
-                    variant={
-                      order.status === "Pending"
-                        ? "warning"
-                        : order.status === "Processing"
-                        ? "secondary"
-                        : order.status === "Shipped"
-                        ? "outline"
-                        : order.status === "Delivered"
-                        ? "success"
-                        : order.status === "Cancelled"
-                        ? "destructive"
-                        : "secondary"
-                    }
-                    className="mt-1"
-                  >
-                    {order.status}
-                  </Badge>
-                </div>
-                <div className="flex flex-col items-end">
-                  {order.status !== "Cancelled" && (
-                    <Button
-                      size="icon"
-                      variant="ghost"
-                      className="text-red-500 hover:text-red-600"
-                      onClick={() => handleDeleteOrderClick(order.id)}
+                {/* Order summary */}
+                <div className="flex justify-between items-center p-4">
+                  <div>
+                    <p className="font-medium">Order #{order.id}</p>
+                    <Badge
+                      variant={
+                        order.status === "Pending"
+                          ? "warning"
+                          : order.status === "Processing"
+                          ? "secondary"
+                          : order.status === "Shipped"
+                          ? "outline"
+                          : order.status === "Delivered"
+                          ? "success"
+                          : order.status === "Cancelled"
+                          ? "destructive"
+                          : "secondary"
+                      }
+                      className="mt-1"
                     >
-                      <RxCross2 />
-                    </Button>
-                  )}
-                  <p className="font-semibold">Rs. {order.total_amount}</p>
+                      {order.status}
+                    </Badge>
+                  </div>
+
+                  <div className="flex flex-col items-end">
+                    {order.status !== "Cancelled" && (
+                      <Button
+                        size="icon"
+                        variant="ghost"
+                        className="text-red-500 hover:text-red-600"
+                        onClick={() => handleDeleteOrderClick(order.id)}
+                      >
+                        <RxCross2 />
+                      </Button>
+                    )}
+                    <p className="font-semibold">Rs. {order.total_amount}</p>
+                  </div>
+                </div>
+
+                <Separator />
+
+                {/* Order items */}
+                <div className="p-4 space-y-3 bg-gray-50 rounded-b-lg">
+                  {order.items.map((item, idx) => (
+                    <div
+                      key={idx}
+                      className="flex justify-between items-center gap-4 border-b pb-2 last:border-b-0"
+                    >
+                      <div className="flex items-center gap-3">
+                        <Image
+                          src={item.image}
+                          alt={item.product_name}
+                          width={48}
+                          height={48}
+                          className="w-12 h-16 object-cover rounded"
+                        />
+                        <div className="flex flex-col">
+                          <p className="font-medium">{item.product_name}</p>
+                          <p className="text-sm text-gray-500">
+                            {item.variant_size} / {item.variant_color}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-4">
+                        <p className="text-sm text-gray-500">Qty: {item.quantity}</p>
+                        {item.discount_price ? (
+                          <div className="flex flex-col">
+                            <div className="flex items-center gap-2">
+                              <p className="font-semibold text-red-600">Rs. {item.discount_price}</p>
+                              <p className="text-sm text-gray-400 line-through">Rs. {item.price}</p>
+                            </div>
+                            {item.discount_percent && (
+                              <p className="text-xs text-green-600">
+                                {item.discount_percent}% off
+                              </p>
+                            )}
+                          </div>
+                        ) : (
+                          <p className="font-semibold">Rs. {item.price}</p>
+                        )}
+                      </div>
+                    </div>
+                  ))}
                 </div>
               </div>
             ))
@@ -244,6 +297,7 @@ export default function ProfilePage() {
           />
         )}
       </div>
+
 
       <BaseModal
         open={deleteProfileModalOpen}

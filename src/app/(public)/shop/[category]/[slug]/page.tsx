@@ -8,6 +8,7 @@ export default async function ProductPage(props: { params: Promise<{ slug: strin
   const { slug } = await props.params;
 
   const productRes = await getProductBySlug(slug);
+  // console.log(productRes)
 
   if (!productRes?.data) return notFound();
 

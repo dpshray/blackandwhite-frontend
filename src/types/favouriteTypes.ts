@@ -1,11 +1,7 @@
 export interface FavouriteVariant {
   size: string;
   color: string;
-  price: number;
-  discount_price: number;
-  discount_percent: number;
   stock: number;
-  images: string[];
 }
 
 export interface FavouriteCategory {
@@ -19,6 +15,9 @@ export interface FavouriteItem {
   product_id: number;
   title: string;
   images: string[];
+  price: number;
+  discount_price: number;
+  discount_percent: number;
   categories: FavouriteCategory[];
   slug: string;
   variant_id: number;

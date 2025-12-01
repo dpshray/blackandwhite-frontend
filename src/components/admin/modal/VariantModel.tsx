@@ -10,9 +10,7 @@ import {
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import Image from "next/image";
 import { Eye, Package, Palette, Ruler } from "lucide-react";
-import Link from "next/link";
 import { ProductVariant } from "@/types/productTypes";
 
 interface VariantDetailsDialogProps {
@@ -24,10 +22,6 @@ export default function VariantModal({ variants }: VariantDetailsDialogProps) {
     if (stock === 0) return { label: "Out of Stock", color: "destructive" };
     if (stock < 10) return { label: "Low Stock", color: "secondary" };
     return { label: "In Stock", color: "default" };
-  };
-
-  const hasDiscount = (price: number, discountPrice?: number | null) => {
-    return discountPrice !== null && discountPrice !== undefined && discountPrice < price;
   };
 
   return (
@@ -58,7 +52,6 @@ export default function VariantModal({ variants }: VariantDetailsDialogProps) {
                 <div className="space-y-6">
                 {variants.map((variant, index) => {
                     const stockStatus = getStockStatus(Number(variant.stock));
-                    const discounted = hasDiscount(Number(variant.price), variant.discount_price != null ? Number(variant.discount_price) : null);
 
 
                     return (
@@ -75,43 +68,6 @@ export default function VariantModal({ variants }: VariantDetailsDialogProps) {
                             <Badge variant={stockStatus.color as any} className="text-xs">
                             {stockStatus.label}
                             </Badge>
-                        </div>
-                        {discounted && variant.discount_percent && (
-                            <Badge variant="secondary" className="flex items-center gap-1 text-green-700 bg-green-100 border-green-300">
-                                {variant.discount_percent}% Off
-                            </Badge>
-                        )}
-                        </div>
-
-                        {/* Images Section */}
-                        <div className="space-y-2">
-                        <h4 className="text-sm font-semibold text-slate-700 flex items-center gap-1">
-                            <Eye className="w-4 h-4" />
-                            Product Images
-                        </h4>
-                        <div className="flex gap-3 overflow-x-auto custom-scrollbar pb-2">
-                            {variant.images && variant.images.length > 0 ? (
-                            variant.images.map((img, idx) => (
-                                <Link
-                                href={img || ""}
-                                key={idx}
-                                className="relative flex-shrink-0 aspect-[5/3]"
-                                target="_blank"
-                                >
-                                <Image
-                                    src={img || "/placeholder.svg"}
-                                    alt={`Variant ${index + 1} - Image ${idx + 1}`}
-                                    width={100}
-                                    height={100}
-                                    className="rounded-xl object-cover border-2 border-slate-100 hover:border-blue-300 transition-colors"
-                                />
-                                </Link>
-                            ))
-                            ) : (
-                            <div className="w-[100px] h-[100px] bg-slate-50 flex items-center justify-center rounded-xl border-2 border-dashed border-slate-200">
-                                <Package className="w-6 h-6 text-slate-400" />
-                            </div>
-                            )}
                         </div>
                         </div>
 
@@ -143,31 +99,6 @@ export default function VariantModal({ variants }: VariantDetailsDialogProps) {
                                 {variant.stock} units
                                 </p>
                             </div>
-                            </div>
-                        </div>
-                        </div>
-
-                        {/* Pricing Section */}
-                        <div className="pt-3 border-t border-slate-100">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                            <span className="text-sm font-medium text-slate-700">Price</span>
-                            </div>
-                            <div className="text-right">
-                            {discounted ? (
-                                <div className="space-y-1">
-                                <p className="text-lg font-bold text-green-600">
-                                    Rs. {variant.discount_price}
-                                </p>
-                                <p className="text-sm text-slate-500 line-through">
-                                    Rs. {variant.price}
-                                </p>
-                                </div>
-                            ) : (
-                                <p className="text-lg font-bold text-slate-900">
-                                Rs. {variant.price}
-                                </p>
-                            )}
                             </div>
                         </div>
                         </div>

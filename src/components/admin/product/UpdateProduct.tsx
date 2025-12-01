@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -12,30 +12,21 @@ import { useProducts } from "@/hooks/useProducts";
 import { Controller, useFieldArray, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import z from "zod";
-import { normalizeFiles } from "@/lib/normalizeFiles";
 import TextInput from "@/components/fields/TextInput";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { Product } from "@/types/productTypes";
 import { useCategories } from "@/hooks/useCategories";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { ImagePreview } from "../ImagePreview";
-
-const MAX_PRODUCT_SIZE = 1 * 1024 * 1024;
-const ALLOWED_IMAGE_TYPES = ["image/jpeg", "image/png", "image/webp", "image/jpg"];
+import { SIZE_OPTIONS } from "./AddProduct";
+import SelectInputField from "@/components/fields/SelectInput";
 
 // Variant Schema
 const variantSchema = z.object({
   id: z.number().optional(),
   size: z.string().min(1),
   color: z.string().min(1),
-  price: z.string().min(1),
-  discount_price: z.string().nullable().optional(),
   stock: z.string().min(0),
-  images: z
-    .any()
-    .refine((files) => normalizeFiles(files).every((f) => f instanceof Blob), "All files must be images")
-    .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_PRODUCT_SIZE), `Image must be less than ${MAX_PRODUCT_SIZE / (1024 * 1024)}MB`)
-    .refine((files) => normalizeFiles(files).every((f) => ALLOWED_IMAGE_TYPES.includes(f.type)), "Only jpg/png/webp")
 });
 
 // Product Schema
@@ -48,7 +39,7 @@ const productSchema = z.object({
   fabric: z.string().min(1),
   material: z.string().min(1),
   images: z.any(),
-  categories: z.array(z.number()).min(1),
+  categories: z.number().min(1, "Category is required"),
   size_detail: z.any(),
   variants: z.array(variantSchema).min(1),
 });
@@ -65,8 +56,15 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
   const { getCategories } = useCategories();
   const categoriesData = getCategories.data?.data?.data || [];
   const [productImages, setProductImages] = useState<FileList | null>(null)
-  const [variantImages, setVariantImages] = useState<{ [key: number]: FileList | null }>({})
   const [sizeDetailsImage, setSizeDetailsImage] = useState<File | null>(null)
+  const productInputRefs = useRef<HTMLInputElement | null>(null)
+  const sizeDetailInputRefs = useRef<HTMLInputElement | null>(null)
+
+  const categoryOptions = categoriesData.map((category) => ({
+    value: category.id,
+    label: category.title,
+  }));
+
 
   const {
     register,
@@ -86,16 +84,13 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       fabric: product.fabric || "",
       material: product.material || "",
       images: [],
-      categories: product.categories?.map((c: any) => c.categories_id) || [],
+      categories: product.categories?.[0]?.categories_id || undefined,
       size_detail: null,
       variants: product.variants?.map((v: any) => ({
         id: v.id,
         size: v.size,
         color: v.color,
-        price: String(v.price),
-        discount_price: v.discount_price != null ? String(v.discount_price) : null,
         stock: String(v.stock),
-        images: [],
       })) || [],
     },
   });
@@ -126,28 +121,8 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
     const newFiles = dt.files
     setProductImages(newFiles)
     setValue("images", newFiles)
-  }
 
-  const handleVariantImageChange = (variantIndex: number, e: React.ChangeEvent<HTMLInputElement>) => {
-    const files = e.target.files
-    setVariantImages((prev) => ({ ...prev, [variantIndex]: files }))
-    setValue(`variants.${variantIndex}.images`, files)
-  }
-
-  const removeVariantImage = (variantIndex: number, imageIndex: number) => {
-    const currentFiles = variantImages[variantIndex]
-    if (!currentFiles) return
-
-    const dt = new DataTransfer()
-    const files = Array.from(currentFiles)
-
-    files.forEach((file, i) => {
-      if (i !== imageIndex) dt.items.add(file)
-    })
-
-    const newFiles = dt.files
-    setVariantImages((prev) => ({ ...prev, [variantIndex]: newFiles }))
-    setValue(`variants.${variantIndex}.images`, newFiles)
+    if (productInputRefs.current) productInputRefs.current.value = ""
   }
 
   const handleSizeDetailImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -161,6 +136,8 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
   const removeSizeDetailImage = () => {
     setSizeDetailsImage(null);
     setValue("size_detail", null);
+
+    if (sizeDetailInputRefs.current) sizeDetailInputRefs.current.value = ""
   };
 
   useEffect(() => {
@@ -173,14 +150,12 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       fabric: product.fabric || "",
       material: product.material || "",
       images: [],
-      categories: product.categories?.map((c: any) => c.categories_id) || [],
+      categories: product.categories?.[0]?.categories_id || undefined,
       size_detail: null,
       variants: product.variants?.map((v: any) => ({
         id: v.id,
         size: v.size,
         color: v.color,
-        price: String(v.price),
-        discount_price: v.discount_price !=  null ? String(v.discount_price) : null,
         stock: String(v.stock),
         images: [],
       })) || [],
@@ -197,8 +172,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       formData.append("pattern", data.pattern);
       formData.append("fabric", data.fabric);
       formData.append("material", data.material);
-
-      data.categories.forEach((id) => formData.append("categories[]", id.toString()));
+      formData.append("categories", data.categories.toString());
 
       if (data.size_detail) {
         formData.append("size_detail", data.size_detail);
@@ -214,12 +188,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
         }
         formData.append(`variant[${index}][size]`, variant.size);
         formData.append(`variant[${index}][color]`, variant.color);
-        formData.append(`variant[${index}][price]`, variant.price);
-        formData.append(`variant[${index}][discount_price]`, variant.discount_price ?? "");
         formData.append(`variant[${index}][stock]`, variant.stock);
-        if (variant.images && variant.images.length > 0) {
-          Array.from(variant.images).forEach((file) => formData.append(`variant[${index}][images][]`, file as Blob));
-        }
       });
 
       await updateProduct.mutateAsync({ id: product.id, payload: formData });
@@ -280,46 +249,30 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
               <TextInput label="Material" name="material" register={register} error={errors.material} />
 
               {/* Category Selection Field */}
-              <div className="md:col-span-2">
-                <Label htmlFor="categories">Category</Label>
-                <Controller
-                  name="categories"
-                  control={control}
-                  render={({ field }) => (
-                    <Select
-                      onValueChange={(value) => field.onChange(Number(value))}
-                      value={field.value ? String(field.value) : ""}
-                    >
-                      <SelectTrigger id="category" className="w-full mt-2">
-                        <SelectValue placeholder="Select a category" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {categoriesData.map((category) => (
-                          <SelectItem
-                            key={category.id}
-                            value={String(category.id)}
-                          >
-                            {category.title}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  )}
-                />
-                {errors.categories && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {String(errors.categories.message)}
-                  </p>
+              <Controller
+                name="categories"
+                control={control}
+                render={({ field }) => (
+                  <SelectInputField
+                    label="Category"
+                    placeholder="Select a category"
+                    name={field.name}
+                    options={categoryOptions}
+                    value={field.value}               
+                    onChangeAction={(value) => field.onChange(Number(value))}
+                    error={errors.categories?.message}
+                    required
+                  />
                 )}
-              </div>
+              />
 
               <div>
                 <Label htmlFor="size_detail" className="pb-2">Size Details Images</Label>
-                <Input type="file" accept="image/*" onChange={handleSizeDetailImageChange} 
+                <Input type="file" accept="image/*" onChange={handleSizeDetailImageChange} ref={sizeDetailInputRefs}
                   className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
                 />
                 {errors.size_detail?.message && <p className="text-red-500 text-sm mt-1">{String(errors.size_detail.message)}</p>}
-                <ImagePreview files={sizeDetailsImage} onRemove={removeSizeDetailImage} />
+                <ImagePreview files={sizeDetailsImage} onRemove={removeSizeDetailImage}/>
               </div>
             </CardContent>
           </Card>
@@ -344,11 +297,11 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <Input type="file" multiple accept="image/*" onChange={handleProductImageChange} 
+              <Input type="file" multiple accept="image/*" onChange={handleProductImageChange} ref={productInputRefs}
                 className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
               />
               {errors.images?.message && <p className="text-red-500 text-sm mt-1">{String(errors.images.message)}</p>}
-              <ImagePreview files={productImages} onRemove={removeProductImage} />
+              <ImagePreview files={productImages} onRemove={removeProductImage}/>
 
             </CardContent>
           </Card>
@@ -363,7 +316,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => appendVariant({ id: 0, size: "", color: "", price: "", discount_price: null, stock: "", images: [] })}
+                  onClick={() => appendVariant({ id: 0, size: "", color: "", stock: "" })}
                 >
                   <Plus className="h-4 w-4 mr-2" /> Add Variant
                 </Button>
@@ -382,7 +335,25 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
                     <X />
                   </Button>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <TextInput label="Size" name={`variants.${index}.size`} register={register} error={errors.variants?.[index]?.size} />
+                    <div>
+                      <Controller
+                          name={`variants.${index}.size`}
+                          control={control}
+                          render={({ field }) => (
+                            <SelectInputField
+                              label="Size"
+                              placeholder="Select size"
+                              name={field.name}
+                              options={SIZE_OPTIONS}
+                              value={field.value}              
+                              onChangeAction={field.onChange}  
+                              error={errors.variants?.[index]?.size?.message as string}
+                              required
+                            />
+                          )}
+                      />  
+                    </div>
+
                     
                     <div>
                       <Label htmlFor={`variant-color-${index}`}>Color</Label>
@@ -405,41 +376,12 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
                         <p className="text-red-500 text-sm mt-1">{String(errors.variants?.[index]?.color?.message)}</p>
                       )}
                     </div>
-                    
-                    <TextInput
-                      label="Price"
-                      name={`variants.${index}.price`}
-                      register={register}
-                      error={errors.variants?.[index]?.price}
-                    />
-                    <TextInput
-                      label="Discount Price"
-                      name={`variants.${index}.discount_price`}
-                      register={register}                     
-                      error={errors.variants?.[index]?.discount_price}
-                    />
+              
                     <TextInput
                       label="Stock"
                       name={`variants.${index}.stock`}
                       register={register}
                       error={errors.variants?.[index]?.stock}
-                    />
-                  </div>
-                  <div>
-                    <Label className="pb-2">Variant Images</Label>
-                    <Input
-                      type="file"
-                      multiple
-                      accept="image/*"
-                      onChange={(e) => handleVariantImageChange(index, e)}
-                      className="h-10 file:mr-4 file:mt-0.5 file:px-4 file:rounded-none file:border-0 file:text-sm file:font-medium file:bg-black file:text-white file:hover:bg-black/80 file:cursor-pointer"
-                    />
-                    {errors.variants?.[index]?.images?.message && (
-                      <p className="text-red-500 text-sm mt-1">{String(errors.variants?.[index]?.images?.message)}</p>
-                    )}
-                    <ImagePreview
-                      files={variantImages[index]}
-                      onRemove={(imageIndex) => removeVariantImage(index, imageIndex)}
                     />
                   </div>
                 </div>

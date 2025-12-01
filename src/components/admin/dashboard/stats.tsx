@@ -4,10 +4,7 @@ import { useTotal } from "@/hooks/useTotal";
 import { StatsCard, StatsSkeleton } from "./StatsCard";
 
 export default function Stats() {
-  const { getTotalRevenue, getTotalOrders, getTotalProducts, getTotalUsers } = useTotal();
-
-  console.log("asasas",getTotalRevenue.data);
-
+  const { getTotalRevenue, getTotalOrders, getTotalProducts, getTotalUsers } = useTotal();  
   const stats = [
     {
       title: "Total Revenue",

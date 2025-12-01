@@ -13,6 +13,8 @@ import { useAuth } from "@/context/auth-provider";
 import LoginModal from "../auth/LoginModal";
 import { useRouter } from "next/navigation";
 import ViewSizeGuideButton from "./ViewSizeGuideButton";
+import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from "../ui/carousel";
+import { Badge } from "../ui/badge";
 
 interface ProductDetailsProps {
   product: any;
@@ -28,23 +30,12 @@ export default function ProductDetails({
   const addToCart = useAddToCart();
   const addFavourite = useAddFavourite();
   const { data: favourites } = useFavourites();
-
-  const productImages: string[] = Array.isArray(product.image)
-    ? product.image
-    : product.image
-    ? [product.image]
-    : [];
-
-  const variantImages: string[] = product.variants.flatMap(
-    (v: ProductVariant) => (v.images ? v.images : [])
-  );
-
-  const allImages: string[] = [...productImages, ...variantImages].filter(Boolean);
+  console.log("ppppp", product.categories[0].categories_title)
 
   const { user } = useAuth();
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
   const [selectedSize, setSelectedSize] = useState<string | null>(null);
-  const [selectedImage, setSelectedImage] = useState<string>(allImages[0] );
+  const [selectedImage, setSelectedImage] = useState<string>(product.image[0] );
   const [quantity, setQuantity] = useState<number>(1);
   const [loginModalOpen, setLoginModalOpen] = useState(false);
   const isFavourite = favourites?.favourites.some((fav: any) => fav.product_id === product.id);
@@ -158,31 +149,81 @@ export default function ProductDetails({
       {/* Product Details */}
       <div className="grid sm:grid-cols-2 gap-6">
         {/* Images */}
-        <div className="flex md:flex-row flex-col gap-6">
+        <div className="flex sm:flex-row flex-col gap-6">
           {/* Thumbnails */}
-          <div className="flex flex-row md:flex-col items-center justify-center sm:justify-start gap-2">
-              {allImages.map((img: string, i: number) => (
-              <Image
-                  key={i}
-                  src={img}
-                  alt={`variant ${i}`}
-                  width={90}
-                  height={90}
-                  onClick={() => setSelectedImage(img)}
-                  className={`rounded-lg object-cover border cursor-pointer transition aspect-4/5
-                  ${selectedImage === img ? "border-black scale-105" : "border-gray-200"}`}
-              />
-              ))}
+          <div className="flex sm:flex-col flex-row gap-2 sm:order-1 order-2">
+            {product.image && product.image.length > 4 ? (
+              <Carousel orientation="vertical" className="sm:w-[120px] w-full hidden sm:block relative mt-6">
+                <CarouselContent className="h-[460px]">
+                  {product.image.map((img: string, i: number) => (
+                    <CarouselItem key={i} className="basis-1/4 pl-2">
+                      <Image
+                        src={img || "/placeholder.svg"}
+                        alt={`Product variant ${i}`}
+                        width={90}
+                        height={90}
+                        onClick={() => setSelectedImage(img)}
+                        className={`rounded-lg object-cover border cursor-pointer transition ${
+                          selectedImage === img ? "border-black " : "border-gray-200"
+                        }`}
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="top-0 left-1/2 -translate-x-1/2 -translate-y-8" />
+                <CarouselNext className="bottom-0 left-1/2 -translate-x-1/2 translate-y-8" />
+              </Carousel>
+            ) : null}
+
+            {/* Horizontal carousel for mobile only */}
+            {product.image && product.image.length > 4 ? (
+              <Carousel orientation="horizontal" className="sm:hidden w-full block relative">
+                <CarouselContent>
+                  {product.image.map((img: string, i: number) => (
+                    <CarouselItem key={i} className="basis-1/3 pl-2">
+                      <Image
+                        src={img || "/placeholder.svg"}
+                        alt={`Product variant ${i}`}
+                        width={90}
+                        height={90}
+                        onClick={() => setSelectedImage(img)}
+                        className={`rounded-lg object-cover border cursor-pointer transition flex-shrink-0 ${
+                          selectedImage === img ? "border-black scale-105" : "border-gray-200"
+                        }`}
+                      />
+                    </CarouselItem>
+                  ))}
+                </CarouselContent>
+                <CarouselPrevious className="-left-2" />
+                <CarouselNext className="-right-2" />
+              </Carousel>
+            ) : (
+              <div className="flex flex-row gap-2 w-full overflow-x-auto pb-2 sm:flex-col sm:w-auto">
+                {product.image &&
+                  product.image.map((img: string, i: number) => (
+                    <Image
+                      key={i}
+                      src={img || "/placeholder.svg"}
+                      alt={`Product variant ${i}`}
+                      width={90}
+                      height={90}
+                      onClick={() => setSelectedImage(img)}
+                      className={`rounded-lg object-cover border cursor-pointer transition flex-shrink-0 ${
+                        selectedImage === img ? "border-black scale-105" : "border-gray-200"
+                      }`}
+                    />
+                  ))}
+              </div>
+            )}
           </div>
 
           {/* Big Image */}
-          <div className="flex justify-center md:justify-start">
+          <div className="relative w-full h-[450px] sm:order-2 order-1">
             <Image
-                src={selectedImage}
-                alt={product.title}
-                width={400}
-                height={400}
-                className="rounded-xl object-cover transition-all duration-300 aspect-4/5"
+              src={selectedImage}
+              alt={product.title}
+              fill
+              className="object-contain rounded-xl"
             />
           </div>
         </div>
@@ -190,7 +231,10 @@ export default function ProductDetails({
 
         {/* Info */}
         <div className="space-y-4">
-          <h1 className="text-2xl lg:text-3xl font-bold text-balance leading-tight">{product.title}</h1>
+          <div>
+            <h1 className="text-2xl lg:text-3xl font-bold text-balance leading-tight">{product.title}</h1>
+            <Badge className="rounded-none">{product.categories[0].categories_title}</Badge>
+          </div>
           <p className="text-sm text-gray-600 mb-4">{product.description}</p>
 
           <div className="flex items-center justify-between">
@@ -224,7 +268,14 @@ export default function ProductDetails({
           </div>
 
           {/* Attributes */}
-          <ul className="space-y-2 text-sm">
+          <ul className="space-y-2 text-sm py-2">
+            {product.product_code && (
+              <li className="flex gap-4 pb-1">
+                <span className="text-muted-foreground">Product ID:</span>
+                <span className="capitalize font-medium">{product.product_code}</span>
+              </li>
+            )
+            }
             {product.pattern && (
               <li className="flex gap-4 pb-1">
                 <span className="text-muted-foreground">Pattern:</span>

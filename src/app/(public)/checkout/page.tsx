@@ -313,7 +313,7 @@ export default function CheckoutPage() {
           {itemsToRender.map((item: any, i: number) => (
             <div key={i} className="flex gap-4 border rounded-md p-3">
               <Image
-                src={isBuyNow ? item.image : item.product.variant.image}
+                src={isBuyNow ? item.image : item.product.image}
                 width={200}
                 height={200}
                 className="w-20 h-24 object-cover rounded-md"
@@ -336,8 +336,8 @@ export default function CheckoutPage() {
                   Rs{" "}
                   {isBuyNow
                     ? item.price
-                    : item.product.variant.discount_price ||
-                      item.product.variant.price}
+                    : item.product.discount_price ||
+                      item.product.price}
                 </p>
               </div>
             </div>

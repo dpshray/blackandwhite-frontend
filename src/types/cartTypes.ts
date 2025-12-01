@@ -1,16 +1,15 @@
 export interface CartVariant {
   id: number;
   size: string;
-  color: string;
-  image: string;
-  price: number;
-  discount_price: number | null;
+  color: string;  
   quantity: number;
 }
 
 export interface CartProduct {
   id: number;
   title: string;
+  price: number
+  discount_price: number | null;
   variant: CartVariant;
 }
 
