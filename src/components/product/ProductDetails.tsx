@@ -30,7 +30,7 @@ export default function ProductDetails({
   const addToCart = useAddToCart();
   const addFavourite = useAddFavourite();
   const { data: favourites } = useFavourites();
-  console.log("ppppp", product.categories[0].categories_title)
+  console.log("ppppp", product)
 
   const { user } = useAuth();
   const [selectedColor, setSelectedColor] = useState<string | null>(null);
@@ -198,7 +198,7 @@ export default function ProductDetails({
                 <CarouselNext className="-right-2" />
               </Carousel>
             ) : (
-              <div className="flex flex-row gap-2 w-full overflow-x-auto pb-2 sm:flex-col sm:w-auto">
+              <div className="flex flex-row gap-2 w-full overflow-x-hidden pb-2 sm:flex-col sm:w-full">
                 {product.image &&
                   product.image.map((img: string, i: number) => (
                     <Image
@@ -209,7 +209,7 @@ export default function ProductDetails({
                       height={90}
                       onClick={() => setSelectedImage(img)}
                       className={`rounded-lg object-cover border cursor-pointer transition flex-shrink-0 ${
-                        selectedImage === img ? "border-black scale-105" : "border-gray-200"
+                        selectedImage === img ? "border-black" : "border-gray-200"
                       }`}
                     />
                   ))}
