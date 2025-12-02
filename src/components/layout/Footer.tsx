@@ -2,9 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
-import { FaFacebook, FaInstagram, FaWhatsapp } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import { ArrowRight } from "lucide-react";
 import { Category } from "@/types/categoryTypes";
+import Image from "next/image";
 
 const company = [
   { title: "Home", link: "/" },
@@ -24,6 +25,11 @@ const follow = [
     icon: <FaInstagram />,
   },
   {
+    title: "Tiktok",
+    link: `${process.env.NEXT_PUBLIC_TIKTOK_URL}`,
+    icon: <FaTiktok />,
+  },
+  {
     title: "WhatsApp",
     link: `${process.env.NEXT_PUBLIC_WHATSAPP_URL}`,
     icon: <FaWhatsapp />,
@@ -31,10 +37,10 @@ const follow = [
 ];
 
 const bottom = [
-  { title: "Privacy Policy", link: "#" },
-  { title: "Terms of Service", link: "#" },
-  { title: "Sales and Refunds", link: "#" },
-  { title: "Legal", link: "#" },
+  { title: "Privacy Policy", link: "/privacy-policy" },
+  { title: "Terms of Service", link: "/terms-of-service" },
+  { title: "Sales and Refunds", link: "/sales-refunds" },
+  { title: "Legal", link: "/legal" },
 ];
 
 interface FooterProps {
@@ -47,12 +53,16 @@ export default function Footer({categories}: FooterProps) {
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-2 md:grid-cols-8 gap-8">
           {/* Company Info */}
-          <div className="col-span-2 space-y-4">
-            <div className="border border-white text-center  px-1 sm:px-3 py-2">
-              <span className="text-xs sm:text-sm font-medium">
-                BLACK AND WHITE TREND
-              </span>
-            </div>
+          <div className="col-span-2 space-y-4 ">
+            <Link href="/" className="inline-block">
+              <Image
+                src="/white-logo.png"
+                alt="Logo"
+                width={120}   
+                height={10}  
+                className="object-contain"
+              />
+            </Link>
             <p className="text-sm text-gray-300 mb-2">
               Your destination for timeless black & white men&apos;s fashion.
             </p>
@@ -68,6 +78,7 @@ export default function Footer({categories}: FooterProps) {
                 <Link
                   href={item.link}
                   key={item.title}
+                  target="_blank"
                   className="w-8 h-8 flex items-center justify-center text-xl hover:text-gray-300 transition-colors"
                 >
                   {item.icon}

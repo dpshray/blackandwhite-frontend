@@ -31,6 +31,8 @@ export interface Product {
   material: string;
   image: string[];
   categories: ProductCategory[];
+  bestseller: boolean;
+  limited: boolean;
   size_detail: string | null;
   main_image: string;
   variants: ProductVariant[];

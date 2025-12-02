@@ -77,6 +77,18 @@ export const useProducts = (page: number = 1, limit: number = 10, search?: strin
     },
   });
 
+  //deleteVariant
+  const deleteVariant = useMutation({
+    mutationFn: (variant_id: number) => productService.deleteVariant(variant_id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      toast.success("Variant deleted successfully");
+    },
+    onError: (err: AxiosError<ApiError>) => {
+      toast.error(err.response?.data?.message || "Failed to delete variant")
+    }
+  })
+
   return {
     // query
     getProducts,
@@ -85,5 +97,6 @@ export const useProducts = (page: number = 1, limit: number = 10, search?: strin
     addProduct,
     updateProduct,
     deleteProduct,
+    deleteVariant,
   };
 };

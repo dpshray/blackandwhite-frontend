@@ -54,3 +54,21 @@ export const useDeleteOrder = () => {
     },
   });
 };
+
+export const useUpdateOrderStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ orderId, status }: { orderId: number; status: string }) =>
+      orderService.updateOrderStatus(orderId, status),
+    onSuccess: (_, { orderId, status }) => {
+      queryClient.invalidateQueries({ queryKey: ["all-orders"], exact: false });
+      queryClient.invalidateQueries({ queryKey: ["revenue"] });
+      toast.success(`Order ${orderId} status updated to ${status}`);
+    },
+    onError: (error) => {
+      toast.error("Failed to update order status");
+      console.error("Failed to update order status:", error);
+    },
+  });
+};

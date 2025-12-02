@@ -30,6 +30,7 @@ import { Controller, useFieldArray, useForm } from "react-hook-form";
 import z from "zod";
 import { ImagePreview } from "../ImagePreview";
 import SelectInputField from "@/components/fields/SelectInput";
+import { Checkbox } from "@/components/ui/checkbox";
 
 export const MAX_PRODUCT_SIZE = 1 * 1024 * 1024; // 1MB
 export const ALLOWED_IMAGE_TYPES = [
@@ -54,13 +55,6 @@ const variantSchema = z.object({
   size: z.string().min(1, "Product size is required"),
   color: z.string().min(1, "Product color is required"),
   stock: z.string().min(1, "Product stock is required"),
-  // images: z.any()
-  //   .refine((files) => normalizeFiles(files).length >= 1,"At least one image is required")
-  //   .refine((files) => normalizeFiles(files).every((file) => file instanceof Blob),"All files must be valid images")
-  //   .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_PRODUCT_SIZE),`Image must be less than ${MAX_PRODUCT_SIZE / (1024 * 1024)}MB`)
-  //   .refine((files) =>normalizeFiles(files).every((f) =>ALLOWED_IMAGE_TYPES.includes(f.type)),
-  //     "Only jpg, jpeg, png, or webp files are allowed"
-  //   ),
 });
 
 const productSchema = z.object({
@@ -77,20 +71,22 @@ const productSchema = z.object({
     .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_PRODUCT_SIZE), `Image must be less than ${MAX_PRODUCT_SIZE / (1024 * 1024)}MB`)
     .refine((files) => normalizeFiles(files).every((f) => ALLOWED_IMAGE_TYPES.includes(f.type)), "Only jpg, jpeg, png or webp allowed"),
   images: z.any()
+  .refine((files) => normalizeFiles(files).length >= 1,"At least one image is required")
+  .refine((files) => normalizeFiles(files).every((file) => file instanceof Blob),"All files must be valid images")
+  .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_PRODUCT_SIZE),`Image must be less than ${MAX_PRODUCT_SIZE / (1024 * 1024)}MB`)
+  .refine((files) =>normalizeFiles(files).every((f) =>ALLOWED_IMAGE_TYPES.includes(f.type)),
+  "Only jpg, jpeg, png, or webp files are allowed"
+),
+categories: z.number().min(1, "At least one category is required"),
+sizeDetail: z.any()
     .refine((files) => normalizeFiles(files).length >= 1,"At least one image is required")
     .refine((files) => normalizeFiles(files).every((file) => file instanceof Blob),"All files must be valid images")
     .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_PRODUCT_SIZE),`Image must be less than ${MAX_PRODUCT_SIZE / (1024 * 1024)}MB`)
     .refine((files) =>normalizeFiles(files).every((f) =>ALLOWED_IMAGE_TYPES.includes(f.type)),
       "Only jpg, jpeg, png, or webp files are allowed"
     ),
-  categories: z.number().min(1, "At least one category is required"),
-  sizeDetail: z.any()
-    .refine((files) => normalizeFiles(files).length >= 1,"At least one image is required")
-    .refine((files) => normalizeFiles(files).every((file) => file instanceof Blob),"All files must be valid images")
-    .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_PRODUCT_SIZE),`Image must be less than ${MAX_PRODUCT_SIZE / (1024 * 1024)}MB`)
-    .refine((files) =>normalizeFiles(files).every((f) =>ALLOWED_IMAGE_TYPES.includes(f.type)),
-      "Only jpg, jpeg, png, or webp files are allowed"
-    ),
+  best_seller: z.boolean(),     
+  limited_edition: z.boolean(), 
   variants: z.array(variantSchema).min(1, "At least one variant is required"),
 });
 
@@ -126,9 +122,12 @@ export default function AddProduct() {
       pattern: "",
       fabric: "",
       material: "",
+      main_image: null,
       images: [],
       categories: undefined,
       sizeDetail: null,
+      best_seller: false,      
+      limited_edition: false, 
       variants: [
         {
           size: "",
@@ -219,6 +218,9 @@ export default function AddProduct() {
       formData.append("pattern", data.pattern);
       formData.append("fabric", data.fabric);
       formData.append("material", data.material);
+      formData.append("bestseller", data.best_seller ? "1" : "0");
+      formData.append("limited", data.limited_edition ? "1" : "0");
+
 
       formData.append("categories", data.categories.toString());
       if (data.main_image && data.main_image.length > 0) {
@@ -392,6 +394,52 @@ export default function AddProduct() {
                 <ImagePreview files={mainImage} onRemove={removeMainImage} single />
               </div>
 
+              <div className="md:col-span-2 flex gap-6">
+                <div className="flex items-center space-x-2">
+                  <Controller
+                    name="best_seller"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="best_seller"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                        <label
+                          htmlFor="best_seller"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Best Seller
+                        </label>
+                      </div>
+                    )}
+                  />
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Controller
+                    name="limited_edition"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="limited_edition"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                        <label
+                          htmlFor="limited_edition"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Limited Edition
+                        </label>
+                      </div>
+                    )}
+                  />
+                </div>
+              </div>
+
             </CardContent>
           </Card>
 
@@ -433,6 +481,19 @@ export default function AddProduct() {
 
             </CardContent>
           </Card>
+
+          {/* <div className="flex flex-col space-y-2 mt-2 md:col-span-2">
+            <Label className="flex items-center space-x-2">
+              <Checkbox {...register("best_seller")} />
+              <span>Best Seller</span>
+            </Label>
+
+            <Label className="flex items-center space-x-2">
+              <Checkbox {...register("limited_edition")} />
+              <span>Limited Edition</span>
+            </Label>
+          </div> */}
+
 
           {/* Variants */}
           <Card>

@@ -156,11 +156,11 @@ export default function ProductDetails({
         <div className="flex sm:flex-row flex-col gap-6">
           {/* Thumbnails */}
           <div className="flex sm:flex-col flex-row gap-2 sm:order-1 order-2">
-            {product.image && product.image.length > 3 ? (
-              <Carousel orientation="vertical" className="sm:w-[120px] w-full hidden sm:block relative mt-6">
-                <CarouselContent className="h-[460px]">
-                  {product.image.map((img: string, i: number) => (
-                    <CarouselItem key={i} className="basis-1/4 pl-2">
+            {allImages.length > 3 ? (
+              <Carousel orientation="vertical" className="sm:w-[120px] w-full hidden sm:block relative mt-10" opts={{align: "start"}}>
+                <CarouselContent className="h-[550px]">
+                  {allImages.map((img: string, i: number) => (
+                    <CarouselItem key={i} className="basis-1/4 pl-2 ">
                       <Image
                         src={img || "/placeholder.svg"}
                         alt={`Product variant ${i}`}
@@ -174,14 +174,14 @@ export default function ProductDetails({
                     </CarouselItem>
                   ))}
                 </CarouselContent>
-                <CarouselPrevious className="top-0 left-1/2 -translate-x-1/2 -translate-y-8" />
-                <CarouselNext className="bottom-0 left-1/2 -translate-x-1/2 translate-y-8" />
+                <CarouselPrevious className="top-0 left-1/2 -translate-x-1/2 -translate-y-10" />
+                <CarouselNext className="bottom-0 left-1/2 -translate-x-1/2 translate-y-10" />
               </Carousel>
             ) : null}
 
             {/* Horizontal carousel for mobile only */}
-            {product.image && product.image.length > 3 ? (
-              <Carousel orientation="horizontal" className="sm:hidden w-full block relative">
+            {allImages.length > 3 ? (
+              <Carousel orientation="horizontal" className="sm:hidden w-full block relative" opts={{align: "start"}}>
                 <CarouselContent>
                   {allImages.map((img: string, i: number) => (
                     <CarouselItem key={i} className="basis-1/4">
@@ -222,7 +222,7 @@ export default function ProductDetails({
           </div>
 
           {/* Big Image */}
-          <div className="relative w-full h-[450px] sm:order-2 order-1">
+          <div className="relative w-full h-[400px] sm:h-[500px] md:h-[600px] sm:order-2 order-1">
             <Image
               src={selectedImage}
               alt={product.title}
@@ -237,8 +237,20 @@ export default function ProductDetails({
         <div className="space-y-4">
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold text-balance leading-tight">{product.title}</h1>
-            <Badge className="rounded-none mt-2">{product.categories[0].categories_title}</Badge>
-          </div>
+            <div className="space-x-2">
+              <Badge className="rounded-none mt-2">{product.categories[0].categories_title}</Badge>
+              {product.bestseller && (
+                <Badge>
+                  Bestseller
+                </Badge>
+              )}
+              {product.limited && (
+                <Badge>
+                  Limited Edition
+                </Badge>
+              )}
+            </div>
+            </div>
           <p className="text-sm text-gray-600 mb-4">{product.description}</p>
 
           <div className="flex items-center justify-between">
@@ -382,7 +394,7 @@ export default function ProductDetails({
           </div>
 
           {/* Buttons */}
-          <div className="flex flex-col sm:flex-row gap-3 mt-4">
+          <div className="flex flex-col sm:flex-row gap-3 mt-4 flex-wrap">
             <Button
               onClick={handleBuyNow}
               disabled={buyNow.isPending}

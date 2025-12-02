@@ -6,9 +6,9 @@ import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 import { AllOrder } from "@/types/orderTypes";
 import { useAllOrders } from "@/hooks/useOrder";
-import { Badge } from "@/components/ui/badge";
 import { FaPhoneAlt } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
+import { StatusCell } from "./StatusCell";
 
 export default function OrderTable() {
     const [page, setPage] = useState(1);
@@ -39,10 +39,10 @@ export default function OrderTable() {
             const b = row.original.billing_information;
             return (
                 <div className="text-sm">
-                {b.first_name} {b.last_name} <br />
-                {b.address}, {b.city}, {b.state} <br />
-                <span className="flex items-center gap-2"><FaPhoneAlt className="text-red-500"/> {b.contact_number}</span>
-                <span className="flex items-center gap-2"><MdEmail className="text-yellow-500"/> {b.email}</span> <br />
+                {b?.first_name} {b?.last_name} <br />
+                {b?.address}, {b?.city}, {b?.state} <br />
+                <span className="flex items-center gap-2"><FaPhoneAlt className="text-red-500"/> {b?.contact_number}</span>
+                <span className="flex items-center gap-2"><MdEmail className="text-yellow-500"/> {b?.email}</span> <br />
                 </div>
             );
             },
@@ -72,13 +72,9 @@ export default function OrderTable() {
         {
             accessorKey: "status",
             header: "Status",
-            cell: ({ row }) => (
-            <div className="font-medium break-words whitespace-normal">
-                <Badge>{row.original.status}</Badge>
-            </div>
-            ),
+            cell: ({ row }) => <StatusCell row={row} />,
         },
-];
+    ];
 
 
     return (

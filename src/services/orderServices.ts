@@ -36,4 +36,9 @@ export const orderService = {
     const res = await axiosInstance.post(`/order-edit/${id}`);
     return res.data;
   },
+
+  updateOrderStatus: async (orderId: number, status: string) => {
+    const res = await axiosInstance.post(`/admin/update-order/${orderId}`, { status }); 
+    return res.data;
+  }
 };
