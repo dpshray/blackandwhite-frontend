@@ -37,10 +37,10 @@ const follow = [
 ];
 
 const bottom = [
-  { title: "Privacy Policy", link: "#" },
-  { title: "Terms of Service", link: "#" },
-  { title: "Sales and Refunds", link: "#" },
-  { title: "Legal", link: "#" },
+  { title: "Privacy Policy", link: "/privacy-policy" },
+  { title: "Terms of Service", link: "/terms-of-service" },
+  { title: "Sales and Refunds", link: "/sales-refunds" },
+  { title: "Legal", link: "/legal" },
 ];
 
 interface FooterProps {

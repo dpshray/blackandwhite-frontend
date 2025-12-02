@@ -237,8 +237,20 @@ export default function ProductDetails({
         <div className="space-y-4">
           <div>
             <h1 className="text-2xl lg:text-3xl font-bold text-balance leading-tight">{product.title}</h1>
-            <Badge className="rounded-none mt-2">{product.categories[0].categories_title}</Badge>
-          </div>
+            <div className="space-x-2">
+              <Badge className="rounded-none mt-2">{product.categories[0].categories_title}</Badge>
+              {product.bestseller && (
+                <Badge>
+                  Bestseller
+                </Badge>
+              )}
+              {product.limited && (
+                <Badge>
+                  Limited Edition
+                </Badge>
+              )}
+            </div>
+            </div>
           <p className="text-sm text-gray-600 mb-4">{product.description}</p>
 
           <div className="flex items-center justify-between">

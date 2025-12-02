@@ -51,10 +51,23 @@ export default async function ProductPage({ params }: { params: Promise<{slug: s
         {/* PRODUCT DETAILS */}
         <div className="space-y-6">
           <div className="space-y-3">
-            <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-gray-900">
-              {p.title}
-            </h1>
-
+            <div className="space-y-1">
+              <h1 className="text-3xl lg:text-4xl font-bold tracking-tight text-gray-900">
+                {p.title}
+              </h1>
+              <div className="space-x-2">
+                {p.bestseller && (
+                  <Badge>
+                    Bestseller
+                  </Badge>
+                )}
+                {p.limited && (
+                  <Badge>
+                    Limited Edition
+                  </Badge>
+                )}
+              </div>
+            </div>
             <p className="text-gray-600 leading-relaxed">{p.description}</p>
           </div>
 
@@ -72,7 +85,7 @@ export default async function ProductPage({ params }: { params: Promise<{slug: s
             </div>
 
             {p.discount_price && (
-              <Badge variant="destructive" className="text-sm px-3 py-1">
+              <Badge variant="destructive">
                 Save {p.discount_percent}% OFF
               </Badge>
             )}

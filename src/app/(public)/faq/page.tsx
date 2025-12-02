@@ -7,33 +7,32 @@ export default function FAQPage() {
   const faqs = [
     {
       id: "1",
-      question: "When will my order be processed?",
+      question: "What makes Black & White Trend unique?",
       answer:
-        "Orders are typically processed within 1-2 business days. You'll receive a confirmation email once your order has been processed and shipped.",
+        "We specialize exclusively in black and white men's wear, offering premium monochrome styles that are modern, versatile, and timeless.",
     },
     {
       id: "2",
-      question: "How can I return a product?",
+      question: "How long does delivery take?",
       answer:
-        "You can return products within 30 days of purchase. Items must be in original condition with tags attached. Contact our customer service to initiate a return.",
+        "Orders are typically delivered within 2-5 business days, depending on your location. A tracking link will be sent once your order is shipped.",
     },
     {
       id: "3",
-      question: "Do you provide international shipping?",
+      question: "What is your return and exchange policy?",
       answer:
-        "Yes, we offer international shipping to most countries. Shipping costs and delivery times vary by location. Check our shipping policy for more details.",
+        "We accept returns and exchanges within 7-14 days of delivery, as long as the item is unused, unwashed, and in its original condition.",
     },
     {
       id: "4",
-      question: "What should I do if my order arrives with missing or incorrect items?",
-      answer:
-        "If your order has missing or incorrect items, please contact our customer service within 48 hours of delivery. We'll resolve the issue promptly and ensure you receive the correct items.",
+      question: "What payment methods do you accept?",
+      answer: "We offer secure payment options including debit/credit cards, digital wallets, and (if applicable) Cash on Delivery.",
     },
     {
       id: "5",
-      question: "Is it necessary to create an account to shop online?",
+      question: "How can I contact customer support?",
       answer:
-        "While you can browse our products without an account, creating one allows you to track orders, save favorites, and enjoy a faster checkout experience.",
+        `You can reach us anytime at ${process.env.NEXT_PUBLIC_MAIL}. Our team is always ready to help with orders, returns, sizing, and more.`,
     },
   ]
 
