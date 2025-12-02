@@ -52,10 +52,10 @@ export default function BannerSlider({ banners }: BannerSliderProps) {
               <div className="absolute inset-0 z-10 flex items-center justify-center">
                 <div className="text-center space-y-4 md:space-y-6">
                   <h1 className="text-black leading-none">
-                    <span className="font-extrabold text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl block">
+                    <span className="font-extrabold text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl block">
                       {banner.title}
                     </span>
-                    <span className="text-3xl sm:text-4xl md:text-6xl lg:text-7xl xl:text-7xl">{banner.subtitle}</span>
+                    <span className="text-xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">{banner.subtitle}</span>
                   </h1>
                   <Link href={banner.url}>
                     <Button

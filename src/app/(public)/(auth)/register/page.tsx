@@ -5,7 +5,7 @@ export default function SignUpPage() {
 
   return (
     <RedirectIfAuthenticated>
-      <RegisterForm />
+      <RegisterForm admin/>
     </RedirectIfAuthenticated>
   )
 }

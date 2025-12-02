@@ -2,7 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Separator } from "../ui/separator";
 import Link from "next/link";
-import { FaFacebook, FaInstagram, FaWhatsapp } from "react-icons/fa";
+import { FaFacebook, FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import { ArrowRight } from "lucide-react";
 import { Category } from "@/types/categoryTypes";
 
@@ -22,6 +22,11 @@ const follow = [
     title: "Instagram",
     link: `${process.env.NEXT_PUBLIC_INSTAGRAM_URL}`,
     icon: <FaInstagram />,
+  },
+  {
+    title: "Tiktok",
+    link: `${process.env.NEXT_PUBLIC_TIKTOK_URL}`,
+    icon: <FaTiktok />,
   },
   {
     title: "WhatsApp",
@@ -68,6 +73,7 @@ export default function Footer({categories}: FooterProps) {
                 <Link
                   href={item.link}
                   key={item.title}
+                  target="_blank"
                   className="w-8 h-8 flex items-center justify-center text-xl hover:text-gray-300 transition-colors"
                 >
                   {item.icon}

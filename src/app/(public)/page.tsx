@@ -43,11 +43,14 @@ export default async function Home({ searchParams }: ProductsPageProps) {
       {/* Newsletter Section */}
       <section className="bg-black text-white py-12">
         <div className="max-w-7xl mx-auto px-4 flex flex-col md:flex-row items-center justify-center gap-12">
-          <h2 className="text-2xl font-medium">SIGN UP FOR UPDATES</h2>
+          <h2 className="text-2xl font-medium text-center md:text-left">
+            SIGN UP FOR UPDATES
+          </h2>
+
           <div className="flex w-full md:w-auto bg-white text-black p-1">
             <Input
               placeholder="Your Email Address Here"
-              className=" placeholder:text-gray-500 rounded-none border-0 min-w-[300px]"
+              className="placeholder:text-gray-500 rounded-none border-0 flex-1 min-w-0"
             />
             <Button className="rounded-none px-4" aria-label="Subscribe">
               <ArrowRight />

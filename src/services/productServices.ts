@@ -32,4 +32,5 @@ export const productService = {
 
   deleteProduct: (id: number) => axiosInstance.delete(`/admin/delete-product/${id}`),
 
-};
+  deleteVariant: (variant_id: number) => axiosInstance.delete(`/admin/delete-variant/${variant_id}`)
+}

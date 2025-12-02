@@ -20,7 +20,7 @@ export default function ProductSection({ title, products, link }: ProductSection
         <h2 className="text-2xl font-bold">{title}</h2>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product) => {
           const favObj = favourites?.favourites?.find((fav: any) => String(fav.product_id) === String(product.id));
           const isFav = !!favObj; 

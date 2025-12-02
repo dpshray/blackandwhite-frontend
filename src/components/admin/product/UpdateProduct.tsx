@@ -20,10 +20,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { ImagePreview } from "../ImagePreview";
 import { SIZE_OPTIONS } from "./AddProduct";
 import SelectInputField from "@/components/fields/SelectInput";
+import ActionModal from "@/components/modal/ConfirmModal";
 
 // Variant Schema
 const variantSchema = z.object({
-  id: z.number().optional(),
+  variant_id: z.number().optional(),
   size: z.string().min(1),
   color: z.string().min(1),
   stock: z.string().min(0),
@@ -53,7 +54,7 @@ interface UpdateProductDialogProps {
 
 export default function UpdateProduct({ product }: UpdateProductDialogProps) {
   const [open, setOpen] = useState(false);
-  const { updateProduct } = useProducts();
+  const { updateProduct, deleteVariant } = useProducts();
   const { getCategories } = useCategories();
   const categoriesData = getCategories.data?.data?.data || [];
   const [productImages, setProductImages] = useState<FileList | null>(null)
@@ -62,12 +63,32 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
   const sizeDetailInputRefs = useRef<HTMLInputElement | null>(null)
   const [mainImage, setMainImage] = useState<File | null>(null);
   const mainImageInputRef = useRef<HTMLInputElement | null>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [selectedVariantId, setSelectedVariantId] = useState<number | undefined>();
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState<number | null>(null);
 
   const categoryOptions = categoriesData.map((category) => ({
     value: category.id,
     label: category.title,
   }));
 
+
+  const handleConfirmDelete = () => {
+    if (selectedVariantIndex === null) return;
+
+    if (!selectedVariantId) {
+      removeVariant(selectedVariantIndex);
+      setDeleteModalOpen(false);
+      return;
+    }
+
+    deleteVariant.mutate(selectedVariantId, {
+      onSuccess: () => {
+        removeVariant(selectedVariantIndex); 
+        setDeleteModalOpen(false);
+      },
+    });
+  };
 
   const {
     register,
@@ -91,7 +112,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       size_detail: null,
       main_image: null,
       variants: product.variants?.map((v: any) => ({
-        id: v.id,
+        variant_id: v.id,
         size: v.size,
         color: v.color,
         stock: String(v.stock),
@@ -105,6 +126,8 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
     control,
     name: "variants",
   });
+
+  // console.log("vvv", variantFields)
 
   const handleMainImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0] ?? null;
@@ -167,11 +190,10 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       categories: product.categories?.[0]?.categories_id || undefined,
       size_detail: null,
       variants: product.variants?.map((v: any) => ({
-        id: v.id,
+        variant_id: v.id,
         size: v.size,
         color: v.color,
         stock: String(v.stock),
-        images: [],
       })) || [],
     });
   }, [product, reset]);
@@ -201,9 +223,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       }
 
       data.variants.forEach((variant, index) => {
-        if (variant.id) {
-          formData.append(`variant[${index}][id]`, variant.id.toString());
-        }
+        if (variant.variant_id) formData.append(`variants[${index}][id]`, String(variant.variant_id));
         formData.append(`variant[${index}][size]`, variant.size);
         formData.append(`variant[${index}][color]`, variant.color);
         formData.append(`variant[${index}][stock]`, variant.stock);
@@ -355,7 +375,7 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
                 <Button
                   type="button"
                   variant="outline"
-                  onClick={() => appendVariant({ id: 0, size: "", color: "", stock: "" })}
+                  onClick={() => appendVariant({ variant_id: 0, size: "", color: "", stock: "" })}
                 >
                   <Plus className="h-4 w-4 mr-2" /> Add Variant
                 </Button>
@@ -369,7 +389,11 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
                     variant="ghost"
                     size="icon"
                     className="absolute -top-8 right-2 text-red-500 hover:text-red-600"
-                    onClick={() => removeVariant(index)}
+                    onClick={() => {
+                      setSelectedVariantIndex(index);
+                      setSelectedVariantId(field.variant_id || 0);
+                      setDeleteModalOpen(true);
+                    }}
                   >
                     <X />
                   </Button>
@@ -436,6 +460,17 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
           </div>
         </form>
       </DialogContent>
+
+      <ActionModal
+        open={deleteModalOpen}
+        setOpen={setDeleteModalOpen}
+        title="Delete Variant?"
+        description="Are you sure you want to delete this variant? This action cannot be undone."
+        confirmLabel="Delete"
+        confirmVariant="destructive"
+        loading={deleteVariant.isPending}
+        onConfirm={handleConfirmDelete}
+      />
     </Dialog>
   );
 }
