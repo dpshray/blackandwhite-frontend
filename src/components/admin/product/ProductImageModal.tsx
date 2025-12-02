@@ -71,22 +71,17 @@ export default function ProductImageModal({ open, onClose, photos, title = "Phot
         ) : (
           // If single image → show one large centered image
           <div className="w-full flex justify-center">
-            <div className="relative w-[280px] md:w-[400px] lg:w-[450px] aspect-[4/5]">
+            <div className="relative w-full h-full ">
               <Image
                 src={photoArray[0]}
                 alt="Preview"
-                fill
-                className="object-cover rounded"
+                width={800}
+                height={600}
+                className="w-full h-full object-contain rounded"
               />
             </div>
           </div>
         )}
-
-        {/* <DialogFooter>
-          <DialogClose asChild>
-            <Button variant="outline">Close</Button>
-          </DialogClose>
-        </DialogFooter> */}
       </DialogContent>
     </Dialog>
   );

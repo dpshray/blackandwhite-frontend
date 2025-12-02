@@ -19,6 +19,8 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { Skeleton } from "@/components/ui/skeleton";
 import Image from "next/image";
 import { BuyNowItem } from "@/types/productTypes";
+import { ShoppingCart } from "lucide-react";
+import { useAuth } from "@/context/auth-provider";
 
 const checkoutSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
@@ -33,6 +35,8 @@ const checkoutSchema = z.object({
 type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutPage() {
+  const { user } = useAuth();
+  console.log(user)
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const { data: cart, isLoading, isFetched } = useCart();
   const { data: addresses, isLoading: isLoadingAddresses } = useAddressInfo();
@@ -60,15 +64,6 @@ export default function CheckoutPage() {
   );
 
   useEffect(() => {
-    if (!isLoading && isFetched && !isBuyNow) {
-      if (!cart || cart.data.length === 0) {
-        toast.error("Your cart is empty");
-        router.replace("/shop");
-      }
-    }
-  }, [cart, isLoading, isFetched, router, isBuyNow]);
-
-  useEffect(() => {
     if (isBuyNow) {
       const item = localStorage.getItem("buyNowItem");
       if (item) setBuyNowItem(JSON.parse(item));
@@ -78,10 +73,24 @@ export default function CheckoutPage() {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors },
   } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
   });
+
+  useEffect(() => {
+    if (user) {
+      const nameParts = user.name?.split(" ") || [];
+      const first = nameParts[0] || "";
+      const last = nameParts.slice(1).join(" ") || "";
+
+      setValue("first_name", first);
+      setValue("last_name", last);
+      setValue("email", user.email || "");
+    }
+  }, [user, setValue]);
+
 
   const onAddAddressSubmit = (data: CheckoutFormData) => {
     addAddress.mutate(data, {
@@ -137,7 +146,22 @@ export default function CheckoutPage() {
   }
 
   if (!isBuyNow && isFetched && (!cart || cart.data.length === 0)) {
-    return null;
+    return (
+      <div className="flex flex-col items-center justify-center py-20">
+        <div className="mb-4 text-gray-500">
+          <ShoppingCart className="w-16 h-16" />
+        </div>
+        <h2 className="text-xl font-semibold text-gray-700">
+          Your cart is empty
+        </h2>
+        <p className="text-gray-500 mt-2">
+          Add some items to continue checkout.
+        </p>
+        <Button onClick={() => router.push("/shop")} className="mt-6">
+          Continue Shopping
+        </Button>
+      </div>
+    );
   }
 
 
