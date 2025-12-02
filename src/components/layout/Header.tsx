@@ -116,12 +116,14 @@ export default function Header({ categories }: HeaderProps) {
             </SheetContent>
           </Sheet>
 
-          <Link href={"/"}>
-            <div className="border border-black text-center px-1 sm:px-3 py-2">
-              <span className="text-xs sm:text-sm font-medium">
-                BLACK AND WHITE TREND
-              </span>
-            </div>
+          <Link href="/">
+              <Image
+                src="/logo.png"
+                alt="Logo"
+                width={100}   
+                height={10}  
+                className="object-contain"
+              />
           </Link>
         </div>
 

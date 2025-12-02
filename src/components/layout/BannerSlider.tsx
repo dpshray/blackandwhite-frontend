@@ -51,20 +51,26 @@ export default function BannerSlider({ banners }: BannerSliderProps) {
               {/* Center Content Overlay */}
               <div className="absolute inset-0 z-10 flex items-center justify-center">
                 <div className="text-center space-y-4 md:space-y-6">
-                  <h1 className="text-black leading-none">
-                    <span className="font-extrabold text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl block">
-                      {banner.title}
-                    </span>
-                    <span className="text-xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl">{banner.subtitle}</span>
-                  </h1>
-                  <Link href={banner.url}>
-                    <Button
-                      className="text-sm sm:px-6 sm:py-2 sm:text-base md:px-8 md:py-3 md:text-lg font-medium rounded-none"
-                    >
-                      SHOP NOW
-                    </Button>
-                  </Link>
-                </div>
+                    {banner.title && (
+                      <h1 className="text-black leading-none">
+                        <span className="font-extrabold text-3xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl block">
+                          {banner.title}
+                        </span>
+                      </h1>
+                    )}
+                    {banner.subtitle && (
+                      <span className="text-xl sm:text-4xl md:text-5xl lg:text-6xl xl:text-7xl block">
+                        {banner.subtitle}
+                      </span>
+                    )}
+                    {banner.url && (
+                      <Link href={banner.url}>
+                        <Button className="text-sm sm:px-6 sm:py-2 sm:text-base md:px-8 md:py-3 md:text-lg font-medium rounded-none">
+                          SHOP NOW
+                        </Button>
+                      </Link>
+                    )}
+                  </div>
               </div>
             </div>
           </SwiperSlide>

@@ -28,12 +28,16 @@ export const ALLOWED_IMAGE_TYPES = [
 ];
 
 const bannerSchema = z.object({
-  title: z.string().min(1, "Banner title is required"),
-  subtitle: z.string().min(1, "Banner subtitle is required"),
+  title: z.string().optional(),
+  subtitle: z.string().optional(),
   url: z
     .string()
-    .min(1, "URL is required")
-    .regex(/^\/[A-Za-z0-9-_\/]*$/, "Invalid URL, should start with '/'"),
+    .transform((val) => (val === "" ? undefined : val))
+    .optional()
+    .refine(
+    (val) => !val || /^\/[A-Za-z0-9-_\/]*$/.test(val),
+    "Invalid URL, should start with '/'"
+    ),
   image: z.any()
     .refine((files) => normalizeFiles(files).every((file) => file instanceof Blob),"All files must be valid images")
     .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_BANNER_SIZE),`Image must be less than ${MAX_BANNER_SIZE / (1024 * 1024)}MB`)
@@ -70,9 +74,9 @@ export default function UpdateBanner({ banner }: UpdateBannerDialogProps) {
 
     useEffect(() => {
         reset({
-            title: banner.title,
-            subtitle: banner.subtitle,
-            url: banner.url,
+            title: banner.title ?? "",
+            subtitle: banner.subtitle ?? "",
+            url: banner.url ?? "",
         });
     }, [banner, reset])
 
@@ -92,9 +96,12 @@ export default function UpdateBanner({ banner }: UpdateBannerDialogProps) {
     const onSubmit = async (data: BannerFormData) => {
         try {
             const formData = new FormData();
-            formData.append("title", data.title);
-            formData.append("subtitle", data.subtitle);
-            formData.append("url", data.url);
+            if (data.title) formData.append("title", data.title);
+            if (data.subtitle) formData.append("subtitle", data.subtitle);
+            if (data.url) formData.append("url", data.url);
+            // formData.append("title", data.title);
+            // formData.append("subtitle", data.subtitle);
+            // formData.append("url", data.url);
             
             if (data.image && data.image.length > 0) {
             formData.append("image", data.image[0]);

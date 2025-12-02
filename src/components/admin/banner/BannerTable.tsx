@@ -54,17 +54,19 @@ export default function BannerTable() {
             header: "Title",
             cell: ({ row }) => (
                 <div className="font-medium break-words whitespace-normal">
-                {row.original.title}
+                    {row.original.title ? row.original.title : "-"}
                 </div>
             ),
         },
         {
             accessorKey: "subtitle",
             header: "Subtitle",
+            cell: ({ row }) => row.original.subtitle ? row.original.subtitle : "-",
         },
         {
             accessorKey: "url",
             header: "url",
+            cell: ({ row }) => row.original.url ? row.original.url : "-",
         },
         {
             accessorKey: "image",

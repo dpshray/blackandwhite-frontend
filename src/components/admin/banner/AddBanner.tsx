@@ -24,19 +24,23 @@ export const ALLOWED_IMAGE_TYPES = [
 ];
 
 const bannerSchema = z.object({
-  title: z.string().min(1, "Banner title is required"),
-  subtitle: z.string().min(1, "Banner subtitle is required"),
-  url: z
-    .string()
-    .min(1, "URL is required")
-    .regex(/^\/[A-Za-z0-9-_\/]*$/, "Invalid URL, should start with '/'"),
-  image: z.any()
-    .refine((files) => normalizeFiles(files).length >= 1,"At least one image is required")
-    .refine((files) => normalizeFiles(files).every((file) => file instanceof Blob),"All files must be valid images")
-    .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_BANNER_SIZE),`Image must be less than ${MAX_BANNER_SIZE / (1024 * 1024)}MB`)
-    .refine((files) =>normalizeFiles(files).every((f) =>ALLOWED_IMAGE_TYPES.includes(f.type)),
-      "Only jpg, jpeg, png, or webp files are allowed"
-    ),
+    title: z.string().optional(),
+    subtitle: z.string().optional(),
+    url: z
+        .string()
+        .transform((val) => (val === "" ? undefined : val))
+        .optional()
+        .refine(
+        (val) => !val || /^\/[A-Za-z0-9-_\/]*$/.test(val),
+        "Invalid URL, should start with '/'"
+        ),
+    image: z.any()
+        .refine((files) => normalizeFiles(files).length >= 1,"At least one image is required")
+        .refine((files) => normalizeFiles(files).every((file) => file instanceof Blob),"All files must be valid images")
+        .refine((files) => normalizeFiles(files).every((f) => f.size <= MAX_BANNER_SIZE),`Image must be less than ${MAX_BANNER_SIZE / (1024 * 1024)}MB`)
+        .refine((files) =>normalizeFiles(files).every((f) =>ALLOWED_IMAGE_TYPES.includes(f.type)),
+        "Only jpg, jpeg, png, or webp files are allowed"
+        ),
 });
 
 type BannerFormData = z.infer<typeof bannerSchema>;
@@ -77,9 +81,10 @@ export default function AddBanner() {
     const onSubmit = async (data: BannerFormData) => {
         try{
             const formData = new FormData();
-            formData.append("title", data.title);
-            formData.append("subtitle", data.subtitle);
-            formData.append("url", data.url);
+            if (data.title) formData.append("title", data.title);
+            if (data.subtitle) formData.append("subtitle", data.subtitle);
+            if (data.url) formData.append("url", data.url);
+            
             formData.append("image", data.image[0]);
             await addBanner.mutateAsync(formData);
             setOpen(false);

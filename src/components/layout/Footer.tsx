@@ -5,6 +5,7 @@ import Link from "next/link";
 import { FaFacebook, FaInstagram, FaTiktok, FaWhatsapp } from "react-icons/fa";
 import { ArrowRight } from "lucide-react";
 import { Category } from "@/types/categoryTypes";
+import Image from "next/image";
 
 const company = [
   { title: "Home", link: "/" },
@@ -52,12 +53,16 @@ export default function Footer({categories}: FooterProps) {
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-2 md:grid-cols-8 gap-8">
           {/* Company Info */}
-          <div className="col-span-2 space-y-4">
-            <div className="border border-white text-center  px-1 sm:px-3 py-2">
-              <span className="text-xs sm:text-sm font-medium">
-                BLACK AND WHITE TREND
-              </span>
-            </div>
+          <div className="col-span-2 space-y-4 ">
+            <Link href="/" className="inline-block">
+              <Image
+                src="/white-logo.png"
+                alt="Logo"
+                width={120}   
+                height={10}  
+                className="object-contain"
+              />
+            </Link>
             <p className="text-sm text-gray-300 mb-2">
               Your destination for timeless black & white men&apos;s fashion.
             </p>

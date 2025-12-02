@@ -21,6 +21,7 @@ import { ImagePreview } from "../ImagePreview";
 import { SIZE_OPTIONS } from "./AddProduct";
 import SelectInputField from "@/components/fields/SelectInput";
 import ActionModal from "@/components/modal/ConfirmModal";
+import { Checkbox } from "@/components/ui/checkbox";
 
 // Variant Schema
 const variantSchema = z.object({
@@ -42,6 +43,8 @@ const productSchema = z.object({
   images: z.any(),
   categories: z.number().min(1, "Category is required"),
   size_detail: z.any(),
+  best_seller: z.boolean(),     
+  limited_edition: z.boolean(), 
   main_image:z.any(),
   variants: z.array(variantSchema).min(1),
 });
@@ -110,6 +113,8 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       images: [],
       categories: product.categories?.[0]?.categories_id || undefined,
       size_detail: null,
+      best_seller: Boolean(product.bestseller),  
+      limited_edition: Boolean(product.limited),
       main_image: null,
       variants: product.variants?.map((v: any) => ({
         variant_id: v.id,
@@ -189,6 +194,8 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       images: [],
       categories: product.categories?.[0]?.categories_id || undefined,
       size_detail: null,
+      best_seller: Boolean(product.bestseller),  
+      limited_edition: Boolean(product.limited),
       variants: product.variants?.map((v: any) => ({
         variant_id: v.id,
         size: v.size,
@@ -209,6 +216,8 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
       formData.append("fabric", data.fabric);
       formData.append("material", data.material);
       formData.append("categories", data.categories.toString());
+      formData.append("bestseller", data.best_seller ? "1" : "0");
+      formData.append("limited", data.limited_edition ? "1" : "0");
 
       if (mainImage) {
         formData.append("main_image", mainImage);
@@ -331,6 +340,52 @@ export default function UpdateProduct({ product }: UpdateProductDialogProps) {
 
                 {/* Preview */}
                 <ImagePreview files={mainImage} onRemove={removeMainImage} />
+              </div>
+
+              <div className="md:col-span-2 flex gap-6">
+                <div className="flex items-center space-x-2">
+                  <Controller
+                    name="best_seller"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="best_seller"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                        <label
+                          htmlFor="best_seller"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Best Seller
+                        </label>
+                      </div>
+                    )}
+                  />
+                </div>
+
+                <div className="flex items-center space-x-2">
+                  <Controller
+                    name="limited_edition"
+                    control={control}
+                    render={({ field }) => (
+                      <div className="flex items-center space-x-2">
+                        <Checkbox
+                          id="limited_edition"
+                          checked={field.value}
+                          onCheckedChange={field.onChange}
+                        />
+                        <label
+                          htmlFor="limited_edition"
+                          className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                        >
+                          Limited Edition
+                        </label>
+                      </div>
+                    )}
+                  />
+                </div>
               </div>
 
             </CardContent>
