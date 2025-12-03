@@ -245,7 +245,13 @@ export default function ProfilePage() {
                           className="w-12 h-16 object-cover rounded"
                         />
                         <div className="flex flex-col">
-                          <p className="font-medium">{item.product_name}</p>
+                          <p className="font-medium flex items-center gap-2">
+                              {item.product_name}
+                              <Badge variant="default">
+                                Product ID: {item.product_id}
+                              </Badge>
+                            </p>
+
                           <p className="text-sm text-gray-500">
                             {item.variant_size} / {item.variant_color}
                           </p>
