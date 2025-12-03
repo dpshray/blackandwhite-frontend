@@ -1,5 +1,6 @@
 export interface OrderItem {
   product_name: string;
+  product_id: number;
   variant_size: string;
   variant_color: string;
   quantity: number;
@@ -43,6 +44,7 @@ export interface OrderHistoryResponse {
 //All Orders
 export interface OrderItem {
   product_name: string;
+  product_id: number;
   variant_size: string;
   variant_color: string;
   quantity: number;

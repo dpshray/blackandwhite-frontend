@@ -9,6 +9,8 @@ import { useAllOrders } from "@/hooks/useOrder";
 import { FaPhoneAlt } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
 import { StatusCell } from "./StatusCell";
+import { OrderItemsDialog } from "./OrderItemsDialog";
+import { Badge } from "@/components/ui/badge";
 
 export default function OrderTable() {
     const [page, setPage] = useState(1);
@@ -23,12 +25,16 @@ export default function OrderTable() {
             cell: ({ row }) => <div>{row.original.id}</div>,
         },
         {
+            id: "items.product_id",
+            header: "Product ID",
+        },
+        {
             accessorKey: "user",
             header: "User",
             cell: ({ row }) => (
             <div>
                 {row.original.user.name} <br />
-                <span className="text-sm text-gray-500">{row.original.user.email}</span>
+                <Badge variant="outline" className="mt-1">{row.original.user.email}</Badge>
             </div>
             ),
         },
@@ -50,15 +56,7 @@ export default function OrderTable() {
         {
             accessorKey: "items",
             header: "Items",
-            cell: ({ row }) => (
-            <div className="space-y-1 text-sm">
-                {row.original.items.map((item, index) => (
-                <div key={index}>
-                    {item.product_name} - {item.variant_size}/{item.variant_color} x {item.quantity} = Rs {item.price}
-                </div>
-                ))}
-            </div>
-            ),
+            cell: ({ row }) => <OrderItemsDialog items={row.original.items} />,
         },
         {
             accessorKey: "total_amount",
