@@ -248,7 +248,7 @@ export default function ProfilePage() {
                           <p className="font-medium flex items-center gap-2">
                               {item.product_name}
                               <Badge variant="default">
-                                Product ID: {item.product_id}
+                                Product Code: {item.product_id}
                               </Badge>
                             </p>
 

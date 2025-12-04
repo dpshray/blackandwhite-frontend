@@ -63,7 +63,7 @@ export const OrderItemsDialog: React.FC<OrderItemsDialogProps> = ({ items }) => 
                                         {item.product_name ?? "N/A"}
                                     </h3>
                                     <p className="text-xs text-gray-500 mt-0.5">
-                                        Product ID: {item.product_id}
+                                        Product Code: {item.product_id}
                                     </p>
                                 </div>
                             </div>
