@@ -5,7 +5,7 @@ import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { useProducts } from "@/hooks/useProducts";
 import { Product } from "@/types/productTypes";
 import { ColumnDef } from "@tanstack/react-table";
-import { useState } from "react";
+import { useCallback, useState } from "react";
 import VariantModal from "../modal/VariantModel";
 import { BaseModal } from "../../modal/deleteModel";
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip";
@@ -18,11 +18,12 @@ import Image from "next/image";
 
 export default function ProductTable() {
     const [page, setPage] = useState(1);
+    const [searchQuery, setSearchQuery] = useState("");
     const [deleteModalOpen, setDeleteModalOpen] = useState(false);
     const [selectedProduct, setSelectedProduct] = useState<Product | null>(
         null
     );
-    const { getProducts, deleteProduct } = useProducts(page, 9);
+    const { getProducts, deleteProduct } = useProducts(page, 9, searchQuery);
     const totalPages = getProducts?.data?.data?.meta?.last_page ?? 1;
     const productData = getProducts?.data?.data.data || [];
     const router = useRouter();
@@ -31,6 +32,11 @@ export default function ProductTable() {
         setSelectedProduct(product);
         setDeleteModalOpen(true);
     };
+
+    const handleSearch = useCallback((value: string) => {
+        setSearchQuery(value)
+        setPage(1)
+    }, [])
 
     const handleConfirmDelete = async () => {
         if (!selectedProduct) return;
@@ -49,6 +55,11 @@ export default function ProductTable() {
             id: "id",
             header: "ID",
             cell: ({ row }) => <div>{row.original.id}</div>,
+        },
+        {
+            id: "product_code",
+            header: "Product Code",
+            cell: ({ row }) => <div>{row.original.product_code}</div>,
         },
         {
             accessorKey: "title",
@@ -195,6 +206,9 @@ export default function ProductTable() {
                     totalPages={totalPages}
                     currentPage={page}
                     onPageChange={setPage}
+                    enableSearch
+                    onSearchAction={handleSearch}
+                    searchPlaceholder="Search Products by product code or name..."
                 />
             )}
 

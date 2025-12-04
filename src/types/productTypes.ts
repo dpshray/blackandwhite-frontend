@@ -20,6 +20,7 @@ export interface ProductCategory {
 
 export interface Product {
   id: number;
+  product_code: number;
   title: string;
   slug: string;
   description: string;
