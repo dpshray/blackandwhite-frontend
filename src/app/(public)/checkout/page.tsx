@@ -21,6 +21,7 @@ import Image from "next/image";
 import { BuyNowItem } from "@/types/productTypes";
 import { ShoppingCart } from "lucide-react";
 import { useAuth } from "@/context/auth-provider";
+import { useGetDeliveryCharge } from "@/hooks/useDashboard";
 
 const checkoutSchema = z.object({
   first_name: z.string().min(1, "First name is required"),
@@ -36,7 +37,7 @@ type CheckoutFormData = z.infer<typeof checkoutSchema>;
 
 export default function CheckoutPage() {
   const { user } = useAuth();
-  console.log(user)
+  // console.log(user)
   const [paymentMethod, setPaymentMethod] = useState("cod");
   const { data: cart, isLoading, isFetched } = useCart();
   const { data: addresses, isLoading: isLoadingAddresses } = useAddressInfo();
@@ -46,6 +47,7 @@ export default function CheckoutPage() {
   const searchParams = useSearchParams();
   const isBuyNow = searchParams.get("mode") === "buy-now";
   const [buyNowItem, setBuyNowItem] = useState<BuyNowItem | null>(null);
+  const { data: delivery, isLoading: isLoadingDelivery } = useGetDeliveryCharge()
 
   const hasAddress = addresses && addresses.length > 0;
   const defaultAddress = hasAddress ? addresses[0] : null;
@@ -390,7 +392,9 @@ export default function CheckoutPage() {
               <>
                 <div className="flex justify-between py-2 border-b">
                   <span>Delivery Charge</span>
-                  <span>Rs {buyNowItem.price > 1000 ? 0 : 200}</span>
+                  <span>
+                    {isLoadingDelivery ? "Calculating..." : `Rs ${delivery?.data?.amount || delivery?.value || 0}`}
+                  </span>
                 </div>
                 <div className="flex justify-between py-2 border-b">
                   <span>Sub-total</span>

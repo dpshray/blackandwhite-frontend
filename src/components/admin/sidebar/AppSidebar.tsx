@@ -1,4 +1,4 @@
-import { ChevronRight, Contact, Home, LogOut, Package, Receipt, User2 } from "lucide-react";
+import { ChevronRight, Contact, Home, LogOut, Package, Receipt, Settings, User2 } from "lucide-react";
 
 import {
   Sidebar,
@@ -19,6 +19,7 @@ import Link from "next/link";
 import { cn } from "@/lib/utils";
 import { PiFlagBanner } from "react-icons/pi";
 import { useLogout } from "@/hooks/useAuth";
+import Image from "next/image";
 
 const items = [
   {
@@ -56,11 +57,11 @@ const items = [
     url: "/admin/contact",
     icon: Contact,
   },
-  // {
-  //   title: "Settings",
-  //   url: "/admin/settings",
-  //   icon: Settings,
-  // },
+  {
+    title: "Settings",
+    url: "/admin/settings",
+    icon: Settings,
+  },
 ];
 
 export function AppSidebar() {
@@ -74,10 +75,21 @@ export function AppSidebar() {
 
   return (
     <Sidebar collapsible="icon">
-      <SidebarHeader className="flex flex-row py-4">
-        {/* <Image src="/images/logo.png" alt="Logo" width={40} height={40} /> */}
-        <SidebarGroupLabel className="text-lg">Black and White</SidebarGroupLabel>
+      <SidebarHeader className="border-b px-3 py-4">
+        <Link href="/admin" className="flex items-center gap-2">
+          <Image 
+            src="/logo.png" 
+            alt="Logo" 
+            width={36} 
+            height={64}
+            className="w-fit"
+          />
+          <SidebarGroupLabel className="text-base font-semibold">
+            Black & White Trend
+          </SidebarGroupLabel>
+        </Link>
       </SidebarHeader>
+
       <SidebarContent>
         <SidebarGroup>
           <SidebarGroupContent>

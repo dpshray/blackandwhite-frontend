@@ -10,6 +10,7 @@ import { AtSignIcon, LockIcon } from "lucide-react";
 import Link from "next/link";
 import TextInput from "../fields/TextInput";
 import { useSignIn } from "@/hooks/useAuth"; 
+import { useState } from "react";
 
 const LoginSchema = z.object({
   email: z.string().email("Invalid email"),
@@ -26,6 +27,7 @@ export default function LoginModal({
   onOpenChange: (open: boolean) => void;
 }) {
   const signIn = useSignIn({ preventRedirect: true });
+  const [isLoading, setIsLoading] = useState(false)
 
   const {
     register,
@@ -43,6 +45,11 @@ export default function LoginModal({
       },
     });
   };
+
+  const handleGoogleLogin = () => {
+    setIsLoading(true)
+    window.location.href = process.env.NEXT_PUBLIC_BASE_URL + "/auth/google/redirect"
+  }
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -106,13 +113,30 @@ export default function LoginModal({
                   "Sign In"
                 )}
               </Button>
+              <Button
+                onClick={handleGoogleLogin}
+                variant="outline"
+                className="w-full"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 48 48"
+                  className="w-5 h-5"
+                >
+                  <path fill="#EA4335" d="M24 9.5c3.5 0 6.6 1.2 9 3.2l6.7-6.7C35.6 2.6 30.1 0 24 0 14.6 0 6.4 5.4 2.4 13.2l7.8 6.1C12.4 13.1 17.7 9.5 24 9.5z"/>
+                  <path fill="#4285F4" d="M46.1 24.5c0-1.6-.1-3.1-.4-4.5H24v9h12.4c-.5 2.7-2 5-4.3 6.5l6.7 5.2c3.9-3.6 6.3-8.9 6.3-16.2z"/>
+                  <path fill="#FBBC05" d="M10.2 28.9c-1.1-3.3-1.1-6.9 0-10.2l-7.8-6.1C-1.3 18.9-1.3 29.1 2.4 36.1l7.8-6.1z"/>
+                  <path fill="#34A853" d="M24 48c6.5 0 12-2.1 16-5.8l-6.7-5.2c-2 1.3-4.5 2.1-7.3 2.1-6.3 0-11.6-4.3-13.5-10.1l-7.8 6.1C6.4 42.6 14.6 48 24 48z"/>
+                </svg>
+                {isLoading ? "Loading..." : "Continue with Google"}
+              </Button>
             </form>
 
             <div className="mt-8 text-center">
               <p className="text-sm text-gray-600">
                 Don&apos;t have an account?{" "}
                 <Link
-                  href="/signup"
+                  href="/register"
                   className="font-bold hover:underline transition-colors"
                 >
                   Sign Up

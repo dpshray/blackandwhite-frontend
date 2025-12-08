@@ -37,6 +37,11 @@ export default function AdminPage() {
             title: "Contacts",
             description: "View and manage contacts",
         },
+        {
+            href: "/admin/settings",
+            title: "Settings",
+            description: "Configure store settings",
+        },
     ];
 
 

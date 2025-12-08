@@ -20,4 +20,8 @@ export const totalService = {
   getTotalUsers: async () => {
     return await axiosInstance.get("/admin/total-user");
   },
+
+  addDeliveryCharge: async (data: any) => {
+    return await axiosInstance.post("/admin/add-delivery-charge", data);
+  },
 };

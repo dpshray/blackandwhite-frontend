@@ -154,12 +154,13 @@ export default async function ProductPage({ params }: { params: Promise<{slug: s
               <h2 className="text-xl font-semibold">Size Guide Image</h2>
             </div>
             <Link href={p.size_detail} target="_blank">
-              <div className="relative aspect-4/5 max-w-sm rounded-lg overflow-hidden border shadow-sm bg-gray-50">
+              <div className="relative inline-block">
                 <Image
                   src={p.size_detail}
                   alt="Size guide"
-                  fill
-                  className="object-cover"
+                  width={600}       
+                  height={800}      
+                  className="object-contain"
                 />
               </div>
             </Link>

@@ -1,11 +1,14 @@
 "use client";
-import { AppSidebar } from "@/components/admin/AppSidebar";
+import { AppSidebar } from "@/components/admin/sidebar/AppSidebar";
+import NotificationComponent from "@/components/admin/sidebar/notification";
 import { Breadcrumb, BreadcrumbItem, BreadcrumbLink, BreadcrumbList, BreadcrumbPage, BreadcrumbSeparator } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { useAuth } from "@/context/authContext";
+import { useNotifications } from "@/hooks/useDashboard";
+import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { Fragment, useEffect } from "react";
+import { Fragment, useEffect, useMemo } from "react";
 
 const breadcrumbMap: { [key: string]: string } = {
   "/admin": "",
@@ -16,13 +19,36 @@ const breadcrumbMap: { [key: string]: string } = {
   "/admin/banner": "Banners",
   "/admin/order": "Orders",
   "/admin/contact": "Contacts",
+  "/admin/settings": "Settings",
 };
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
   const pathname = usePathname();
-  const currentLabel = breadcrumbMap[pathname] ?? "Admin";
+  // const currentLabel = breadcrumbMap[pathname] ?? "Admin";
   const router = useRouter();
+  const {
+    data: notificationData,
+    hasNextPage,
+    fetchNextPage,
+    isFetchingNextPage,
+  } = useNotifications()
+
+  const notifications = useMemo(() => {
+    return (
+      notificationData?.pages.flatMap((page: any) =>
+        page.data?.map((item: any) => ({
+          id: item.id,
+          user: item.title,
+          action: item.message,
+          target: "",
+          timestamp: item.created_at,
+          unread: !item.is_read,
+        })),
+      ) ?? []
+    )
+  }, [notificationData])
+  // console.log("nnn", notifications)
 
   const generateBreadcrumbs = () => {
     const segments = pathname.split("/").filter(Boolean); 
@@ -49,7 +75,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     return (
       <div className="flex min-h-screen items-center justify-center">
         <span className="animate-pulse text-lg font-bold tracking-widest">
-          BLACK AND WHITE TREND...
+          <Image
+            src="/logo.png"
+            alt="logo"
+            width={150}
+            height={50}
+          />
         </span>
       </div>
     );
@@ -65,9 +96,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <SidebarProvider>
         <AppSidebar />
         <SidebarInset>
-          <header className="bg-background z-50 sticky top-0 flex h-16 shrink-0 items-center gap-2 border-b px-4">
-              <SidebarTrigger className="-ml-1" />
-              <Separator orientation="vertical" className="mr-2 h-4" />
+          <header className="flex bg-background z-50 sticky top-0 h-16 shrink-0 items-center gap-2 border-b px-4">
+            <SidebarTrigger className="-ml-1" />
+            <Separator orientation="vertical" className="mr-2 h-4" />
+            <div className="w-full flex items-center justify-between">
               <Breadcrumb>
                 <BreadcrumbList>
                   {breadcrumbs.map((bc, i) => (
@@ -89,6 +121,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   ))}
                 </BreadcrumbList>
               </Breadcrumb>
+
+              <NotificationComponent
+                notifications={notifications}
+                hasNextPage={hasNextPage}
+                fetchNextPage={fetchNextPage}
+                isFetchingNextPage={isFetchingNextPage}
+              />
+
+            </div>
           </header>
            <main className="flex-1 max-w-screen overflow-x-hidden">
             {children}

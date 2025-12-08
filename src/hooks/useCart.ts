@@ -63,7 +63,7 @@ export const useBuyNow = () => {
 
   return useMutation({
     mutationFn: cartService.buyNow,
-    onSuccess: (res) => {
+    onSuccess: () => {
         // toast.success(res.message || "Order placed successfully");
         // queryClient.invalidateQueries({ queryKey: ["cart"] });
     },
