@@ -54,6 +54,9 @@ export default function CheckoutPage() {
   
   const [mode, setMode] = useState<"view" | "select" | "add">("add");
 
+  const deliveryCharge = Number(delivery?.data?.amount ?? delivery?.value ?? 0)
+
+
   useEffect(() => {
     if (addresses && addresses.length > 0) {
       setMode("view");
@@ -393,7 +396,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between py-2 border-b">
                   <span>Delivery Charge</span>
                   <span>
-                    {isLoadingDelivery ? "Calculating..." : `Rs ${delivery?.data?.amount || delivery?.value || 0}`}
+                    {isLoadingDelivery ? "Calculating..." : `Rs ${deliveryCharge}`}
                   </span>
                 </div>
                 <div className="flex justify-between py-2 border-b">
@@ -403,7 +406,7 @@ export default function CheckoutPage() {
                 <div className="flex justify-between py-2 border-b font-semibold">
                   <span>Total</span>
                   <span>
-                    Rs {buyNowItem.price * buyNowItem.quantity + (buyNowItem.price > 1000 ? 0 : 200)}
+                    Rs {(buyNowItem.price * buyNowItem.quantity) + (deliveryCharge)}
                   </span>
                 </div>
               </>
