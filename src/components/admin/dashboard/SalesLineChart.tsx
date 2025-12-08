@@ -17,7 +17,7 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 import { Skeleton } from "@/components/ui/skeleton"
-import { useGetDailySales } from "@/hooks/useChart"
+import { useGetDailySales } from "@/hooks/useDashboard"
 
 const chartConfig = {
   sales: {

@@ -8,6 +8,7 @@ import {
   FieldError,
   FieldValues,
   Path,
+  RegisterOptions,
   UseFormRegister,
 } from "react-hook-form";
 import { Button } from "../ui/button";
@@ -23,7 +24,7 @@ interface TextInputProps<TFieldValues extends FieldValues> {
   showToggle?: boolean;
   icon?: React.ReactNode;
   register: UseFormRegister<TFieldValues>;
-  registerOptions?: object;
+  registerOptions?: RegisterOptions<TFieldValues, Path<TFieldValues>>; // <-- fix here
 }
 
 export default function TextInput<TFieldValues extends FieldValues>({

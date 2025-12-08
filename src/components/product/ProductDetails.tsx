@@ -287,7 +287,7 @@ export default function ProductDetails({
           <ul className="space-y-2 text-sm py-2">
             {product.product_code && (
               <li className="flex gap-4 pb-1">
-                <span className="text-muted-foreground">Product ID:</span>
+                <span className="text-muted-foreground">Product Code:</span>
                 <span className="capitalize font-medium">{product.product_code}</span>
               </li>
             )
@@ -375,6 +375,7 @@ export default function ProductDetails({
             <div className="flex items-center gap-2">
               <Button
                 onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                disabled={!selectedVariant}
                 size="sm"
                 variant="outline"
                 className="rounded-none"
@@ -383,13 +384,24 @@ export default function ProductDetails({
               </Button>
               <span>{quantity}</span>
               <Button
-                onClick={() => setQuantity(quantity + 1)}
+                onClick={() => {
+                  if (selectedVariant && quantity < selectedVariant.stock) {
+                    setQuantity(quantity + 1)
+                  }
+                }}
+                disabled={!selectedVariant}
                 size="sm"
                 variant="outline"
                 className="rounded-none"
               >
                 +
               </Button>
+              {selectedVariant && (
+                <p className="text-xs text-gray-500">
+                  Only {selectedVariant.stock} left in stock
+                </p>
+              )}
+
             </div>
           </div>
 
