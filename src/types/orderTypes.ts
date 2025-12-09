@@ -85,14 +85,43 @@ export interface OrderMeta {
   total: number;
 }
 
+export interface AllOrderResponse {
+  message: string;
+  data: AllOrderData;
+  success: boolean;
+}
+
 export interface AllOrderData {
   data: AllOrder[];
   meta: OrderMeta;
   links: OrderLinks;
 }
 
-export interface AllOrderResponse {
+// WhatsApp Order Type
+
+export interface AllWhatsAppOrderResponse {
   message: string;
-  data: AllOrderData;
+  data: AllWhatsAppOrderData;
   success: boolean;
+}
+
+export interface AllWhatsAppOrderData {
+  data: AllWhatsAppOrder[];
+  meta: OrderMeta;
+  links: OrderLinks;
+}
+
+export interface AllWhatsAppOrder {
+  id: number;
+  name: string | null;
+  phone: string | null;
+  address: string | null;
+  email: string | null;
+  product_code: string | null;
+  size: string | null;
+  color: string | null;
+  date: string | null;
+  status: string | null;
+  created_at: string | null;
+  updated_at: string | null;
 }

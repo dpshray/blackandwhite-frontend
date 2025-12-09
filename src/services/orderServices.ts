@@ -1,6 +1,7 @@
 import axiosInstance from "@/lib/axios";
 import {
   AllOrderResponse,
+  AllWhatsAppOrderResponse,
   OrderHistoryResponse,
 } from "@/types/orderTypes";
 
@@ -25,6 +26,17 @@ export const orderService = {
     return res.data;
   },
 
+  getAllWhatsAppOrders: async (
+    page: number = 1,
+    perPage: number = 10
+  ): Promise<AllWhatsAppOrderResponse> => {
+    const res = await axiosInstance.get(
+      `/admin/all-whatsapp-order?page=${page}&limit=${perPage}`
+    );
+    console.log(res);
+    return res.data;
+  },
+
   addOrder: async ( addressId: number, buynow: number ) => {
     const res = await axiosInstance.post(`/order-item/${addressId}`, {
       buynow
@@ -40,5 +52,10 @@ export const orderService = {
   updateOrderStatus: async (orderId: number, status: string) => {
     const res = await axiosInstance.post(`/admin/update-order/${orderId}`, { status }); 
     return res.data;
-  }
+  },
+
+  updateWhatsAppOrderStatus: async (id: number, status: string) => {
+    const res = await axiosInstance.post(`/admin/update-whatsapp-order/${id}`, { status }); 
+    return res.data;
+  },
 };
