@@ -5,16 +5,18 @@ import { TableSkeleton } from "@/components/admin/TableSkeleton";
 import { ColumnDef } from "@tanstack/react-table";
 import { useState } from "react";
 import { AllOrder } from "@/types/orderTypes";
-import { useAllOrders } from "@/hooks/useOrder";
+import { useAllOrders, useUpdateOrderStatus } from "@/hooks/useOrder";
 import { FaPhoneAlt } from "react-icons/fa";
 import { MdEmail } from "react-icons/md";
-import { StatusCell } from "./StatusCell";
 import { OrderItemsDialog } from "./OrderItemsDialog";
 import { Badge } from "@/components/ui/badge";
+import { OrderStatusCell } from "./OrderStatusCell";
 
 export default function OrderTable() {
     const [page, setPage] = useState(1);
+    const [loadingOrderId, setLoadingOrderId] = useState<number | null>(null)
     const { data:getOrders, isLoading: isLoadingOrders } = useAllOrders(page, 9);
+    const { mutate } = useUpdateOrderStatus();
     const totalPages = getOrders?.data?.meta.last_page ?? 1;
     const OrderData = getOrders?.data?.data || [];
 
@@ -23,10 +25,6 @@ export default function OrderTable() {
             id: "id",
             header: "ID",
             cell: ({ row }) => <div>{row.original.id}</div>,
-        },
-        {
-            id: "items.product_id",
-            header: "Product ID",
         },
         {
             accessorKey: "user",
@@ -62,7 +60,7 @@ export default function OrderTable() {
             accessorKey: "total_amount",
             header: "Total Amount",
             cell: ({ row }) => (
-            <div className="font-medium break-words whitespace-normal">
+            <div className="font-medium wrap-break-word whitespace-normal">
                 Rs {row.original.total_amount}
             </div>
             ),
@@ -70,8 +68,24 @@ export default function OrderTable() {
         {
             accessorKey: "status",
             header: "Status",
-            cell: ({ row }) => <StatusCell row={row} />,
-        },
+            cell: ({ row }) => (
+                <OrderStatusCell
+                    orderId={row.original.id}
+                    value={row.original.status}
+                    onChangeStatus={(id, status) => {
+                        setLoadingOrderId(id) // Set loading for this specific order
+                        mutate(
+                        { orderId: id, status },
+                        {
+                            onSuccess: () => setLoadingOrderId(null),
+                            onError: () => setLoadingOrderId(null),
+                        },
+                        )
+                    }}
+                    loadingOrderId={loadingOrderId} // Pass loading state to cell
+                    />
+            )
+        }
     ];
 
 

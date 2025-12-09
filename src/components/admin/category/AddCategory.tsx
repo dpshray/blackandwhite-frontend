@@ -18,20 +18,20 @@ const categorySchema = z.object({
 type CategoryFormData = z.infer<typeof categorySchema>;
 
 export default function AddCategory() {
-    const { addCategory } = useCategories();
-    const [open, setOpen] = useState(false);
+  const { addCategory } = useCategories();
+  const [open, setOpen] = useState(false);
 
-    const {
-      register,
-      handleSubmit,
-      reset,
-      formState: { errors, isSubmitting },
-    } = useForm<CategoryFormData>({
-      resolver: zodResolver(categorySchema),
-      defaultValues: {
-        title: "",
-      },
-    });
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<CategoryFormData>({
+    resolver: zodResolver(categorySchema),
+    defaultValues: {
+      title: "",
+    },
+  });
 
     const onSubmit = async (data: CategoryFormData) => {
       try {

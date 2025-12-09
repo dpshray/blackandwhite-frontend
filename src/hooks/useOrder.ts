@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import {
   AllOrderResponse,
+  AllWhatsAppOrderResponse,
   OrderHistoryResponse,
 } from "@/types/orderTypes";
 import { toast } from "sonner";
@@ -20,6 +21,13 @@ export const useAllOrders = (page: number = 1, perPage: number = 10) => {
   return useQuery<AllOrderResponse>({
     queryKey: ["all-orders", page, perPage],
     queryFn: () => orderService.getAllOrders(page, perPage),
+  });
+};
+
+export const useAllWhatsAppOrders = (page: number = 1, perPage: number = 10) => {
+  return useQuery<AllWhatsAppOrderResponse>({
+    queryKey: ["all-whatsapp-orders", page, perPage],
+    queryFn: () => orderService.getAllWhatsAppOrders(page, perPage),
   });
 };
 
@@ -65,6 +73,24 @@ export const useUpdateOrderStatus = () => {
       queryClient.invalidateQueries({ queryKey: ["all-orders"], exact: false });
       queryClient.invalidateQueries({ queryKey: ["revenue"] });
       toast.success(`Order ${orderId} status updated to ${status}`);
+    },
+    onError: (error) => {
+      toast.error("Failed to update order status");
+      console.error("Failed to update order status:", error);
+    },
+  });
+};
+
+export const useUpdateWhatsAppOrderStatus = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, status }: { id: number; status: string }) =>
+      orderService.updateWhatsAppOrderStatus(id, status),
+    onSuccess: (_, { id, status }) => {
+      queryClient.invalidateQueries({ queryKey: ["all-whatsapp-orders"], exact: false });
+      queryClient.invalidateQueries({ queryKey: ["revenue"] });
+      toast.success(`Order ${id} status updated to ${status}`);
     },
     onError: (error) => {
       toast.error("Failed to update order status");
