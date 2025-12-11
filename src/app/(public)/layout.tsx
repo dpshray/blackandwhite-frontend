@@ -1,5 +1,6 @@
 import Footer from "@/components/layout/Footer";
 import Header from "@/components/layout/Header";
+import WhatsAppChatWidget from "@/components/layout/WhatsAppChatWidget";
 import { getCategories } from "@/lib/server-api";
 
 export const dynamic = "force-dynamic";
@@ -15,7 +16,8 @@ export default async function RootLayout({
   return (
     <div className="min-h-screen flex flex-col">
         <Header categories={categories} />
-        <main className="flex-grow">{children}</main>
+        <main className="grow">{children}</main>
+        <WhatsAppChatWidget />
         <Footer categories={categories} />
     </div>
   );
