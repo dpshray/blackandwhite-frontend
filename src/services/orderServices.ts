@@ -58,4 +58,9 @@ export const orderService = {
     const res = await axiosInstance.post(`/admin/update-whatsapp-order/${id}`, { status }); 
     return res.data;
   },
+
+  addAdminOrder: async (data: any) => {
+    const res = await axiosInstance.post(`/admin/add-admin-order`, data);
+    return res.data;
+  },
 };

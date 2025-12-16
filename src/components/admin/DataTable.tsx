@@ -17,14 +17,15 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { useCallback, useEffect, useId, useRef, useState } from "react";
+import { ReactNode, useCallback, useEffect, useId, useRef, useState } from "react";
 import Pagination from "../Pagination";
 import { Skeleton } from "../ui/skeleton";
 import { Button } from "../ui/button";
-import { CircleX, Search } from "lucide-react";
+import { CircleX, Columns3, Plus, Search } from "lucide-react";
 import { Input } from "../ui/input";
 import { useDebounce } from "@/hooks/useDebounce";
 import { cn } from "@/lib/utils";
+import { DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent, DropdownMenuLabel, DropdownMenuTrigger } from "../ui/dropdown-menu";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -37,9 +38,13 @@ interface DataTableProps<TData, TValue> {
   totalPages?: number;
   currentPage?: number;
   onPageChange?: (page: number) => void;
+  enableColumnVisibility?: boolean
   enableSearch?: boolean;
   onSearchAction?: (value: string) => void;
   searchPlaceholder?: string;
+  onAddAction?: () => void
+  actionLabel?: string,
+  extraActions?: ReactNode
 }
 
 export function DataTable<TData, TValue>({
@@ -49,15 +54,19 @@ export function DataTable<TData, TValue>({
   totalPages = 1,
   currentPage = 1,
   onPageChange,
+  enableColumnVisibility = false,
   enableSearch = false,
   defaultSort = [],
   onSearchAction,
   searchPlaceholder = "Search...",
+  onAddAction,
+  actionLabel = "Add",
+  extraActions,
 }: DataTableProps<TData, TValue>) {
   const id = useId()
   const inputRef = useRef<HTMLInputElement>(null)
   const [search, setSearch] = useState("")
-    const debouncedSearch = useDebounce(search, 500)
+  const debouncedSearch = useDebounce(search, 500)
   const [sorting, setSorting] = useState<SortingState>(defaultSort ?? []);
 
   useEffect(() => {
@@ -96,7 +105,7 @@ export function DataTable<TData, TValue>({
 
   return (
     <div className="w-full overflow-auto custom-scrollbar">
-      <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-between">
+      <div className="flex flex-col gap-3 sm:gap-4 lg:flex-row lg:items-center lg:justify-between mb-2">
         <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap">
             {enableSearch && (
                 <div className="relative w-full sm:w-auto sm:min-w-[280px] lg:min-w-[360px]">
@@ -131,7 +140,54 @@ export function DataTable<TData, TValue>({
                     )}
                 </div>
             )}
-            
+            {enableColumnVisibility && (
+              <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                      <Button
+                          variant="outline"
+                          size="sm"
+                          className="h-10 gap-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-colors"
+                      >
+                          <Columns3 size={16} aria-hidden="true" strokeWidth={2}/>
+                          <span className="hidden sm:inline font-medium">Columns</span>
+                      </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-52">
+                      <DropdownMenuLabel className="text-xs font-semibold text-gray-500 uppercase tracking-wider">
+                          Toggle columns
+                      </DropdownMenuLabel>
+                      {table
+                          .getAllColumns()
+                          .filter((column) => column.getCanHide())
+                          .map((column) => (
+                              <DropdownMenuCheckboxItem
+                                key={column.id}
+                                className="capitalize"
+                                checked={column.getIsVisible()}
+                                onCheckedChange={(value) => column.toggleVisibility(value)}
+                                onSelect={(e) => e.preventDefault()}
+                              >
+                                  {column.id}
+                              </DropdownMenuCheckboxItem>
+                          ))}
+                  </DropdownMenuContent>
+              </DropdownMenu>
+            )}
+        </div>
+
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:flex-wrap lg:justify-end">
+          {onAddAction && (
+              <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={onAddAction}
+                  className="h-10 gap-2 w-full sm:w-auto border-[#4a358e] text-[#4a358e] hover:bg-[#4a358e] hover:text-white transition-colors font-medium"
+              >
+                  <Plus size={16} aria-hidden="true" strokeWidth={2}/>
+                  <span>{actionLabel}</span>
+              </Button>
+          )}
+          {extraActions}
         </div>
       </div>
       <div className="rounded-md bg-white max-w-screen overflow-x-auto custom-scrollbar">
