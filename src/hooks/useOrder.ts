@@ -98,3 +98,16 @@ export const useUpdateWhatsAppOrderStatus = () => {
     },
   });
 };
+
+export const useAddAdminOrder = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (data: any) => orderService.addAdminOrder(data),
+    onSuccess: () => {
+      toast.success("Order added successfully");
+      queryClient.invalidateQueries({ queryKey: ["all-orders"], exact: false });    },
+    onError: () => {
+      toast.error("Failed to add product");
+    },
+  });
+}

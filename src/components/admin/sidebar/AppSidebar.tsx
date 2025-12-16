@@ -80,9 +80,9 @@ export function AppSidebar() {
           <Image 
             src="/logo.png" 
             alt="Logo" 
-            width={36} 
+            width={64} 
             height={64}
-            className="w-fit"
+            className=""
           />
           <SidebarGroupLabel className="text-base font-semibold">
             Black & White Trend
@@ -105,9 +105,9 @@ export function AppSidebar() {
                       href={item.url}
                       className={cn(
                         pathname.startsWith(item.url)
-                          ? "bg-gradient-to-r from-black to-gray-400 text-gray-200 font-semibold shadow-sm hover:shadow-2xl hover:!text-gray-200"
+                          ? "bg-linear-to-r from-black to-gray-400 text-gray-200 font-semibold shadow-sm hover:shadow-2xl hover:text-gray-200!"
                           : "",
-                        "flex items-center gap-2 w-full px-3 py-2 rounded hover:!bg-black hover:!text-gray-200 transition-colors"
+                        "flex items-center gap-2 w-full px-3 py-2 rounded hover:bg-black! hover:text-gray-200! transition-colors"
                       )}
                     >
                       <item.icon />

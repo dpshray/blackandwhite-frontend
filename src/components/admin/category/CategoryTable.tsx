@@ -50,7 +50,7 @@ export default function CategoryTable() {
             accessorKey: "title",
             header: "Category Name",
             cell: ({ row }) => (
-                <div className="font-medium break-words whitespace-normal">
+                <div className="font-medium wrap-break-words whitespace-normal">
                 {row.original.title}
                 </div>
             ),

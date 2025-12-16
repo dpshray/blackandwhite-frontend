@@ -11,6 +11,7 @@ import { MdEmail } from "react-icons/md";
 import { OrderItemsDialog } from "./OrderItemsDialog";
 import { Badge } from "@/components/ui/badge";
 import { OrderStatusCell } from "./OrderStatusCell";
+import OrderCreationDialog from "./AddOrder";
 
 export default function OrderTable() {
     const [page, setPage] = useState(1);
@@ -43,10 +44,10 @@ export default function OrderTable() {
             const b = row.original.billing_information;
             return (
                 <div className="text-sm">
-                {b?.first_name} {b?.last_name} <br />
-                {b?.address}, {b?.city}, {b?.state} <br />
-                <span className="flex items-center gap-2"><FaPhoneAlt className="text-red-500"/> {b?.contact_number}</span>
-                <span className="flex items-center gap-2"><MdEmail className="text-yellow-500"/> {b?.email}</span> <br />
+                    {b?.first_name} {b?.last_name} <br />
+                    {[b?.address, b?.city, b?.state].filter(Boolean).join(", ")}
+                    {b?.contact_number && <span className="flex items-center gap-2"><FaPhoneAlt className="text-red-500"/> {b?.contact_number}</span>}
+                    {b?.email && <span className="flex items-center gap-2"><MdEmail className="text-yellow-500"/> {b?.email}</span>}
                 </div>
             );
             },
@@ -73,7 +74,7 @@ export default function OrderTable() {
                     orderId={row.original.id}
                     value={row.original.status}
                     onChangeStatus={(id, status) => {
-                        setLoadingOrderId(id) // Set loading for this specific order
+                        setLoadingOrderId(id) 
                         mutate(
                         { orderId: id, status },
                         {
@@ -82,7 +83,7 @@ export default function OrderTable() {
                         },
                         )
                     }}
-                    loadingOrderId={loadingOrderId} // Pass loading state to cell
+                    loadingOrderId={loadingOrderId} 
                     />
             )
         }
@@ -91,6 +92,9 @@ export default function OrderTable() {
 
     return (
         <div className="space-y-4 py-4">
+            <div className="w-full md:w-auto">
+                <OrderCreationDialog />
+            </div>
 
         {!OrderData ? (
             <TableSkeleton />
