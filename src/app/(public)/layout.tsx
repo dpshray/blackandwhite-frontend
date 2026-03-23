@@ -3,8 +3,6 @@ import Header from "@/components/layout/Header";
 import WhatsAppChatWidget from "@/components/layout/WhatsAppChatWidget";
 import { getCategories } from "@/lib/server-api";
 
-export const dynamic = "force-dynamic";
-
 export default async function RootLayout({
   children,
 }: Readonly<{

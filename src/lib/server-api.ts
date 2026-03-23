@@ -6,7 +6,7 @@ const apiUrl = process.env.NEXT_PUBLIC_BASE_URL;
 
 async function fetchJSON<T>(endpoint: string, options: RequestInit = {}): Promise<T> {
   try {
-    const res = await fetch(`${apiUrl}${endpoint}`, { cache: "no-store", ...options });
+    const res = await fetch(`${apiUrl}${endpoint}`, { next: { revalidate: 600 }, ...options });
     if (!res.ok) throw new Error(`API Error: ${res.status}`);
     return await res.json();
   } catch (err) {
@@ -62,7 +62,9 @@ export async function getProducts(
     if (color) params.append("color", color)
     if (sort) params.append("sort", sort)
 
-    return await fetchJSON<ProductsResponse>(`/product?${params.toString()}`)
+    return await fetchJSON<ProductsResponse>(`/product?${params.toString()}`, {
+      cache: "no-store"
+    })
   } catch {
     return {
       message: "Failed to fetch products",

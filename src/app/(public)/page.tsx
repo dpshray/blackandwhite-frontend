@@ -11,24 +11,24 @@ interface ProductsPageProps {
   searchParams: Promise<{ page?: string }>
 }
 
+export const revalidate = 600;
+
 export default async function Home({ searchParams }: ProductsPageProps) {
   const params = await searchParams
   const currentPage = Number.parseInt(params.page || "1", 9)
 
-  const bannerResponse = await getBanners()
-  const banners = bannerResponse.data.data || []
+  const [bannerResponse, newArrivalsResponse, bestSellersResponse, limitedEditionResponse] = 
+    await Promise.all([
+      getBanners(),
+      getProducts(currentPage, 4, undefined, undefined, undefined, "new"),
+      getProducts(currentPage, 4, undefined, undefined, undefined, "best_seller"),
+      getProducts(currentPage, 4, undefined, undefined, undefined, "limited"),
+    ]);
 
-  // Fetch new arrivals
-  const newArrivalsResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "new")
-  const newArrivals = newArrivalsResponse.data.data
-
-  // Fetch best sellers
-  const bestSellersResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "best_seller")
-  const bestSellers = bestSellersResponse.data.data
-
-  // Fetch limited edition 
-  const limitedEditionResponse = await getProducts(currentPage, 4, undefined, undefined, undefined, "limited")
-  const limitedEdition = limitedEditionResponse.data.data
+  const banners = bannerResponse.data.data || [];
+  const newArrivals = newArrivalsResponse.data.data;
+  const bestSellers = bestSellersResponse.data.data;
+  const limitedEdition = limitedEditionResponse.data.data;
 
   return (
     <div className="min-h-screen">
@@ -68,7 +68,7 @@ export default async function Home({ searchParams }: ProductsPageProps) {
               <h2 className="text-4xl md:text-6xl font-medium text-black mb-8 leading-tight">
                 Your Go-To Destination for Black & White Men&apos;s Wear
               </h2>
-              {/* Image Size: 600x600px, Aspect Ratio: 1:1 */}
+              {/* Image Size: 600x600px, Aspect Ratio: 1:1 */}  
               <div className="aspect-square relative rounded-sm overflow-hidden">
                 <Image
                   src="/section1.jpg"
