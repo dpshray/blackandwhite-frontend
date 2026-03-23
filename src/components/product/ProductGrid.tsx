@@ -145,7 +145,7 @@ export default function ProductGrid({ products, totalPages, currentPage, categor
                 <SelectItem value="none">None</SelectItem>
                 <SelectItem value="best_seller">Best Seller</SelectItem>
                 <SelectItem value="price_low">Price: Low to High</SelectItem>
-                <SelectItem value="price_high ">Price: High to Low</SelectItem>
+                <SelectItem value="price_high">Price: High to Low</SelectItem>
               </SelectContent>
             </Select>
           </div>
